@@ -1,0 +1,48 @@
+# Intro to R
+
+## A necessary evil
+
+This course assumes a degree of knowledge of the R language (e.g., packages and data structures), and principles of tidy data (e.g., long and wide data format). We include detailed comments in the code, but do not attempt to provide a complete introduction to R. We include pointers to exceptional resources for learning R basics should you need them:
+
+Free books by [Roger Peng](https://leanpub.com/bookstore?category=r&type=book&search=peng) and [Hadley Wickham](https://r4ds.hadley.nz/)
+
+- **(Telford biostats, environmental computing)**
+
+## R GUI
+
+RStudio and VS Code
+
+## R projects
+
+R projects are not essential to use but can make life a little easier
+
+## Directory structure
+
+Having a well structured project directory is important for accessing the files you need and for reproducibility.
+
+## Version control
+
+It is good practice to back-up your data and use version control for your code. Onve you integrate version control into your workflow you will wonder how you ever lived without it. Version control is a vast subject but knowing the basics can get you a very far. The Git language (not to be confused with GitHub the remote server) is a common method used to colaborate in software development. Git is not a pre-requisite for this book but as a necessary part of an advanced workflow we include some links to learning basic version control:
+
+- links...
+
+As an example, this book itself is version controlled and collaborated on using Git and GitHub, the resources can be found **here-LINK**
+
+
+## Packages
+
+R is equiped with packages for data wrangling aside from the `BASE` R language, notably `data.table` and several packages inside the `tidyverse` library. We won't debate the differences here. We will primarily use packages from the `tidyverse` (`dplyr, ggplot2...) because they integrate with the `neotoma2` package used for interacting with the Neotoma(link) API.
+
+
+## Packages used in this book
+
+The following packages are required for this book. Run the following code to install them all (installation might take a few minutes!).
+
+**more to come, mgcv, pca packages.....**
+
+```{r book-packages}
+#| output: false
+#| warning: false
+if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
+pacman::p_load(tidyverse, neotoma2, Bchron)    # Install & load packages
+```

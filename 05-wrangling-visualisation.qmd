@@ -1,0 +1,7 @@
+# Data wrangling and visualisations {#wrangle-vis-sec}
+
+- [ ] Data checks
+
+- [ ] Tidying data
+
+- [ ] Plotting data

@@ -1,0 +1,3 @@
+# Ordination: Non-metric Dimension Scaling
+
+I need wifi.

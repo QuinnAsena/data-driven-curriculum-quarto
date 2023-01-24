@@ -1,0 +1,3 @@
+# Ordination: Principal Component Analysis
+
+Principal Component Analysis (PCA) is a statistical method for reducing $n$-dimensional data (e.g., the $n$ species in your data) to fewer axes that minimise the variance in the data.

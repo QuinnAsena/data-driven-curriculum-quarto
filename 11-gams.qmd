@@ -1,0 +1,6 @@
+# Generalised Additive Models
+
+Gavin GAMs
+
+
+## Hierarchical Generalised Additive Models.

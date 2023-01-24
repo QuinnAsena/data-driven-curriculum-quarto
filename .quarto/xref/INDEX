@@ -1,0 +1,50 @@
+{
+  "index.qmd": {
+    "index.html": "6c7a9687"
+  },
+  "01-intro.qmd": {
+    "01-intro.html": "3eea9e3b"
+  },
+  "02-intro-to-R.qmd": {
+    "02-intro-to-R.html": "3741726d"
+  },
+  "03-age-depth-modelling.qmd": {
+    "03-age-depth-modelling.html": "a4e3e7c8"
+  },
+  "04-neotoma2.qmd": {
+    "04-neotoma2.html": "f25c0871"
+  },
+  "05-wrangling-visualisation.qmd": {
+    "05-wrangling-visualisation.html": "10b6acaf"
+  },
+  "06-exploratory-analyses.qmd": {
+    "06-exploratory-analyses.html": "1d16fd7c"
+  },
+  "07-dissimilarity-roc.qmd": {
+    "07-dissimilarity-roc.html": "df871cc8"
+  },
+  "08-no-analogue.qmd": {
+    "08-no-analogue.html": "1ab115b0"
+  },
+  "09-ordination-pca.qmd": {
+    "09-ordination-pca.html": "03ff5603"
+  },
+  "10-ordination-nmds.qmd": {
+    "10-ordination-nmds.html": "57a621d3"
+  },
+  "11-gams.qmd": {
+    "11-gams.html": "e5e22bfd"
+  },
+  "12-tapas.qmd": {
+    "12-tapas.html": "1872ecbe"
+  },
+  "13-psm.qmd": {
+    "13-psm.html": "0e2af5cb"
+  },
+  "15-test-chapter.qmd": {
+    "15-test-chapter.html": "67570957"
+  },
+  "references.qmd": {
+    "references.html": "365fbac8"
+  }
+}

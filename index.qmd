@@ -1,0 +1,32 @@
+# Introduction
+
+Welcome to palaeoecological data-science! This book is designed as a reproducible workflow for a semester-long course in palaeoecological data-science. For students, the book is carefully designed as both an educational resource with working examples and exercises, and as a coding resource that can be transferred to your own analyses. The cautionary note being that the most appropriate analyses (e.g., NMDS or GAMs?), or parameterisation of the analyses will likely be different for your data. To help, the key resources associated with each analytical method are cited throughout. Some R knowledge is assumed but we have tried to make it as easy-to-follow as possible with reproducible, working code chunks.
+
+For instructors, the repository can be forked and edited to suit different needs. The pollen data from Devil's Lake (Wisconsin, USA) used as an example dataset can be swapped out for a different region or proxy (e.g., diatoms) and the workflow edited to accommodate for the change. We would love to know how the resource is adapted and used so drop us an email and let us know!
+
+If you do use this resource for teaching or learning please cite it: DOI XXX. This will help us keep track of the impact and use of such open-source curricula and inform future work.
+
+Copied in, perhaps unnecessary:
+
+This curriculum is an open-source and we welcome suggestions for improvement from the community that will be reviewed by the developers. We will also keep the resource up-to-date with the latest package improvements. The development of this curriculum is tracked with version control using git and the `renv` package is used to control package versions. **section perhaps should be edited and moved to readme with instructions for raising github issues**
+
+
+## Is this going to hurt?
+
+Yes. But it will be worth it. Palaeoecological data are complex and demand advanced analyses and modelling methods that require anything from basic coding proficiency and a laptop, to super-computing resources and online databases.
+
+- [ ] Set up group Zotero
+
+- [ ] Complete writing
+
+- [ ] Complete YAML file
+
+- [ ] Author order? Authors per chapter?
+
+- [ ] `renv`
+
+- [ ] replace PSM with LDA?
+
+- [ ] host and track with google analytics?
+
+- [ ] check literature is open access? 

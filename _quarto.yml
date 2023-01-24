@@ -1,0 +1,32 @@
+project:
+  type: book
+
+book:
+  title: "Palaeoecological data-science: a data driven curriculum"
+  author: "Quinn Asena, Jack Williams, Simon Gorring, Socorro Dominguez Vidana"
+  date: today
+  chapters:
+    - index.qmd
+    - 01-intro.qmd
+    - 02-intro-to-R.qmd
+    - 03-age-depth-modelling.qmd
+    - 04-neotoma2.qmd
+    - 05-wrangling-visualisation.qmd
+    - 06-exploratory-analyses.qmd
+    - 07-dissimilarity-roc.qmd
+    - 08-no-analogue.qmd
+    - 09-ordination-pca.qmd
+    - 10-ordination-nmds.qmd
+    - 11-gams.qmd
+    - 12-tapas.qmd
+    - 13-psm.qmd
+    - 15-test-chapter.qmd
+    - references.qmd
+
+bibliography: data-driven-curriculum.bib
+
+format:
+  html:
+    theme: cosmo
+execute:
+  cache: true
