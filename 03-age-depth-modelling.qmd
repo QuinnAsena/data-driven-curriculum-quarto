@@ -1,4 +1,4 @@
-# Age-depth modelling
+# Age-depth modelling {#sec-age-depth}
 
 ## Part 1: Background
 
@@ -12,9 +12,11 @@ To estimate ages for depths lacking radiocarbon date, an age-depth model is requ
 
 Here we will gain practice in working with age-depth models of various kind, and assessing their age estimates and uncertainty. We’ll begin with a bit of practice in calibrating radiocarbon years to calendar years and comparing the resulting age estimates from different calibration curves. 
 
-### Packages required for this chapter
 
-We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using base R.
+::: {.callout-note}
+# Packages required for this section
+
+We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using BASE-R.
 
 ```{r packages}
 #| output: false
@@ -22,6 +24,8 @@ We will be using `Bchron` for calibration and Bayesian age-depth modelling. Nota
 library(Bchron)
 library(splines) # for fitting splines comes with Base-R
 ```
+:::
+
 
 ### Calibration of Radiocarbon Dates
 

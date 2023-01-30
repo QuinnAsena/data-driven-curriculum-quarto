@@ -1,14 +1,20 @@
-# Introduction
+# Introduction {#sec-introduction}
 
-Welcome to palaeoecological data-science! This book is designed as a reproducible workflow for a semester-long course in palaeoecological data-science. For students, the book is carefully designed as both an educational resource with working examples and exercises, and as a coding resource that can be transferred to your own analyses. The cautionary note being that the most appropriate analyses (e.g., NMDS or GAMs?), or parameterisation of the analyses will likely be different for your data. To help, the key resources associated with each analytical method are cited throughout. Some R knowledge is assumed but we have tried to make it as easy-to-follow as possible with reproducible, working code chunks.
+Welcome to palaeoecological data-science! This book is designed as a reproducible workflow for a semester-long course in palaeoecological data-science with the accompany publication XXX. For students, the book is carefully designed as both an educational resource with working examples and exercises, and as a coding resource that can be transferred to your own analyses. The cautionary note being that the most appropriate analyses (e.g., NMDS or GAMs?), or parameterisation of the analyses will likely be different for your data. To help, the key resources associated with each analytical method are cited throughout. Some R knowledge is assumed but we have tried to make it as easy-to-follow as possible with reproducible, working code chunks.
 
 For instructors, the repository can be forked and edited to suit different needs. The pollen data from Devil's Lake (Wisconsin, USA) used as an example dataset can be swapped out for a different region or proxy (e.g., diatoms) and the workflow edited to accommodate for the change. We would love to know how the resource is adapted and used so drop us an email and let us know!
 
 If you do use this resource for teaching or learning please cite it: DOI XXX. This will help us keep track of the impact and use of such open-source curricula and inform future work.
 
-Copied in, perhaps unnecessary:
-
 This curriculum is an open-source and we welcome suggestions for improvement from the community that will be reviewed by the developers. We will also keep the resource up-to-date with the latest package improvements. The development of this curriculum is tracked with version control using git and the `renv` package is used to control package versions. **section perhaps should be edited and moved to readme with instructions for raising github issues**
+
+## What this book is
+
+Many palaeo research projects follow the same general workflow, of course there will always be unique questions, challenges, and additional interests. This book is intended to cover the general workflow from obtaining data, through wrangling, analysing and visualising. There are examples throughout
+
+## What this book is not
+
+Palaeo-science comprise many disciplines from biochemistry and climatology, to mathematics, and ecology. We focus on providing a workflow but cannot, in detail, cover every challenge faced in, for example, age-depth modelling or statistical analyses of proxies. To remedy this shortcoming, each section has the key references that, while not essential for this book, are a starting point to understanding essential challenges.
 
 
 ## Is this going to hurt?

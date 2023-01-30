@@ -2,30 +2,32 @@
 
 Sandbox chapter for testing scripts outside main writing if necessary
 
-# Introduction {#intro}
+::: {.callout-note}
+# Packages required for this section
+List of packages required for section and what they are used for
 
-You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro).
-If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
+:::
 
-## Figures and Tables {.panelset}
+::: {.callout-tip}
+# Respawn code
+Begin each section with a code-block that can be run to reproduce the necessary data format for the upcoming section
 
-### Figures
+:::
 
-Figures and tables with captions will be placed in `figure` and `table` environments, respectively.
+::: {.callout-warning}
+# Oh no! :scream:
+Example of common mistakes
 
-```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'}
-par(mar = c(4, 4, .1, .1))
-plot(pressure, type = 'b', pch = 19)
-```
+:::
 
-### Tables
+::: {.callout-tip}
+# Good practice tip
+Tips on version control, directory structure (and anything else) that make life easier
 
-Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig).
-Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab).
+:::
 
-```{r nice-tab, tidy=FALSE}
-knitr::kable(
-  head(iris, 20), caption = 'Here is a nice table!',
-  booktabs = TRUE
-)
-```
+::: {.callout-note}
+# Resources
+List of packages required for section and what they are used for
+
+:::

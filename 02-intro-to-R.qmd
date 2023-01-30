@@ -1,4 +1,4 @@
-# Intro to R
+# Intro to R {#sec-R}
 
 ## A necessary evil
 

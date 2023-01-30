@@ -24,6 +24,7 @@ book:
     - references.qmd
 
 bibliography: data-driven-curriculum.bib
+from: markdown+emoji
 
 format:
   html:
