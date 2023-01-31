@@ -23,3 +23,25 @@ SlugganOut = with(Sluggan,
                            positionThicknesses=thickness,
                            ids=id, 
                            predictPositions=seq(0,1500,by=10)))
+
+data(Glendalough)
+print(Glendalough)
+
+GlenOut = with(Glendalough, 
+               Bchronology(ages=ages,
+                           ageSds=ageSds, 
+                           calCurves=calCurves,
+                           positions=position, 
+                           positionThicknesses=thickness,
+                           ids=id, 
+                           predictPositions=seq(0,1500,by=10)))
+
+
+summary(GlenOut)
+
+ages2 = BchronCalibrate(ages=c(3445,11553,7456), 
+                        ageSds=c(50,230,110), 
+                        calCurves=c('intcal20','intcal20','shcal20'))
+summary(ages2)
+plot(ages2)
+median(ages2$Date1$ageGrid)

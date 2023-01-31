@@ -198,7 +198,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-neotoma2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The neotoma2 package</span></a>
+  <a href="./04-neotoma2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>neotoma2</code> package</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -270,8 +270,14 @@ div.csl-indent {
   <li><a href="#calibration-of-radiocarbon-dates" id="toc-calibration-of-radiocarbon-dates" class="nav-link" data-scroll-target="#calibration-of-radiocarbon-dates"><span class="toc-section-number">4.1.1</span>  Calibration of Radiocarbon Dates</a></li>
   <li><a href="#types-of-age-depth-models" id="toc-types-of-age-depth-models" class="nav-link" data-scroll-target="#types-of-age-depth-models"><span class="toc-section-number">4.1.2</span>  Types of Age-Depth Models</a></li>
   </ul></li>
-  <li><a href="#part-2-exercises" id="toc-part-2-exercises" class="nav-link" data-scroll-target="#part-2-exercises"><span class="toc-section-number">4.2</span>  Part 2: Exercises</a></li>
+  <li><a href="#part-2-exercises" id="toc-part-2-exercises" class="nav-link" data-scroll-target="#part-2-exercises"><span class="toc-section-number">4.2</span>  Part 2: Exercises</a>
+  <ul class="collapse">
+  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration"><span class="toc-section-number">4.2.1</span>  Calibration</a></li>
+  <li><a href="#classical-age-depth-modelling" id="toc-classical-age-depth-modelling" class="nav-link" data-scroll-target="#classical-age-depth-modelling"><span class="toc-section-number">4.2.2</span>  Classical age-depth modelling:</a></li>
+  <li><a href="#bayesian-age-depth-modelling" id="toc-bayesian-age-depth-modelling" class="nav-link" data-scroll-target="#bayesian-age-depth-modelling"><span class="toc-section-number">4.2.3</span>  Bayesian age-depth modelling</a></li>
+  </ul></li>
   <li><a href="#learning-outcomes-rephraseexclude" id="toc-learning-outcomes-rephraseexclude" class="nav-link" data-scroll-target="#learning-outcomes-rephraseexclude"><span class="toc-section-number">4.3</span>  Learning outcomes (Rephrase/exclude)</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -427,7 +433,7 @@ $`94.6%`
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Linear interpolation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Linear regression</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Polynomial regression</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Cubic splines</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<p>Linear interpolation predicts missing ages by simply, drawing a line between dated samples. This method assumes that there is a constant age-depth relationship between successive samples. An assumption that is unlikely to be true, especially of cores with fewer dated samples than Sluggan Moss.</p>
+<p>Linear interpolation predicts ages by simply, drawing a line between successive dated samples. This method assumes that there is a constant age-depth relationship between samples. An assumption that is unlikely to be true, especially of cores with fewer dated samples than Sluggan Moss.</p>
 <div class="cell" data-hash="03-age-depth-modelling_cache/html/LinearInterp_31a30a9b3a6326a931ced14f1efdc65d">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>interp_ages <span class="ot">&lt;-</span> <span class="fu">approx</span>(<span class="at">x =</span> Sluggan<span class="sc">$</span>ages, <span class="at">y =</span> Sluggan<span class="sc">$</span>position) <span class="co"># use the function approx() to interpolate between ages</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> interp_ages<span class="sc">$</span>x, <span class="at">y =</span> interp_ages<span class="sc">$</span>y, <span class="at">type =</span> <span class="st">'l'</span>) <span class="co"># Plot the interpolated data</span></span>
@@ -570,7 +576,7 @@ $`94.6%`
 </div>
 </div>
 </div>
-<p>A more complete version of the modelling process using Bchron can be found in the <a href="https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html">vignette</a>. Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. In each section we include the key papers on the topic.</p>
+<p>A more complete version of the modelling process using Bchron can be found in the <a href="https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html">vignette</a>.</p>
 <div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -581,6 +587,7 @@ Resources
 </div>
 </div>
 <div class="callout-body-container callout-body">
+<p>Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. Ket papers for understanding age depth modelling include:</p>
 <ul>
 <li><p><span class="citation" data-cites="blaauw2018">Blaauw et al. (<a href="references.html#ref-blaauw2018" role="doc-biblioref">2018</a>)</span></p></li>
 <li><p><span class="citation" data-cites="parnell2008">Parnell et al. (<a href="references.html#ref-parnell2008" role="doc-biblioref">2008</a>)</span></p></li>
@@ -593,15 +600,56 @@ Resources
 </section>
 <section id="part-2-exercises" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="part-2-exercises"><span class="header-section-number">4.2</span> Part 2: Exercises</h2>
-<p>Calibration</p>
-<ul>
-<li>Modify the example to calibrate the dates to different calibration curves</li>
-</ul>
-<p>Classical age-depth modelling:</p>
-<ul>
-<li><p>Load up the other dataset provided by Bchron and try…</p></li>
-<li><p>plot 3 different orders of polynomial in different colours</p></li>
-</ul>
+<p>You may want to refer to the bchron vignette to find some helpful information for the exercises below.</p>
+<section id="calibration" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="calibration"><span class="header-section-number">4.2.1</span> Calibration</h3>
+<ol type="1">
+<li>Using the existing example code, change the <code>calCurves</code> input to:
+<ol type="i">
+<li>the Southern Hemisphere calibration curve</li>
+<li>the marine sediments curve.</li>
+</ol></li>
+<li>Calibrate a different set of three ages by modifying the inputs to <code>ages</code> and <code>ageSds</code>.</li>
+</ol>
+<p>The object you assigned the result of <code>BchronCalibrate</code> to contains all the calibration information and can be accessed with the <code>$</code> e.g., <code>ages$Date1$ageGrid</code></p>
+<ol start="3" type="1">
+<li>Using one of your calibrated sets of three dates, calculate the median age from the <code>ageGrid</code> and the difference of each calibrated age to the original uncalibrated age.</li>
+</ol>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Median and mean ages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Commonly, only the median age is reported; however, it is good practice to report and consider the range of possible ages, especially when exploring synchroneity of events across space. Notice how <code>Bchron</code> focuses on delivering ranges and densities.</p>
+</div>
+</div>
+</section>
+<section id="classical-age-depth-modelling" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="classical-age-depth-modelling"><span class="header-section-number">4.2.2</span> Classical age-depth modelling:</h3>
+<ol type="1">
+<li><code>Bchron</code> has a second built-in dataset named Glendalough. Using the Glendalough dataset:
+<ol type="i">
+<li>Fit a linear interpolation, linear regression, three different order polynomials and a cubic spline</li>
+<li>Plot the results</li>
+</ol></li>
+<li>Did you run into any errors or warnings? If so, why?</li>
+</ol>
+</section>
+<section id="bayesian-age-depth-modelling" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="bayesian-age-depth-modelling"><span class="header-section-number">4.2.3</span> Bayesian age-depth modelling</h3>
+<ol type="1">
+<li>Run the <code>Bchron</code> age-depth model on the Glendalough dataset and consider:
+<ol type="i">
+<li>How does uncertainty change between the plot outputs between the Glendalough (a dataset with fewer radiocarbon dates) and Sluggan Moss (a data-rich site)</li>
+<li>Run the summary funcion on the Glendalough model, does the output reflect the plot? Is there smaller uncertainty around samples? Why is interpreting results in the context of the uncertainty important?</li>
+</ol></li>
+</ol>
+</section>
 </section>
 <section id="learning-outcomes-rephraseexclude" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="learning-outcomes-rephraseexclude"><span class="header-section-number">4.3</span> Learning outcomes (Rephrase/exclude)</h2>
@@ -609,6 +657,9 @@ Resources
 <li><p><input type="checkbox" disabled="">Learn how to access and use-built in datasets</p></li>
 <li><p><input type="checkbox" disabled="">Learn how to find package vignettes</p></li>
 </ul>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
@@ -781,7 +832,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./04-neotoma2.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The neotoma2 package</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>neotoma2</code> package</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

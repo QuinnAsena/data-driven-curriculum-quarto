@@ -44,5 +44,5 @@ The following packages are required for this book. Run the following code to ins
 #| output: false
 #| warning: false
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(tidyverse, neotoma2, Bchron)    # Install & load packages
+pacman::p_load(tidyverse, neotoma2, Bchron, devtools)    # Install & load packages
 ```

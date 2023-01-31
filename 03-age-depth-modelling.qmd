@@ -103,7 +103,7 @@ print(Sluggan) # Check out the data
 
 ## Linear interpolation
 
-Linear interpolation predicts missing ages by simply, drawing a line between dated samples. This method assumes that there is a constant age-depth relationship between successive samples. An assumption that is unlikely to be true, especially of cores with fewer dated samples than Sluggan Moss.
+Linear interpolation predicts ages by simply, drawing a line between successive dated samples. This method assumes that there is a constant age-depth relationship between samples. An assumption that is unlikely to be true, especially of cores with fewer dated samples than Sluggan Moss.
 
 ```{r LinearInterp}
 interp_ages <- approx(x = Sluggan$ages, y = Sluggan$position) # use the function approx() to interpolate between ages
@@ -194,10 +194,12 @@ plot(SlugganOut)
 
 :::
 
-A more complete version of the modelling process using Bchron can be found in the [vignette](https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html). Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. In each section we include the key papers on the topic.
+A more complete version of the modelling process using Bchron can be found in the [vignette](https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html). 
 
 ::: {.callout-tip}
 # Resources
+
+Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. Ket papers for understanding age depth modelling include:
 
 - @blaauw2018
 
@@ -205,24 +207,49 @@ A more complete version of the modelling process using Bchron can be found in th
 
 - @trachsel2017
 
-
 :::
 
 ## Part 2: Exercises
 
-Calibration
+You may want to refer to the bchron vignette to find some helpful information for the exercises below.
 
-- Modify the example to calibrate the dates to different calibration curves
+### Calibration
 
-Classical age-depth modelling:
+1. Using the existing example code, change the `calCurves` input to:
+    i) the Southern Hemisphere calibration curve
+    ii) the marine sediments curve.
 
-- Load up the other dataset provided by Bchron and try...
+2. Calibrate a different set of three ages by modifying the inputs to `ages` and `ageSds`.
 
-- plot 3 different orders of polynomial in different colours
+The object you assigned the result of `BchronCalibrate` to contains all the calibration information and can be accessed with the `$` e.g., `ages$Date1$ageGrid`
 
+3. Using one of your calibrated sets of three dates, calculate the median age from the `ageGrid` and the difference of each calibrated age to the original uncalibrated age.
+
+::: {.callout-note}
+# Median and mean ages
+
+Commonly, only the median age is reported; however, it is good practice to report and consider the range of possible ages, especially when exploring synchroneity of events across space. Notice how `Bchron` focuses on delivering ranges and densities.
+
+:::
+
+### Classical age-depth modelling:
+
+1. `Bchron` has a second built-in dataset named Glendalough. Using the Glendalough dataset:
+    i) Fit a linear interpolation, linear regression, three different order polynomials and a cubic spline
+    ii) Plot the results
+    
+2. Did you run into any errors or warnings? If so, why?
+
+### Bayesian age-depth modelling
+
+1. Run the `Bchron` age-depth model on the Glendalough dataset and consider:
+    i) How does uncertainty change between the plot outputs between the Glendalough (a dataset with fewer radiocarbon dates) and Sluggan Moss (a data-rich site)
+    ii) Run the summary funcion on the Glendalough model, does the output reflect the plot? Is there smaller uncertainty around samples? Why is interpreting results in the context of the uncertainty important?
 
 ## Learning outcomes (Rephrase/exclude)
 
 - [ ] Learn how to access and use-built in datasets
 
 - [ ] Learn how to find package vignettes
+
+# References {.unnumbered}
