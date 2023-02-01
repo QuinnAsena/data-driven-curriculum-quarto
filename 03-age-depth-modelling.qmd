@@ -21,8 +21,8 @@ We will be using `Bchron` for calibration and Bayesian age-depth modelling. Nota
 ```{r packages}
 #| output: false
 # Load up the package
-library(Bchron)
-library(splines) # for fitting splines comes with Base-R
+if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
+pacman::p_load(Bchron, splines) # splines comes with BASE-R
 ```
 :::
 

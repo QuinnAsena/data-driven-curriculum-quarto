@@ -57,13 +57,14 @@ For this workbook we use several packages, including `leaflet`, `sf` and others.
 ::: {.callout-note}
 # Packages required for this section
 
-`neotoma2` is available from GitHub and can be installed in R using the `devtools` package via:
+`neotoma2` is available from GitHub and can be installed in R using the `devtools` package via `devtools`:
 
 ```{r packages}
 #| output: false
 # Load up the package
+devtools::install_github('NeotomaDB/neotoma2')
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(dplyr, ggplot2, sf, geojsonsf, leaflet, raster, DT, devtools) # devtools allows us to install from online repositories
+pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, devtools, rioja) # devtools allows us to install from online repositories
 ```
 :::
 
@@ -94,7 +95,7 @@ Many users of Neotoma first want to search and explore data at the site level. T
   * altitude (maximum and minimum)
   * geopolitical unit
 
-#### Searching by Site Name: `sitename="%Devil%"` {.tabset}
+#### Searching by Site Name: `sitename="%Devil%"`
 
 We may know exactly what site we're looking for (*"Devil's Lake"*), or have an approximate guess for the site name (for example, we know it's something like *"Devil Pond"*, or *"Devil's Hole"*).
 
@@ -104,29 +105,32 @@ PostgreSQL (and the API) uses the percent sign as a wildcard. So `"%Devil%"` wou
 
 If we want an individual record we can use the siteid, which is a unique identifier for each site: `r devils_lake <- neotoma2::get_sites(siteid = 666)`.
 
-##### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r sitename, eval=FALSE}
 devil_sites <- neotoma2::get_sites(sitename = "%Devil%")
 plotLeaflet(devil_sites)
 ```
 
-##### Result
+## Result
 
 ```{r sitenamePlot, echo=FALSE}
 devil_sites <- neotoma2::get_sites(sitename = "%Devil%")
 plotLeaflet(devil_sites)
 ```
 
-###
+:::
 
 **Exercise Question 2** How many sites have the name 'clear' in them?  Show both your code and provide the total count.
 
-#### Searching by Location: `loc=c()` {.tabset}
+#### Searching by Location: `loc=c()`
 
 The `neotoma` package used a bounding box for locations, structured as a vector of latitude and longitude values: `c(xmin, ymin, xmax, ymax)`.  The `neotoma2` R package supports both this simple bounding box and also more complex spatial objects, using the [`sf` package](https://r-spatial.github.io/sf/). Using the `sf` package allows us to more easily work with raster and polygon data in R, and to select sites using more complex spatial objects.  The `loc` parameter works with the simple vector, [WKT](https://arthur-e.github.io/Wicket/sandbox-gmaps3.html), [geoJSON](http://geojson.io/#map=2/20.0/0.0) objects and native `sf` objects in R.  **Note however** that the `neotoma2` package is a wrapper for a simple API call using a URL (see APIs above), and URL strings have a maximum limit of 1028 characters, so the API currently cannot accept very long/complex spatial objects.  
 
 As an example of different ways that you can search by location, let's say you wanted to search for all sites in the state of Michigan.  Here are three spatial representations of Michigan: 1) a geoJSON list with five elements, 2) WKT, and 3) bounding box representation.  And, as a fourth variant, we've transformed the `mich$geoJSON` element to an object for the `sf` package.  Any of these four spatial representations work with the `neotoma2` package.
+
 ```{r boundingBox, message=FALSE}
 mich <- list(geoJSON = '{"type": "Polygon",
         "coordinates": [[
@@ -150,7 +154,9 @@ mich_sites <- neotoma2::get_sites(loc = mich$geoJSON, all_data = TRUE)
 
 You can always simply `plot()` the `sites` objects, but this won't show any geographic context. The `leaflet::plotLeaflet()` function returns a `leaflet()` map, and allows you to further customize it, or add additional spatial data (like our original bounding polygon, `mich$sf`, which works directly with the R `leaflet` package):
 
-##### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r plotL, eval=FALSE}
 neotoma2::plotLeaflet(mich_sites) %>%
@@ -159,7 +165,7 @@ neotoma2::plotLeaflet(mich_sites) %>%
                        color = "green")
 ```
 
-##### Result
+## Result
 
 ```{r plotLeaf, echo=FALSE}
 neotoma2::plotLeaflet(mich_sites) %>%
@@ -168,10 +174,12 @@ neotoma2::plotLeaflet(mich_sites) %>%
                        color = "green")
 ```
 
-###
+:::
+
+
 **Exercise Question 3** Which state has more sites in Neotoma, Minnesota or Wisconsin? How many in each state? Provide both code and answer.
 
-#### Helper Functions for Site Searches {.tabset}
+#### Helper Functions for Site Searches
 
 ![Neotoma R Package Universal Modeling Language (UML) diagram.](images/neotomaUML_as.svg)
 
@@ -179,13 +187,15 @@ If we look at the [UML diagram](https://en.wikipedia.org/wiki/Unified_Modeling_L
 
 The following code gives the summary table. We do some R magic here to change the way the data is displayed (turning it into a `datatable()` object using the `DT` package), but the main function is the `summary()` call.
 
-##### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r summary_sites, eval=FALSE}
 neotoma2::summary(mich_sites)
 ```
 
-##### Result
+## Result
 
 ```{r summarySitesTable, eval=TRUE, echo=FALSE}
 neotoma2::summary(mich_sites) %>%
@@ -193,16 +203,20 @@ neotoma2::summary(mich_sites) %>%
                 options = list(scrollX = "100%", dom = 't'))
 ```
 
-###
+:::
+
+
 We can see that there are no chronologies associated with the `site` objects. This is because, at present, we have not pulled in the `dataset` information we need. All we know from `get_sites()` are the kinds of datasets we have.
 
-### Searching for Datasets: {.tabset}
+### Searching for Datasets
 
 Now that we know how to search for sites, we can start to search for datasets. As we've discussed before, in the Neotoma data model, each site can contain one or more collection units, each of which can contain one or more datasets. Similarly, a `sites` object contains `collectionunits` which contain `datasets`. From the table above, we can see that some of the sites we've looked at contain pollen data. However, so far we have only downloaded the `sites` data object and not any of the actual pollen data, it's just that (for convenience) the `sites` API returns some information about datasets, to make it easier to navigate the records.
 
 With a `sites` object we can directly call `get_datasets()`, to pull in more metadata about the datasets. At any time we can use `datasets()` to get more information about any datasets that a `sites` object may contain. Compare the output of `datasets(mich_sites)` to the output of a similar call using the following:
 
-#### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r datasetsFromSites, eval=FALSE}
 mich_datasets <- neotoma2::get_datasets(mich_sites, all_data = TRUE)
@@ -210,7 +224,7 @@ mich_datasets <- neotoma2::get_datasets(mich_sites, all_data = TRUE)
 datasets(mich_datasets)
 ```
 
-#### Result
+## Result
 
 ```{r datasetsFromSitesResult, echo=FALSE, message=FALSE}
 mich_datasets <- neotoma2::get_datasets(mich_sites, all_data = TRUE)
@@ -220,14 +234,18 @@ datasets(mich_datasets) %>%
                 options = list(scrollX = "100%", dom = 't'))
 ```
 
-###
+:::
+
+
 **Question 4**: How many different kinds of datasets are available at Devil's Lake, WI? Show both code and answer. Ensure that your code just retrieves datasets for just this single site.
 
-### Filter Records {.tabset}
+### Filter Records
 
 If we choose to pull in information about only a single dataset type, or if there is additional filtering we want to do before we download the data, we can use the `filter()` function. For example, if we only want pollen records, and want records with known chronologies, we can filter:
 
-#### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r downloads, eval=FALSE}
 mich_pollen <- mich_datasets %>%
@@ -236,7 +254,7 @@ mich_pollen <- mich_datasets %>%
 neotoma2::summary(mich_pollen)
 ```
 
-#### Result
+## Result
 
 ```{r downloadsCode, echo = FALSE}
 mich_pollen <- mich_datasets %>%
@@ -246,7 +264,7 @@ neotoma2::summary(mich_pollen) %>% DT::datatable(data = .,
                 options = list(scrollX = "100%", dom = 't'))
 ```
 
-###
+:::
 
 Note, that we are filtering on two conditions. (You may want to look up the operators being used in the above code: `==`, `&`, and `!` to understand what they accomplish in the code.) We can see now that the data table looks different, and there are fewer total sites.
 
@@ -275,17 +293,19 @@ colnames(allSamp)
 
 For some dataset types, or analyses some of these columns may not be needed, however, for other dataset types they may be critically important. To allow the `neotoma2` package to be as useful as possible for the community we've included as many as we can.
 
-#### Extracting Taxa {.tabset}
+#### Extracting Taxa
 
 If you want to know what taxa we have in a dataset, you can use the helper function `taxa()` on the sites object. The `taxa()` function gives us, not only the unique taxa, but two additional columns, `sites` and `samples`, that tell us how many sites the taxa appear in, and how many samples the taxa appear in, to help us better understand how common individual taxa are.
 
-##### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r taxa2, eval=FALSE, eval=FALSE}
 neotomatx <- neotoma2::taxa(mich_dl)
 ```
 
-##### Results
+## Results
 
 ```{r taxaprint, echo=FALSE, message=FALSE}
 neotomatx <- neotoma2::taxa(mich_dl)
@@ -295,11 +315,12 @@ neotoma2::taxa(mich_dl) %>%
                 options = list(scrollX = "100%", dom = 't'))
 ```
 
-#### {-}
+:::
+
 
 The `taxonid` values can be linked to the `taxonid` column in the `samples()`. This allows us to build taxon harmonization tables if we choose to. Note also that the `taxonname` is in the field `variablename`. Individual sample counts are reported in Neotoma as [`variables`](https://open.neotomadb.org/manual/taxonomy-related-tables-1.html#Variables). A "variable" may be either a species for which we have presence or count data, a geochemical measurement, or any other proxy, such as charcoal counts. Each stored entry for a variable includes the units of measurement and the value.
 
-#### Taxonomic Harmonization (Simple) {.tabset}
+#### Taxonomic Harmonization (Simple)
 
 A standard challenge in Neotoma (and in biodiversity research more generally) is that different scientists use different names for taxonomic entities such as species. Even if everyone agrees on a common taxonomy, it's quite possible that a given fossil might be only partially identifiable, perhaps just to genus or even family. Hence, when working with data from Neotoma, a common intermediary step is to 'harmonize' all the taxa names stored in Neotoma into some standard names of interest to you.
 
@@ -327,32 +348,35 @@ allSamp <- allSamp %>%
 
 There were originally `r sum(stringr::str_detect(neotomatx$variablename, 'Pinus.*'))` different taxa identified as being within the genus *Pinus* (including *Pinus*, *Pinus subg. Pinus*, and *Pinus undiff.*). The above code reduces them all to a single taxonomic group *Pinus*. We can check out the unique names by using:
 
-##### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r UniqueNames, eval=FALSE}
 neotomatx %>%
   ungroup() %>%
-  filter(stringr::str_detect(variablename, "Pinus")) %>%
+  dplyr::filter(stringr::str_detect(variablename, "Pinus")) %>%
   summarise(pinus_spp = unique(variablename))
 
 # I actually like Base here for the one-liner:
 # unique(grep("Pinus", neotomatx$variablename, value = TRUE))
 ```
 
-##### Result
+## Result
 
 ```{r UniqueNamesTab, echo=FALSE, message=FALSE}
 neotomatx %>%
   ungroup() %>%
-  filter(stringr::str_detect(variablename, "Pinus")) %>%
+  dplyr::filter(stringr::str_detect(variablename, "Pinus")) %>%
   summarise(pinus_spp = unique(variablename)) %>%
   DT::datatable(data = .,
                 options = list(scrollX = "100%", dom = 't'))
 ```
 
-#### {- .tabset}
-**Question 5**: Follow the *Pinus* example above, but now for *Picea.* How many taxon names were aggregated into your *Picea* name?
+:::
 
+
+**Question 5**: Follow the *Pinus* example above, but now for *Picea.* How many taxon names were aggregated into your *Picea* name?
 
 If we want to store a record of our choices outside of R, we can use an external table. For example, a table of pairs (what we want changed, and the name we want it replaced with) can be generated, and it can include regular expressions (if we choose):
 
@@ -366,7 +390,9 @@ If we want to store a record of our choices outside of R, we can use an external
 
 We can get the list of original names directly from the `taxa()` call, applied to a `sites` object, and then export it using `write.csv()`. We can also do some exploratory plots of the data:
 
-##### Code
+::: {.panel-tabset}
+
+## Code
 
 ```{r countbySitesSamples, eval=FALSE}
 taxaplots <- taxa(mich_dl)
@@ -374,7 +400,7 @@ taxaplots <- taxa(mich_dl)
 readr::write_csv(taxaplots, "data/mytaxontable.csv")
 ```
 
-##### Result
+## Result
 
 ```{r PlotTaxonCounts, echo=FALSE, fig.cap="**Figure**. A plot of the number of sites a taxon appears in, against the number of samples a taxon appears in.", message=FALSE}
 taxaplots <- taxa(mich_dl)
@@ -387,7 +413,7 @@ ggplot(data = taxaplots, aes(x = sites, y = samples)) +
   theme_bw()
 ```
 
-#### {-}
+:::
 
 The plot is mostly for illustration, but we can see, as a sanity check, that the relationship is as we'd expect.
 
@@ -403,14 +429,14 @@ We can use packages like `rioja` to do stratigraphic plotting for a single datas
 plottingSite <- mich_dl[[25]]
 
 plottingTaxa <- taxa(plottingSite) %>%
-  filter(ecologicalgroup %in% c("TRSH"),
+  dplyr::filter(ecologicalgroup %in% c("TRSH"),
          elementtype == "pollen") %>%
   arrange(desc(samples))
 
 # Clean up. Select only pollen measured using NISP.
 # We repeat the filters for pollen & ecological group on the samples
 shortSamples <- samples(plottingSite) %>%
-  filter(variablename %in% plottingTaxa$variablename,
+  dplyr::filter(variablename %in% plottingTaxa$variablename,
          ecologicalgroup %in% c("TRSH"),
          elementtype == "pollen",
          units == "NISP")
@@ -437,7 +463,7 @@ onesite <- shortSamples %>%
 widetable <- onesite %>%
   dplyr::select(age, variablename, prop) %>%
   mutate(prop = as.numeric(prop))  %>%
-  filter(variablename %in% c("Pinus", "Betula", "Quercus",
+  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea"))
 
 counts <- tidyr::pivot_wider(widetable,
@@ -477,7 +503,7 @@ onesite <- devils_samples %>%
 widetable <- onesite %>%
   dplyr::select(age, variablename, prop) %>%
   mutate(prop = as.numeric(prop))  %>%
-  filter(variablename %in% c("Pinus", "Betula", "Quercus",
+  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea"))
 
 counts <- tidyr::pivot_wider(widetable,
@@ -512,14 +538,14 @@ The true power of Neotoma is its ability to support large-scale analyses across 
 
 ```{r summarizeByTime, message = FALSE}
 taxabyage <- allSamp %>%
-  filter(variablename %in% c("Pinus", "Betula", "Quercus",
+  dplyr:::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea"),
                              age < 11000) %>%
   group_by(variablename, "age" = round(age * 2, -3) / 2) %>%
   summarise(n = length(unique(siteid)), .groups = 'keep')
 
 samplesbyage <- allSamp %>%
-  filter(variablename %in% c("Pinus", "Betula", "Quercus",
+  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea")) %>%
   group_by("age" = round(age * 2, -3) / 2) %>%
   summarise(samples = length(unique(siteid)), .groups = 'keep')
