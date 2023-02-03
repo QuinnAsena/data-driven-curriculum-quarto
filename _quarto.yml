@@ -29,5 +29,7 @@ from: markdown+emoji
 format:
   html:
     theme: cosmo
+    link-external-newwindow: true
+    link-external-icon: true
 execute:
   cache: true

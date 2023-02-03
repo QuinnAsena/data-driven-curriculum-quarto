@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
+This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) **WHYYYYYYY???** to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
 
 Much of this exercise is based on [A Simple Workflow](https://open.neotomadb.org/EPD_binder/simple_workflow.html) and [A Not so Simple Workflow](https://open.neotomadb.org/EPD_binder/complex_workflow.html) tutorials that were originally developed for a workshop convened by the European Pollen Database in June 2022. Today we'll keep the initial analyses relatively simple, so that you can focus on learning the data structures and functions used by `neotoma2`. A hard-won lesson for a practicing data scientist is how much time and attention goes into data handling!
 
@@ -48,7 +48,7 @@ Note that in this demo use of the Google search API, all we did is enter 'neotom
 
 OK, now your turn: 
 
-**Exercise Question 1** Use the *sites* API to retrieve site data for sites of interest. The *sites* API has a few different parameters, so try out options. Try copying and pasting the URLs into the address line of your browser, and then hitting return. In your homework exercise, provide at least two *sites* API calls (as URLs) with a comment line for each that explains what the API command is doing.
+**Exercise question 1** Use the *sites* API to retrieve site data for sites of interest. The *sites* API has a few different parameters, so try out options. Try copying and pasting the URLs into the address line of your browser, and then hitting return. In your homework exercise, provide at least two *sites* API calls (as URLs) with a comment line for each that explains what the API command is doing.
 
 ## Getting Started With `neotoma2`
 
@@ -62,12 +62,12 @@ For this workbook we use several packages, including `leaflet`, `sf` and others.
 ```{r packages}
 #| output: false
 # Load up the package
+if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org")
 devtools::install_github('NeotomaDB/neotoma2')
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, devtools, rioja) # devtools allows us to install from online repositories
+pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, rioja) # devtools allows us to install from online repositories
 ```
 :::
-
 
 ### Good coding practice: explicitly naming packages and functions
 Different packages in R are created independently by different teams of developers, and it's very common for two different packages to use the same function names (the English language is finite...). This can lead to coding errors if you call a function that you know is in one package, but R guesses wrongly that you wanted a function of the same name from an entirely different package. For example, for a function like `filter()`, which exists in both `neotoma2` and other packages such as `dplyr`, you may see an error that looks like:
@@ -109,21 +109,23 @@ If we want an individual record we can use the siteid, which is a unique identif
 
 ## Code
 
-```{r sitename, eval=FALSE}
+```{r sitename}
+#| eval: false
 devil_sites <- neotoma2::get_sites(sitename = "%Devil%")
 plotLeaflet(devil_sites)
 ```
 
 ## Result
 
-```{r sitenamePlot, echo=FALSE}
+```{r sitenamePlot}
+#| echo: false
 devil_sites <- neotoma2::get_sites(sitename = "%Devil%")
 plotLeaflet(devil_sites)
 ```
 
 :::
 
-**Exercise Question 2** How many sites have the name 'clear' in them?  Show both your code and provide the total count.
+**Exercise question 2** How many sites have the name 'clear' in them?  Show both your code and provide the total count.
 
 #### Searching by Location: `loc=c()`
 
@@ -131,7 +133,7 @@ The `neotoma` package used a bounding box for locations, structured as a vector 
 
 As an example of different ways that you can search by location, let's say you wanted to search for all sites in the state of Michigan.  Here are three spatial representations of Michigan: 1) a geoJSON list with five elements, 2) WKT, and 3) bounding box representation.  And, as a fourth variant, we've transformed the `mich$geoJSON` element to an object for the `sf` package.  Any of these four spatial representations work with the `neotoma2` package.
 
-```{r boundingBox, message=FALSE}
+```{r boundingBox}
 mich <- list(geoJSON = '{"type": "Polygon",
         "coordinates": [[
             [-86.95, 41.55],
@@ -158,7 +160,8 @@ You can always simply `plot()` the `sites` objects, but this won't show any geog
 
 ## Code
 
-```{r plotL, eval=FALSE}
+```{r plotL}
+#| eval: false
 neotoma2::plotLeaflet(mich_sites) %>%
   leaflet::addPolygons(map = .,
                        data = mich$sf,
@@ -167,7 +170,8 @@ neotoma2::plotLeaflet(mich_sites) %>%
 
 ## Result
 
-```{r plotLeaf, echo=FALSE}
+```{r plotLeaf}
+#| echo: false
 neotoma2::plotLeaflet(mich_sites) %>%
   leaflet::addPolygons(map = .,
                        data = mich$sf,
@@ -177,11 +181,11 @@ neotoma2::plotLeaflet(mich_sites) %>%
 :::
 
 
-**Exercise Question 3** Which state has more sites in Neotoma, Minnesota or Wisconsin? How many in each state? Provide both code and answer.
+**Exercise question 3** Which state has more sites in Neotoma, Minnesota or Wisconsin? How many in each state? Provide both code and answer.
 
 #### Helper Functions for Site Searches
 
-![Neotoma R Package Universal Modeling Language (UML) diagram.](images/neotomaUML_as.svg)
+![Neotoma R Package Universal Modeling Language (UML) diagram.](./images/neotomaUML_as.svg)
 
 If we look at the [UML diagram](https://en.wikipedia.org/wiki/Unified_Modeling_Language) for the objects in the `neotoma2` R package, we can see that there are a set of functions that can operate on `sites`. As we add to `sites` objects, using `get_datasets()` or `get_downloads()`, we are able to use more of these helper functions. We can use functions like `summary()` to get a more complete sense of the types of data in this set of sites.
 
@@ -191,13 +195,15 @@ The following code gives the summary table. We do some R magic here to change th
 
 ## Code
 
-```{r summary_sites, eval=FALSE}
+```{r summary_sites}
+#| eval: false
 neotoma2::summary(mich_sites)
 ```
 
 ## Result
 
-```{r summarySitesTable, eval=TRUE, echo=FALSE}
+```{r summarySitesTable}
+#| echo: false
 neotoma2::summary(mich_sites) %>%
   DT::datatable(data = ., rownames = FALSE,
                 options = list(scrollX = "100%", dom = 't'))
@@ -218,7 +224,8 @@ With a `sites` object we can directly call `get_datasets()`, to pull in more met
 
 ## Code
 
-```{r datasetsFromSites, eval=FALSE}
+```{r datasetsFromSites}
+#| eval: false
 mich_datasets <- neotoma2::get_datasets(mich_sites, all_data = TRUE)
 
 datasets(mich_datasets)
@@ -226,7 +233,8 @@ datasets(mich_datasets)
 
 ## Result
 
-```{r datasetsFromSitesResult, echo=FALSE, message=FALSE}
+```{r datasetsFromSitesResult}
+#| echo: false
 mich_datasets <- neotoma2::get_datasets(mich_sites, all_data = TRUE)
 datasets(mich_datasets) %>%
   as.data.frame() %>%
@@ -237,7 +245,7 @@ datasets(mich_datasets) %>%
 :::
 
 
-**Question 4**: How many different kinds of datasets are available at Devil's Lake, WI? Show both code and answer. Ensure that your code just retrieves datasets for just this single site.
+**Exercise question 4**: How many different kinds of datasets are available at Devil's Lake, WI? Show both code and answer. Ensure that your code just retrieves datasets for just this single site.
 
 ### Filter Records
 
@@ -247,7 +255,8 @@ If we choose to pull in information about only a single dataset type, or if ther
 
 ## Code
 
-```{r downloads, eval=FALSE}
+```{r downloads}
+#| eval: false
 mich_pollen <- mich_datasets %>%
   neotoma2::filter(datasettype == "pollen" & !is.na(age_range_young))
 
@@ -256,7 +265,8 @@ neotoma2::summary(mich_pollen)
 
 ## Result
 
-```{r downloadsCode, echo = FALSE}
+```{r downloadsCode}
+#| echo: false
 mich_pollen <- mich_datasets %>%
   neotoma2::filter(datasettype == "pollen" & !is.na(age_range_young))
 
@@ -301,13 +311,15 @@ If you want to know what taxa we have in a dataset, you can use the helper funct
 
 ## Code
 
-```{r taxa2, eval=FALSE, eval=FALSE}
+```{r taxa2}
+#| eval: false
 neotomatx <- neotoma2::taxa(mich_dl)
 ```
 
 ## Results
 
-```{r taxaprint, echo=FALSE, message=FALSE}
+```{r taxaprint}
+#| echo: false
 neotomatx <- neotoma2::taxa(mich_dl)
 
 neotoma2::taxa(mich_dl) %>%
@@ -330,7 +342,7 @@ Programmatically, we can harmonize all the taxon names using matching and transf
 
 As a first step, we're going to filter the ecological groups to include only *UPHE* (upleand/heath) and *TRSH* (trees and shrubs). (More information about ecological groups is available from the [Neotoma Online Manual](https://open.neotomadb.org/manual).) After converting all _Pinus.*_ records to *Pinus* we then sum the counts of the *Pinus* records.
 
-```{r simpleTaxonChange, message=FALSE}
+```{r simpleTaxonChange}
 allSamp <- allSamp %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH")) %>%
   mutate(variablename = replace(variablename,
@@ -352,7 +364,8 @@ There were originally `r sum(stringr::str_detect(neotomatx$variablename, 'Pinus.
 
 ## Code
 
-```{r UniqueNames, eval=FALSE}
+```{r UniqueNames}
+#| eval: false
 neotomatx %>%
   ungroup() %>%
   dplyr::filter(stringr::str_detect(variablename, "Pinus")) %>%
@@ -364,7 +377,8 @@ neotomatx %>%
 
 ## Result
 
-```{r UniqueNamesTab, echo=FALSE, message=FALSE}
+```{r UniqueNamesTab}
+#| echo: false
 neotomatx %>%
   ungroup() %>%
   dplyr::filter(stringr::str_detect(variablename, "Pinus")) %>%
@@ -376,7 +390,7 @@ neotomatx %>%
 :::
 
 
-**Question 5**: Follow the *Pinus* example above, but now for *Picea.* How many taxon names were aggregated into your *Picea* name?
+**Exercise question 5**: Follow the *Pinus* example above, but now for *Picea.* How many taxon names were aggregated into your *Picea* name?
 
 If we want to store a record of our choices outside of R, we can use an external table. For example, a table of pairs (what we want changed, and the name we want it replaced with) can be generated, and it can include regular expressions (if we choose):
 
@@ -394,7 +408,8 @@ We can get the list of original names directly from the `taxa()` call, applied t
 
 ## Code
 
-```{r countbySitesSamples, eval=FALSE}
+```{r countbySitesSamples}
+#| eval: false
 taxaplots <- taxa(mich_dl)
 # Save the taxon list to file so we can edit it subsequently.
 readr::write_csv(taxaplots, "data/mytaxontable.csv")
@@ -402,7 +417,9 @@ readr::write_csv(taxaplots, "data/mytaxontable.csv")
 
 ## Result
 
-```{r PlotTaxonCounts, echo=FALSE, fig.cap="**Figure**. A plot of the number of sites a taxon appears in, against the number of samples a taxon appears in.", message=FALSE}
+```{r PlotTaxonCounts}
+#| echo: false
+#| fig-cap: "**Figure**. A plot of the number of sites a taxon appears in, against the number of samples a taxon appears in."
 taxaplots <- taxa(mich_dl)
 ggplot(data = taxaplots, aes(x = sites, y = samples)) +
   geom_point() +
@@ -424,7 +441,9 @@ As you've seen already, stratigraphic diagrams are a very common way of viewing 
 
 We can use packages like `rioja` to do stratigraphic plotting for a single dataset. Here, we'll take a few key species at a single site and plot them.
 
-```{r stratiplot, message = FALSE, include=FALSE, eval=FALSE}
+```{r stratiplot}
+#| include: false
+#| eval: false
 # Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
 plottingSite <- mich_dl[[25]]
 
@@ -474,7 +493,8 @@ counts <- tidyr::pivot_wider(widetable,
 ```
 
 
-```{r stratiplot2, message = FALSE, result=FALSE}
+```{r stratiplot2}
+#| output: false
 # Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
 # Transform to proportion values.
 devils_samples <- get_sites(siteid = 666) %>%
@@ -515,7 +535,8 @@ counts <- tidyr::pivot_wider(widetable,
 
 This appears to be a fairly long set of commands, but the code is pretty straightforward, and it provides you with significant control over the taxa for display, units pf measurement, and other elements of your data before you get them into the wide matrix (`depth` by `taxon`) that most statistical tools such as the `vegan` package or `rioja` use. To plot we can use `rioja`'s `strat.plot()`, sorting the taxa using weighted averaging scores (`wa.order`). We've also added a CONISS plot to the edge of the plot, to show how the new *wide* data frame works with distance metric functions. (We'll talk more about distance and dissimilarity metrics in upcoming labs.)
 
-```{r plotStrigraph, message=FALSE, warning=FALSE}
+```{r plotStrigraph}
+#| warning: false
 clust <- rioja::chclust(dist(sqrt(counts)),
                         method = "coniss")
 
@@ -530,13 +551,14 @@ plot <- rioja::strat.plot(counts[,-1] * 100, yvar = counts$age,
 rioja::addClustZone(plot, clust, 4, col = "red")
 ```
 
-**Question 5**: Make a stratigraphic pollen diagram in `rioja`, for a site of your choice (not Devils Lake) and taxa of your choice. Show code and resulting diagram.
+**Exercise question 6**: Make a stratigraphic pollen diagram in `rioja`, for a site of your choice (not Devils Lake) and taxa of your choice. Show code and resulting diagram.
 
 ### Change Taxon Distributions Across Space and Time
 
 The true power of Neotoma is its ability to support large-scale analyses across many sites, many s time periods within sites, many proxies, and many taxa. As a first dipping of our toes in the water, lets look at temporal trends in abundance when averaged across ites. We now have site information across Michigan, with samples, and with taxon names. Let's say we are interested in looking at the distributions of the selected taxa across time, their presence/absence:
 
-```{r summarizeByTime, message = FALSE}
+```{r summarizeByTime}
+#| warning: false
 taxabyage <- allSamp %>%
   dplyr:::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea"),
@@ -570,7 +592,7 @@ We can see clear patterns of change for at least some taxa, and the smoothed sur
 
 Note that for some taxa, they always have a few pollen grains in all pollen samples, so this 'proportion of sites with taxon' isn't very informative. Calculating a metric like average abundance might be more useful. 
 
-**Question 6**: Repeat the above example, for a different state or other geographic region of your choice.
+**Exercise question 7**: Repeat the above example, for a different state or other geographic region of your choice.
 
 
 ## Conclusion
