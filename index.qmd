@@ -36,3 +36,5 @@ Yes. But it will be worth it. Palaeoecological data are complex and demand advan
 - [ ] host and track with google analytics?
 
 - [ ] check literature is open access? 
+
+- [ ] include `saveRDS` for devils lake.

@@ -1,3 +1,40 @@
-# Exploratory Analyses
+# Exploratory analyses {#sec-explore}
 
-Basic descriptors of palaeoecological data
+## Part 1: Background
+
+There are multiple methods of describing palaeoecological data in terms of species communities. Older, but still valid, methods include CONISS and ... Modern methods include machine learning methods such as boosted regression trees and latent dirichlet allocation.
+
+
+
+For most of the rest of this workbook we will be using the Devil's Lake dataset downloaded in @sec-neotoma2.
+
+::: {.callout-tip}
+# Respawn code
+
+The following code recreates the necessary formatted data for the
+
+```{r DevilsRespawn}
+#| output: false
+
+devils_samples <- get_sites(siteid = 666) %>%
+  get_downloads() %>%
+  samples()
+
+devils_samples <- devils_samples %>%
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus")) %>%
+  group_by(siteid, sitename,
+           sampleid, variablename, units, age,
+           agetype, depth, datasetid,
+           long, lat) %>%
+  summarise(value = sum(value), .groups='keep')
+
+:::
+
+
+
+
+library(readxl)
+library(analogue)
+library(vegan)

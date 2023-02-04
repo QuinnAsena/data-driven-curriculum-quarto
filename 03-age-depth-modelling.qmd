@@ -10,6 +10,8 @@ In Quaternary paleoecology, radiocarbon dating is expensive – a single sample 
 
 To estimate ages for depths lacking radiocarbon date, an age-depth model is required. Age-depth models are fitted to the available age controls (age estimates with uncertainty for individual depths) and provide estimates of age as a function of depth, for all depths and ages within the temporal bounds of the model.
 
+## Part 2: Code
+
 Here we will gain practice in working with age-depth models of various kind, and assessing their age estimates and uncertainty. We’ll begin with a bit of practice in calibrating radiocarbon years to calendar years and comparing the resulting age estimates from different calibration curves. 
 
 
@@ -209,7 +211,7 @@ Age-depth modelling is complicated, there are many pitfalls, assumptions, and un
 
 :::
 
-## Part 2: Exercises
+## Part 3: Exercises
 
 You may want to refer to the bchron vignette to find some helpful information for the exercises below.
 

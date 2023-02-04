@@ -1,6 +1,6 @@
-# The `neotoma2` package {#neotoma2-sec}
+# The `neotoma2` package {#sec-neotoma2}
 
-## Introduction
+## Part1: Background
 
 This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) **WHYYYYYYY???** to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
 
@@ -50,7 +50,7 @@ OK, now your turn:
 
 **Exercise question 1** Use the *sites* API to retrieve site data for sites of interest. The *sites* API has a few different parameters, so try out options. Try copying and pasting the URLs into the address line of your browser, and then hitting return. In your homework exercise, provide at least two *sites* API calls (as URLs) with a comment line for each that explains what the API command is doing.
 
-## Getting Started With `neotoma2`
+## Part2: Getting Started With `neotoma2`
 
 For this workbook we use several packages, including `leaflet`, `sf` and others. We load the packages using the `pacman` package, which will automatically install the packages if they do not currently exist in your set of packages.
 
@@ -598,3 +598,13 @@ Note that for some taxa, they always have a few pollen grains in all pollen samp
 ## Conclusion
 
 So, we've done a lot in this exercise. We've (1) learned how APIs work (2) searched for sites using site names and geographic parameters, (3) filtered results using temporal and spatial parameters, (4) built a pollen diagram, and (5) done a first-pass spatial mapping of taxa. We will build upon this methodological foundation in future lab exercises.
+
+## To do:
+
+- [ ] Check 'Parts' Should be consistent with other sections
+
+- [ ] Exercises currently in-text. should be own part like age-depth-modelling?
+
+- [ ] error in `all_data = TRUE`
+
+- [ ] include resources section
