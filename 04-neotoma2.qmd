@@ -2,7 +2,7 @@
 
 ## Part1: Background
 
-This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) **WHYYYYYYY???** to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
+This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
 
 Much of this exercise is based on [A Simple Workflow](https://open.neotomadb.org/EPD_binder/simple_workflow.html) and [A Not so Simple Workflow](https://open.neotomadb.org/EPD_binder/complex_workflow.html) tutorials that were originally developed for a workshop convened by the European Pollen Database in June 2022. Today we'll keep the initial analyses relatively simple, so that you can focus on learning the data structures and functions used by `neotoma2`. A hard-won lesson for a practicing data scientist is how much time and attention goes into data handling!
 

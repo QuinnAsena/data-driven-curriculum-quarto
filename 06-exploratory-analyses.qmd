@@ -5,36 +5,130 @@
 There are multiple methods of describing palaeoecological data in terms of species communities. Older, but still valid, methods include CONISS and ... Modern methods include machine learning methods such as boosted regression trees and latent dirichlet allocation.
 
 
+::: {.callout-note}
+# Packages required for this section
 
-For most of the rest of this workbook we will be using the Devil's Lake dataset downloaded in @sec-neotoma2.
+```{r packages}
+#| output: false
+# Load up the package
+if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org")
+devtools::install_github('NeotomaDB/neotoma2')
+if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
+pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan) # devtools allows us to install from online repositories
+```
+:::
+
+
+For most of the rest of this workbook we will be using the Devil's Lake dataset downloaded in @sec-neotoma2. We've included a catch-up block of code that downloads and formats the data so that this section can be run independently of the previous one. 
 
 ::: {.callout-tip}
 # Respawn code
 
-The following code recreates the necessary formatted data for the
+The following code recreates the necessary formatted data from Devil's Lake using the `neotoma2` package. We have provided this dataset as an `.rds` file in the data directory, it is preferable to read the dataset avoid repeated API calls. the following code is included so that you can manipulate the inputs (e.g., `sideid = ` and harmonising taxa) and object name to download and experiment with different datasets.
 
 ```{r DevilsRespawn}
-#| output: false
-
-devils_samples <- get_sites(siteid = 666) %>%
+#| eval: false
+# The following code can be done in one pipeline but we have split it into chunks to help with readablity
+devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
   get_downloads() %>%
   samples()
 
-devils_samples <- devils_samples %>%
+devils_samples <- devils_samples %>%+
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland heath and trees and shrubs
+         elementtype == "pollen", # filter bu pollen samples
+         units == "NISP") %>% # Filter by sampling unit
   mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"),
+                                stringr::str_detect(variablename, "Pinus.*"), # Harmonize Pinus into one group
                                 "Pinus")) %>%
   group_by(siteid, sitename,
            sampleid, variablename, units, age,
            agetype, depth, datasetid,
            long, lat) %>%
-  summarise(value = sum(value), .groups='keep')
+  summarise(value = sum(value), .groups='keep') # The group_by function will drop columns not used as grouping variables
+
+devils_samples <- devils_samples %>% # Calculate proportions of each species by year group
+  group_by(age) %>%
+  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
+  group_by(variablename) %>%
+  mutate(prop = value / pollencount) %>%
+  arrange(desc(age)) %>%
+  ungroup()
+
+saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
+```
+
+The following code reads-in the Devil's Lake data provided in the data directory. Sometimes minor mistakes along the way lead to errors, so you can always come back here and read in the formatted data again.
+
+```{r DevilsRespawnRDS}
+#| output: false
+# Load up the data
+devils_samples <- readRDS("./data/devils_samples.rds")
+
+```
+:::
+
+The data are in long format as a tibble, i.e., similar to a dataframe. This format can be great for data wrangling and plotting; however, many analyses require a specific input such as a (wide) site-by-species matrix. It is important to be comfotable with pivoting data between long and wide formats and converting between dataframes/tibbles and matrices. Remember, that unlike dataframes and tibbles, matrices cannot be of mixed type (e.g., strings and numbers).
+
+::: {.callout-warning}
+# Oh no! Common sources of error (and anxiety...) :scream:
+
+If a numeric matrix is required as the input make sure the data haven't been converted to strings. R will coerce numbers to characters if there is a character (like a nameing column) in the matrix. This coersion can go unnoticed when converting from a dataframe to a matrix.
+
+```{r StringMatrix}
+string_matrix <- matrix(c("1", 2:10), nrow = 2) # see the numbers are in quotes indicating a string? 
+str(string_matrix) # Check the structure
+```
+
+Numeric matrix:
+
+```{r NumericMatrix}
+numeric_matrix <- matrix(1:10, nrow = 2) # see the numbers are in quotes indicating a string? 
+str(numeric_matrix) # Check the structure
+```
+
+Matrices can have names (e.g., species names) as column names and maintain a numeric structure, for example: `colnames(numeric_matrix) <- LETTERS[1:5]`. 
+:::
+
+The `analogue` package calculates several distance metrics on site-by-species matrices. So let's pivot our data to wide format and convert it to a matrix. This can be done in several ways in R, for consistency's sake we'll use `tidyr`:
+
+```{r Pivot}
+#| output: false
+devils_samples_wide <- devils_samples %>%
+    tidyr::pivot_wider(id_cols = c(age, depth),
+                       names_from = variablename,
+                       values_from = prop,
+                       values_fill = 0) %>%
+    as.matrix()
+
+devils_ad <- devils_samples_wide[ , c(1:2)] # store the ages and depths separately
+
+devils_samples_wide <- devils_samples_wide[ , -c(1:2)] # drop ages and depth as they are not included in the distance calculations
+devils_names <- colnames(devils_samples_wide)
+
+```
+
+mmm can I fill NAs with 0s using SQchord?
+
+
+::: {.panel-tabset}
+
+## Code
+
+```{r SqDist}
+devils_sqdist <- analogue::distance(devils_samples_wide, method = "SQchord")
+```
+
+## Result
+
+```{r SqDistResult}
+#| echo: false
+devils_sqdist %>%
+  DT::datatable(data = ., rownames = T,
+                options = list(scrollX = "100%", dom = 't'))
+```
 
 :::
 
 
+## Part 2: Exercises
 
-
-library(readxl)
-library(analogue)
-library(vegan)

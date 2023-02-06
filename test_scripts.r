@@ -45,3 +45,10 @@ ages2 = BchronCalibrate(ages=c(3445,11553,7456),
 summary(ages2)
 plot(ages2)
 median(ages2$Date1$ageGrid)
+
+library(analogue)
+data(abernethy)
+head(abernethy)
+ncol(abernethy)
+aber_dat <- abernethy[ , 1:36]
+analogue::distance(aber_dat, method = "SQchord")

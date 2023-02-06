@@ -18,7 +18,7 @@ Here we will gain practice in working with age-depth models of various kind, and
 ::: {.callout-note}
 # Packages required for this section
 
-We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using BASE-R.
+We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using BASE-R. Remember you must have packages both installed _and_ loaded, often loading a package is done via the `library(packagename)` function. The following code using the `pacman` package takes care of installation and loading in one go.
 
 ```{r packages}
 #| output: false
