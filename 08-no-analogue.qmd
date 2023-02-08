@@ -1,3 +1,61 @@
 # Novelty and No Analogue Futures
 
-Jack
+## Part 1: Background
+
+The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data [@chevalier2020; @williams2008; @gavin2003; @overpeck1985]. The MAT relies on reasoning by analogy [@jackson2004], in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.
+
+The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.
+
+The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.
+
+To reconstruct past environments using the MAT, we need three data sets:
+
+1. modern species assemblages
+
+2. modern environmental variables
+
+3. fossil species assemblages
+
+The MAT follows four basic steps:
+
+1. Calculate dissimilarities between a fossil species assemblage i and all modern species assemblages in set $S$.
+
+2. Discard modern samples with dissimilarities greater than a threshold Dthreshold.
+
+3. Identify and retain the k closest modern analogs.
+
+4. Average the environmental conditions associated with the modern analogs and assign them to fossil sample $i$.
+
+Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!
+
+## Part 2: Cross-Validation
+
+Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
+
+In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called k-fold cross-validation. In $k$-fold cross-validation the modern data set is split into k mutually exclusive subsets. For each kth subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.
+
+Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation tools built into the analogue package.
+
+Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation [@telford2005].
+
+We will use the North American Modern Pollen Dataset (Whitmore et al. 2005) for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use a subsetted and local version that has exactly the same list of pollen variables as the Devils Lake dataset that we’ll use in a few minutes.
+
+Let’s get the data ready:
+
+::: {.callout-note}
+# Packages required for this section
+List of packages required for section and what they are used for
+
+```{r packages}
+#| output: false
+# Load up the package
+if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org")
+devtools::install_github('NeotomaDB/neotoma2')
+if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
+pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
+```
+:::
+
+
+## Part 3: Exercises
+

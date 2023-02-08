@@ -14,7 +14,7 @@ There are multiple methods of describing palaeoecological data in terms of speci
 if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org")
 devtools::install_github('NeotomaDB/neotoma2')
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan) # devtools allows us to install from online repositories
+pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
 ```
 :::
 

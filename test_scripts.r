@@ -51,4 +51,6 @@ data(abernethy)
 head(abernethy)
 ncol(abernethy)
 aber_dat <- abernethy[ , 1:36]
-analogue::distance(aber_dat, method = "SQchord")
+aber_sqchord <- analogue::distance(aber_dat, method = "SQchord")
+plot(aber_sqchord)
+Stratiplot(abernethy$Depth ~ abernethy$Ulmus + abernethy$Betula)
