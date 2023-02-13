@@ -57,5 +57,60 @@ pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
 :::
 
 
-## Part 3: Exercises
+The following code downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.
 
+```{r DevilsRespawnNa}
+#| eval: false
+#| code-fold: true
+# The following code can be done in one pipeline but we have split it into chunks to help with readablity
+devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
+  get_downloads() %>%
+  samples()
+
+devils_samples <- devils_samples %>%+
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland heath and trees and shrubs
+         elementtype == "pollen", # filter bu pollen samples
+         units == "NISP") %>% # Filter by sampling unit
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"), # Harmonize Pinus into one group
+                                "Pinus")) %>%
+  group_by(siteid, sitename,
+           sampleid, variablename, units, age,
+           agetype, depth, datasetid,
+           long, lat) %>%
+  summarise(value = sum(value), .groups='keep') # The group_by function will drop columns not used as grouping variables
+
+devils_samples <- devils_samples %>% # Calculate proportions of each species by year group
+  group_by(age) %>%
+  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
+  group_by(variablename) %>%
+  mutate(prop = value / pollencount) %>%
+  arrange(desc(age)) %>%
+  ungroup()
+
+saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
+```
+
+To read in the example data use:
+
+```{r DevilsRespawnRDSNa}
+#| output: false
+# Load up the data
+devils_samples <- readRDS("./data/devils_samples.rds")
+
+```
+:::
+
+
+
+
+```{r mat}
+#| output: false
+# Load up the data
+devils_samples <- readRDS("./data/devils_samples.rds")
+
+```
+
+
+
+## Part 3: Exercises

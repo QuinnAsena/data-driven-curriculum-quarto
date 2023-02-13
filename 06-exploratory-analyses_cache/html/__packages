@@ -1,6 +1,7 @@
 usethis
 devtools
 pacman
+tidyr
 dplyr
 ggplot2
 neotoma2
@@ -8,4 +9,3 @@ permute
 lattice
 vegan
 analogue
-tidyr

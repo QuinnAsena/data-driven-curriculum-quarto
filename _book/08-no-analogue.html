@@ -20,6 +20,88 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -61,6 +143,7 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -178,7 +261,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#part-1-background" id="toc-part-1-background" class="nav-link active" data-scroll-target="#part-1-background"><span class="toc-section-number">9.1</span>  Part 1: Background</a></li>
+  <li><a href="#part-2-cross-validation" id="toc-part-2-cross-validation" class="nav-link" data-scroll-target="#part-2-cross-validation"><span class="toc-section-number">9.2</span>  Part 2: Cross-Validation</a></li>
+  <li><a href="#part-3-exercises" id="toc-part-3-exercises" class="nav-link" data-scroll-target="#part-3-exercises"><span class="toc-section-number">9.3</span>  Part 3: Exercises</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -200,9 +291,80 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Jack</p>
+<section id="part-1-background" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="part-1-background"><span class="header-section-number">9.1</span> Part 1: Background</h2>
+<p>The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data <span class="citation" data-cites="chevalier2020 williams2008 gavin2003 overpeck1985">(<a href="references.html#ref-chevalier2020" role="doc-biblioref">Chevalier et al. 2020</a>; <a href="references.html#ref-williams2008" role="doc-biblioref">Williams and Shuman 2008</a>; <a href="references.html#ref-gavin2003" role="doc-biblioref">Gavin et al. 2003</a>; <a href="references.html#ref-overpeck1985" role="doc-biblioref">Overpeck, Webb, and Prentice 1985</a>)</span>. The MAT relies on reasoning by analogy <span class="citation" data-cites="jackson2004">(<a href="references.html#ref-jackson2004" role="doc-biblioref">Jackson and Williams 2004</a>)</span>, in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.</p>
+<p>The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more (<span class="math inline">\(k\)</span>) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.</p>
+<p>The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.</p>
+<p>To reconstruct past environments using the MAT, we need three data sets:</p>
+<ol type="1">
+<li><p>modern species assemblages</p></li>
+<li><p>modern environmental variables</p></li>
+<li><p>fossil species assemblages</p></li>
+</ol>
+<p>The MAT follows four basic steps:</p>
+<ol type="1">
+<li><p>Calculate dissimilarities between a fossil species assemblage i and all modern species assemblages in set <span class="math inline">\(S\)</span>.</p></li>
+<li><p>Discard modern samples with dissimilarities greater than a threshold Dthreshold.</p></li>
+<li><p>Identify and retain the k closest modern analogs.</p></li>
+<li><p>Average the environmental conditions associated with the modern analogs and assign them to fossil sample <span class="math inline">\(i\)</span>.</p></li>
+</ol>
+<p>Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!</p>
+</section>
+<section id="part-2-cross-validation" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="part-2-cross-validation"><span class="header-section-number">9.2</span> Part 2: Cross-Validation</h2>
+<p>Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.</p>
+<p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called k-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into k mutually exclusive subsets. For each kth subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.</p>
+<p>Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation tools built into the analogue package.</p>
+<p>Note that the <code>palaeoSig</code> package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation <span class="citation" data-cites="telford2005">(<a href="references.html#ref-telford2005" role="doc-biblioref">Telford and Birks 2005</a>)</span>.</p>
+<p>We will use the North American Modern Pollen Dataset (Whitmore et al.&nbsp;2005) for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use a subsetted and local version that has exactly the same list of pollen variables as the Devils Lake dataset that we’ll use in a few minutes.</p>
+<p>Let’s get the data ready:</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Packages required for this section
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>List of packages required for section and what they are used for</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/packages_e1870c4bf438af5d7589382105be57f6">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the package</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"devtools"</span>)) <span class="fu">install.packages</span>(<span class="st">"devtools"</span>, <span class="at">repos=</span><span class="st">"http://cran.r-project.org"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">'NeotomaDB/neotoma2'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"pacman"</span>)) <span class="fu">install.packages</span>(<span class="st">"pacman"</span>, <span class="at">repos=</span><span class="st">"http://cran.r-project.org"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-3-exercises" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">9.3</span> Part 3: Exercises</h2>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-chevalier2020" class="csl-entry" role="doc-biblioentry">
+Chevalier, Manuel, Basil A. S. Davis, Oliver Heiri, Heikki Seppä, Brian M. Chase, Konrad Gajewski, Terri Lacourse, et al. 2020. <span>“Pollen-Based Climate Reconstruction Techniques for Late <span>Quaternary</span> Studies.”</span> <em>Earth-Science Reviews</em> 210 (November): 103384. <a href="https://doi.org/10.1016/j.earscirev.2020.103384">https://doi.org/10.1016/j.earscirev.2020.103384</a>.
+</div>
+<div id="ref-gavin2003" class="csl-entry" role="doc-biblioentry">
+Gavin, Daniel G, W.Wyatt Oswald, Eugene R Wahl, and John W Williams. 2003. <span>“A Statistical Approach to Evaluating Distance Metrics and Analog Assignments for Pollen Records.”</span> <em>Quaternary Research</em> 60 (3): 356–67. <a href="https://doi.org/10.1016/S0033-5894(03)00088-7">https://doi.org/10.1016/S0033-5894(03)00088-7</a>.
+</div>
+<div id="ref-jackson2004" class="csl-entry" role="doc-biblioentry">
+Jackson, Stephen T., and John W. Williams. 2004. <span>“Modern <span>Analogs</span> in <span>Quaternary Paleoecology</span>: <span>Here Today</span>, <span>Gone Yesterday</span>, <span>Gone Tomorrow</span>?”</span> <em>Annual Review of Earth and Planetary Sciences</em> 32 (1): 495–537. <a href="https://doi.org/10.1146/annurev.earth.32.101802.120435">https://doi.org/10.1146/annurev.earth.32.101802.120435</a>.
+</div>
+<div id="ref-overpeck1985" class="csl-entry" role="doc-biblioentry">
+Overpeck, J. T., T. Webb, and I. C. Prentice. 1985. <span>“Quantitative <span>Interpretation</span> of <span>Fossil Pollen Spectra</span>: <span>Dissimilarity Coefficients</span> and the <span>Method</span> of <span>Modern Analogs</span>.”</span> <em>Quaternary Research</em> 23 (1): 87–108. <a href="https://doi.org/10.1016/0033-5894(85)90074-2">https://doi.org/10.1016/0033-5894(85)90074-2</a>.
+</div>
+<div id="ref-telford2005" class="csl-entry" role="doc-biblioentry">
+Telford, R. J., and H. J. B. Birks. 2005. <span>“The Secret Assumption of Transfer Functions: Problems with Spatial Autocorrelation in Evaluating Model Performance.”</span> <em>Quaternary Science Reviews</em> 24 (20-21): 2173–79. <a href="https://doi.org/10.1016/j.quascirev.2005.05.001">https://doi.org/10.1016/j.quascirev.2005.05.001</a>.
+</div>
+<div id="ref-williams2008" class="csl-entry" role="doc-biblioentry">
+Williams, J. W., and B. Shuman. 2008. <span>“Obtaining Accurate and Precise Environmental Reconstructions from the Modern Analog Technique and <span>North American</span> Surface Pollen Dataset.”</span> <em>Quaternary Science Reviews</em> 27 (7-8): 669–87. <a href="https://doi.org/10.1016/j.quascirev.2008.01.004">https://doi.org/10.1016/j.quascirev.2008.01.004</a>.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

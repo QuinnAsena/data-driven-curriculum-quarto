@@ -54,3 +54,17 @@ aber_dat <- abernethy[ , 1:36]
 aber_sqchord <- analogue::distance(aber_dat, method = "SQchord")
 plot(aber_sqchord)
 Stratiplot(abernethy$Depth ~ abernethy$Ulmus + abernethy$Betula)
+
+library(neotoma2)
+devil_test <- get_sites(siteid = 666)
+summary(devil_test)
+
+devils_samples <- readRDS("./data/devils_samples.rds")
+unique(devils_samples$variablename)
+library(analogue)
+data(Pollen)
+head(Pollen)
+ncol(Pollen)-1
+
+data(Climate)
+head(Climate)

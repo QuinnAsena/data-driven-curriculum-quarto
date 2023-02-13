@@ -1,6 +1,6 @@
 # The `neotoma2` package {#sec-neotoma2}
 
-## Part1: Background
+## Part 1: Background
 
 This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
 
