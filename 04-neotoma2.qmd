@@ -72,10 +72,16 @@ pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, rio
 ### Good coding practice: explicitly naming packages and functions
 Different packages in R are created independently by different teams of developers, and it's very common for two different packages to use the same function names (the English language is finite...). This can lead to coding errors if you call a function that you know is in one package, but R guesses wrongly that you wanted a function of the same name from an entirely different package. For example, for a function like `filter()`, which exists in both `neotoma2` and other packages such as `dplyr`, you may see an error that looks like:
 
+::: {.callout-warning}
+# Oh no! :scream:
+
 ```bash
 Error in UseMethod("filter") :
  no applicable method for 'filter' applied to an object of class "sites"
 ```
+
+:::
+
 
 You can avoid this error by explicitly naming which package has the function that you want to use, through the standard convention of double colons (`package.name::function.name`). For example, using `neotoma2::filter()` tells R explicitly that you want to use the `filter()` function in the `neotoma2` package, not some other package version.
 
@@ -369,7 +375,7 @@ There were originally `r sum(stringr::str_detect(neotomatx$variablename, 'Pinus.
 neotomatx %>%
   ungroup() %>%
   dplyr::filter(stringr::str_detect(variablename, "Pinus")) %>%
-  summarise(pinus_spp = unique(variablename))
+  reframe(pinus_spp = unique(variablename))
 
 # I actually like Base here for the one-liner:
 # unique(grep("Pinus", neotomatx$variablename, value = TRUE))
@@ -382,7 +388,7 @@ neotomatx %>%
 neotomatx %>%
   ungroup() %>%
   dplyr::filter(stringr::str_detect(variablename, "Pinus")) %>%
-  summarise(pinus_spp = unique(variablename)) %>%
+  reframe(pinus_spp = unique(variablename)) %>%
   DT::datatable(data = .,
                 options = list(scrollX = "100%", dom = 't'))
 ```
@@ -441,58 +447,6 @@ As you've seen already, stratigraphic diagrams are a very common way of viewing 
 
 We can use packages like `rioja` to do stratigraphic plotting for a single dataset. Here, we'll take a few key species at a single site and plot them.
 
-```{r stratiplot}
-#| include: false
-#| eval: false
-# Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
-plottingSite <- mich_dl[[25]]
-
-plottingTaxa <- taxa(plottingSite) %>%
-  dplyr::filter(ecologicalgroup %in% c("TRSH"),
-         elementtype == "pollen") %>%
-  arrange(desc(samples))
-
-# Clean up. Select only pollen measured using NISP.
-# We repeat the filters for pollen & ecological group on the samples
-shortSamples <- samples(plottingSite) %>%
-  dplyr::filter(variablename %in% plottingTaxa$variablename,
-         ecologicalgroup %in% c("TRSH"),
-         elementtype == "pollen",
-         units == "NISP")
-
-shortSamples <- shortSamples %>%
-  mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"),
-                                "Pinus"))  %>%
-  group_by(siteid, sitename,
-           sampleid, variablename, units, age,
-           agetype, depth, datasetid,
-           long, lat) %>%
-  summarise(value = sum(value), .groups='keep')
-
-# Transform to proportion values.
-onesite <- shortSamples %>%
-  group_by(age) %>%
-  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
-  group_by(variablename) %>%
-  mutate(prop = value / pollencount) %>%
-  arrange(desc(age))
-
-# Spread the data to a "wide" table, with taxa as column headings.
-widetable <- onesite %>%
-  dplyr::select(age, variablename, prop) %>%
-  mutate(prop = as.numeric(prop))  %>%
-  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
-                             "Tsuga", "Ulmus", "Picea"))
-
-counts <- tidyr::pivot_wider(widetable,
-                             id_cols = age,
-                             names_from = variablename,
-                             values_from = prop,
-                             values_fill = 0)
-```
-
-
 ```{r stratiplot2}
 #| output: false
 # Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
@@ -526,7 +480,7 @@ widetable <- onesite %>%
   dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea"))
 
-counts <- tidyr::pivot_wider(widetable,
+props <- tidyr::pivot_wider(widetable,
                              id_cols = age,
                              names_from = variablename,
                              values_from = prop,
@@ -537,13 +491,13 @@ This appears to be a fairly long set of commands, but the code is pretty straigh
 
 ```{r plotStrigraph}
 #| warning: false
-clust <- rioja::chclust(dist(sqrt(counts)),
+clust <- rioja::chclust(dist(sqrt(props)),
                         method = "coniss")
 
-plot <- rioja::strat.plot(counts[,-1] * 100, yvar = counts$age,
+plot <- rioja::strat.plot(props[,-1] * 100, yvar = props$age,
                   title = devils_samples$sitename[1],
                   ylabel = "Calibrated Years BP",
-                  xlabel = "Pollen (%)",
+                  #xlabel = "Pollen (%)",
                   y.rev = TRUE,
                   clust = clust,
                   wa.order = "topleft", scale.percent = TRUE)
@@ -605,6 +559,6 @@ So, we've done a lot in this exercise. We've (1) learned how APIs work (2) searc
 
 - [ ] Exercises currently in-text. should be own part like age-depth-modelling?
 
-- [ ] error in `all_data = TRUE`
+- [x] error in `all_data = TRUE`
 
 - [ ] include resources section

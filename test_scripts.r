@@ -68,3 +68,22 @@ ncol(Pollen)-1
 
 data(Climate)
 head(Climate)
+
+pol_df <- Pollen %>% 
+    pivot_longer(-ID2, names_to = "variablename")
+
+library("fuzzyjoin")
+
+test_names <- stringdist_left_join(devils_samples, pol_df, by = "variablename")
+
+pol_names <- as_tibble(colnames(Pollen[ ,-1]))
+length(pol_names)
+devil_names <- as_tibble(unique(devils_samples$variablename))
+length(devil_names)
+test_names2 <- stringdist_left_join(devil_names, pol_names, by = "value", max_dist = 4, distance_col = "distance", method = "jw")
+test_names2
+
+test_names2 %>% 
+  group_by(value.x) %>%
+  top_n(1, desc(distance)) %>%
+  ungroup()

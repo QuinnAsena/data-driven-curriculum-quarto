@@ -54,10 +54,11 @@ devtools::install_github('NeotomaDB/neotoma2')
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
 pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
 ```
+
 :::
 
 
-The following code downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.
+The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.
 
 ```{r DevilsRespawnNa}
 #| eval: false
@@ -99,7 +100,7 @@ To read in the example data use:
 devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
-:::
+
 
 
 

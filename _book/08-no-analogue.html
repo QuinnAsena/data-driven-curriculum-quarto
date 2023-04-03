@@ -339,6 +339,48 @@ Packages required for this section
 </div>
 </div>
 </div>
+<p>The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnNa_a834730b2f83023091014c8dfe2d790d">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following code can be done in one pipeline but we have split it into chunks to help with readablity</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">get_sites</span>(<span class="at">siteid =</span> <span class="dv">666</span>) <span class="sc">%&gt;%</span> <span class="co"># Download the site samples data</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_downloads</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">samples</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(ecologicalgroup <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"UPHE"</span>, <span class="st">"TRSH"</span>), <span class="co"># Filter ecological groups by upland heath and trees and shrubs</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>         elementtype <span class="sc">==</span> <span class="st">"pollen"</span>, <span class="co"># filter bu pollen samples</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>         units <span class="sc">==</span> <span class="st">"NISP"</span>) <span class="sc">%&gt;%</span> <span class="co"># Filter by sampling unit</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variablename =</span> <span class="fu">replace</span>(variablename,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                                stringr<span class="sc">::</span><span class="fu">str_detect</span>(variablename, <span class="st">"Pinus.*"</span>), <span class="co"># Harmonize Pinus into one group</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Pinus"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(siteid, sitename,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>           sampleid, variablename, units, age,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>           agetype, depth, datasetid,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>           long, lat) <span class="sc">%&gt;%</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">sum</span>(value), <span class="at">.groups=</span><span class="st">'keep'</span>) <span class="co"># The group_by function will drop columns not used as grouping variables</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%</span> <span class="co"># Calculate proportions of each species by year group</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(age) <span class="sc">%&gt;%</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pollencount =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(variablename) <span class="sc">%&gt;%</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> value <span class="sc">/</span> pollencount) <span class="sc">%&gt;%</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(age)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(devils_samples, <span class="st">"./data/devils_samples.rds"</span>) <span class="co"># Save the data for later</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>To read in the example data use:</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnRDSNa_2b150c298a51b288057b7fcad994e9c1">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the data</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/devils_samples.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="08-no-analogue_cache/html/mat_6346ba834c42a79109ff7cf199b97d67">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the data</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/devils_samples.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="part-3-exercises" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">9.3</span> Part 3: Exercises</h2>
