@@ -38,3 +38,5 @@ Yes. But it will be worth it. Palaeoecological data are complex and demand advan
 - [ ] check literature is open access? 
 
 - [ ] include `saveRDS` for devils lake.
+
+- [ ] `cache: false` for programatically generated tabset panel code chunks

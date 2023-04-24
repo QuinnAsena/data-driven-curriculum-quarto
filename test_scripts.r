@@ -69,21 +69,67 @@ ncol(Pollen)-1
 data(Climate)
 head(Climate)
 
-pol_df <- Pollen %>% 
+
+
+
+
+pol_df <- mod_pol_east %>% 
     pivot_longer(-ID2, names_to = "variablename")
+
+
+
 
 library("fuzzyjoin")
 
 test_names <- stringdist_left_join(devils_samples, pol_df, by = "variablename")
 
-pol_names <- as_tibble(colnames(Pollen[ ,-1]))
+pol_names <- as_tibble(tolower(colnames(mod_pol_east[ ,-1])))
 length(pol_names)
-devil_names <- as_tibble(unique(devils_samples$variablename))
+devil_names <- as_tibble(unique(tolower(devils_samples$variablename)))
 length(devil_names)
-test_names2 <- stringdist_left_join(devil_names, pol_names, by = "value", max_dist = 4, distance_col = "distance", method = "jw")
+test_names2 <- stringdist_left_join(devil_names, pol_names, by = "value", max_dist = 4, distance_col = "distance", method = "jw") %>% 
+  group_by(value.x) %>%
+  slice_min(order_by=distance, n=2)
+
 test_names2
+test_names2[test_names2$distance > 0.1, ]
+
+test_names2 %>%
+  filter(distance < 0.3)  %>%
+  arrange(desc(distance))
+  
+  ,
+          value.y, "arecaceae")
 
 test_names2 %>% 
   group_by(value.x) %>%
   top_n(1, desc(distance)) %>%
   ungroup()
+
+
+data(ImbrieKipp)
+data(SumSST)
+data(V12.122)
+
+## merge training set and core samples
+dat <- join(ImbrieKipp, V12.122, verbose = TRUE)
+
+## extract the merged data sets and convert to proportions
+ImbrieKipp <- dat[[1]] / 100
+ImbrieKippCore <- dat[[2]] / 100
+
+ik.mat <- mat(ImbrieKipp, SumSST, method = "chord")
+ik.mat
+
+## model summary
+summary(ik.mat)
+
+## fitted values
+fitted(ik.mat)
+
+## model residuals
+resid(ik.mat)
+
+coreV12.mat <- predict(ik.mat, matrix(rnorm(110*30), nrow = 110, ncol = 30), k = 3)
+coreV12.mat <- predict(ik.mat, V12.122, k = 3)
+coreV12.mat

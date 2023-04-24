@@ -355,8 +355,8 @@ allSamp <- allSamp %>%
                                 stringr::str_detect(variablename, "Pinus.*"),
                                 "Pinus"),
          variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Picea.*"),
-                                "Picea")) %>%
+                                stringr::str_detect(variablename, "Ambrosia.*"),
+                                "Ambrosia")) %>%
   group_by(siteid, sitename,
            sampleid, variablename, units, age,
            agetype, depth, datasetid,

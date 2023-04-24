@@ -38,7 +38,7 @@ Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation to
 
 Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation [@telford2005].
 
-We will use the North American Modern Pollen Dataset (Whitmore et al. 2005) for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use a subsetted and local version that has exactly the same list of pollen variables as the Devils Lake dataset that we’ll use in a few minutes.
+We will use the North American Modern Pollen Dataset [@whitmore2005] for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (complete) data so that we can filter locations easily.
 
 Let’s get the data ready:
 
@@ -49,14 +49,12 @@ List of packages required for section and what they are used for
 ```{r packages}
 #| output: false
 # Load up the package
-if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org")
-devtools::install_github('NeotomaDB/neotoma2')
+
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
+pacman::p_load(neotoma2, tidyr, dplyr, ggplot2, neotoma2, analogue, vegan, readxl, fuzzyjoin)
 ```
 
 :::
-
 
 The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.
 
@@ -68,13 +66,16 @@ devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
   get_downloads() %>%
   samples()
 
-devils_samples <- devils_samples %>%+
+devils_samples <- devils_samples %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland heath and trees and shrubs
-         elementtype == "pollen", # filter bu pollen samples
-         units == "NISP") %>% # Filter by sampling unit
-  mutate(variablename = replace(variablename,
+                elementtype == "pollen", # filter bu pollen samples
+                units == "NISP") %>% # Filter by sampling unit
+         mutate(variablename = replace(variablename,
                                 stringr::str_detect(variablename, "Pinus.*"), # Harmonize Pinus into one group
-                                "Pinus")) %>%
+                                "Pinus"),
+                variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Ambrosia.*"),
+                                "Ambrosia")) %>%
   group_by(siteid, sitename,
            sampleid, variablename, units, age,
            agetype, depth, datasetid,
@@ -101,17 +102,92 @@ devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
 
+We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. **JACK ACTION POINT: to use this method in other regions what databases are available.** The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file. If you do not already have a directory named data from previous chapters **CROSSREF INTRO set-up instructions** one will be created.
 
 
+```{r nampd}
 
-
-```{r mat}
-#| output: false
-# Load up the data
-devils_samples <- readRDS("./data/devils_samples.rds")
+dir.create("./data") # If the data directory exists it will not be overwritten
+download.file("https://williamspaleolab.github.io/data/whitmoreetal2005.zip", "./data/whitmoreetal2005.zip")
+unzip("./data/whitmoreetal2005.zip", exdir = "./data/whitmoreetal2005")
+mod_pol <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "POLLEN DATA")
+mod_clim <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "CLIMATE+BIOCLIMATE")
 
 ```
 
+::: {.callout-warning}
+# Oh no! :scream:
+
+If you do not already have a directory named data from previous chapters **CROSSREF INTRO set-up instructions** one will be created. If the directory already exists you will see a warning message:
+
+```bash
+Warning message:
+In dir.create("./data") : '.\data' already exists
+```
+Don't worry, the function `dir.create()` will not overwrite any existing directory contents. **./ and .\ between mac/pc/linux**
+
+:::
+
+Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil's lake); (ii) our modern species assemblages; and (iii) our modern climate. The modern datasets are for the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the taxa in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake and the NAMPD.
+
+
+```{r, wrangle}
+
+# several columns contain data not used for the MAT
+mod_pol_east <- mod_pol %>% 
+  filter(LONDD >= -105) %>% # Filter for sites east of -105 degrees
+  select(ID2, 14:147) # Select colums with ID and species only
+
+# Many functions require site-by-species matrices in wide format
+# Note we pivoted by age so we have an age column not used in MAT
+devils_wide <- devils_samples %>% 
+  pivot_wider(id_cols = age, names_from = variablename, values_from = prop)
+
+# Store ages separately for plotting later:
+devils_ages <- devils_wide$age
+
+```
+
+Right, now is the tricky part of matching species names. Unfortunately, the species names between data downloaded from Neotoma and the NAMPD do not match exactly. Sometimes matching is easiest done manually but because of the number of species in both datasets we will do as much as possible programatically. The `fuzzyjoin` package allows us to match strings (names) by a distance measure and outputs a number of possible matches.
+
+
+```{r fuzzyjoin}
+
+# Save the names of each dataset
+mod_pol_names <- as_tibble(tolower(colnames(mod_pol_east[ ,-1])))
+devil_names <- as_tibble(tolower(colnames(devils_wide[-1])))
+
+# match the names using fuzzy matching
+names_matches <- stringdist_left_join(devil_names, mod_pol_names, by = "value",
+                                      max_dist = 4, distance_col = "distance", method = "jw") %>% 
+                   group_by(value.x) %>%
+                   slice_min(order_by = distance, n = 1)
+
+head(names_matches, 20) # looks like it's done a good job for the most part!
+
+# Let's take a closer look:
+filter(names_matches, distance > 0.1)
+
+# even closer!
+names_matches %>%
+  filter(distance < 0.3)  %>% # everything abover 0.3 looks like a bad match
+  arrange(desc(distance)) %>% 
+  print(n = 15)
+
+# Ok looks like we only have a few to weed out manually:
+names_matches_filter <- names_matches %>% 
+  filter(distance < 0.3,
+         value.x != "rhus" & value.y != "rubus",
+         value.x != "morus" & value.y != "cornus",
+         value.x != "ericaceae" & value.y != "arecaceae",
+         value.x != "ilex" & value.y != "piceax")  %>% 
+         arrange(desc(distance))
+
+```
+
+Now we have 
 
 
 ## Part 3: Exercises
+
+
