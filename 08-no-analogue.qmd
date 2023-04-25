@@ -106,6 +106,7 @@ We will use the North American Modern Pollen Database (NAMPD) to create modern a
 
 
 ```{r nampd}
+#| warning: false
 
 dir.create("./data") # If the data directory exists it will not be overwritten
 download.file("https://williamspaleolab.github.io/data/whitmoreetal2005.zip", "./data/whitmoreetal2005.zip")
@@ -151,10 +152,16 @@ devils_ages <- devils_wide$age
 Right, now is the tricky part of matching species names. Unfortunately, the species names between data downloaded from Neotoma and the NAMPD do not match exactly. Sometimes matching is easiest done manually but because of the number of species in both datasets we will do as much as possible programatically. The `fuzzyjoin` package allows us to match strings (names) by a distance measure and outputs a number of possible matches.
 
 
+::: {.panel-tabset}
+
+## String matching code
+
+looks like it's done a good job for the most part!
+
 ```{r fuzzyjoin}
 
 # Save the names of each dataset
-mod_pol_names <- as_tibble(tolower(colnames(mod_pol_east[ ,-1])))
+mod_pol_names <- as_tibble(tolower(colnames(mod_pol_east[-1])))
 devil_names <- as_tibble(tolower(colnames(devils_wide[-1])))
 
 # match the names using fuzzy matching
@@ -163,18 +170,30 @@ names_matches <- stringdist_left_join(devil_names, mod_pol_names, by = "value",
                    group_by(value.x) %>%
                    slice_min(order_by = distance, n = 1)
 
-head(names_matches, 20) # looks like it's done a good job for the most part!
+head(names_matches, 15) 
+```
 
-# Let's take a closer look:
+## Let's take a closer look
+```{r}
+
 filter(names_matches, distance > 0.1)
 
-# even closer!
+```
+## Even closer!
+
+```{r}
+
 names_matches %>%
-  filter(distance < 0.3)  %>% # everything abover 0.3 looks like a bad match
+  filter(distance < 0.3)  %>% # everything above 0.3 looks like a bad match
   arrange(desc(distance)) %>% 
   print(n = 15)
+```
 
-# Ok looks like we only have a few to weed out manually:
+:::
+
+Ok looks like we only have a few to weed out manually:
+
+```{r}
 names_matches_filter <- names_matches %>% 
   filter(distance < 0.3,
          value.x != "rhus" & value.y != "rubus",
@@ -184,6 +203,7 @@ names_matches_filter <- names_matches %>%
          arrange(desc(distance))
 
 ```
+
 
 Now we have 
 
