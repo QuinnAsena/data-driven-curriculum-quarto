@@ -38,7 +38,7 @@ Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation to
 
 Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation [@telford2005].
 
-We will use the North American Modern Pollen Dataset [@whitmore2005] for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (complete) data so that we can filter locations easily.
+We will use the North American Modern Pollen Dataset [@whitmore2005] for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily.
 
 Let’s get the data ready:
 
@@ -129,7 +129,7 @@ Don't worry, the function `dir.create()` will not overwrite any existing directo
 
 :::
 
-Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil's lake); (ii) our modern species assemblages; and (iii) our modern climate. The modern datasets are for the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the taxa in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake and the NAMPD.
+Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil's Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake and the NAMPD.
 
 
 ```{r, wrangle}
@@ -142,7 +142,8 @@ mod_pol_east <- mod_pol %>%
 # Many functions require site-by-species matrices in wide format
 # Note we pivoted by age so we have an age column not used in MAT
 devils_wide <- devils_samples %>% 
-  pivot_wider(id_cols = age, names_from = variablename, values_from = prop)
+  pivot_wider(id_cols = age, names_from = variablename, values_from = prop) %>% 
+  replace(is.na(.), 0)
 
 # Store ages separately for plotting later:
 devils_ages <- devils_wide$age
@@ -156,7 +157,7 @@ Right, now is the tricky part of matching species names. Unfortunately, the spec
 
 ## String matching code
 
-looks like it's done a good job for the most part!
+looks like it's done a good job for the most part! Butthere are a few mismatches.
 
 ```{r fuzzyjoin}
 
@@ -174,12 +175,17 @@ head(names_matches, 15)
 ```
 
 ## Let's take a closer look
+
+In your console take a good look through the whole list. You don't want anything matched twice!
+
 ```{r}
 
 filter(names_matches, distance > 0.1)
 
 ```
 ## Even closer!
+
+Arranging by distance helps.
 
 ```{r}
 
@@ -205,8 +211,83 @@ names_matches_filter <- names_matches %>%
 ```
 
 
-Now we have 
+Now we have a dataframe with names from devils lake and their match in the NAMPD. We can select those species from the NAMPD:
 
+```{r}
+
+# Select species based on name
+mod_pol_east_match <- mod_pol_east %>%
+  rename_with(tolower) %>% 
+  select(c(id2, names_matches_filter$value.y))
+
+# the analoge functions need species names to match
+# so lets name everything in our filtered modern pollen the same as in Devil's Lake
+new_names <- c(names_matches_filter$value.y)
+names(new_names) <- c(names_matches_filter$value.x)
+
+mod_pol_east_match <- mod_pol_east_match %>% 
+  rename(all_of(new_names))
+
+# recall that the Devil's Lake data are in relative proportions
+# let's create a matrix of species only for the MAT with relative proportions
+# This is an approach for calculating relative abundances on wide data:
+mod_pol_east_match_prop <- mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1])*1
+
+# while we are here lets make a matrix of species only from Devils Lake
+devils_prop <- devils_wide %>% 
+  rename_with(tolower) %>% 
+  select(names_matches_filter$value.x) %>% 
+  as.matrix()
+
+```
+
+The last bit of wrangling we need to do is filter the climate data to match the pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.
+
+```{r}
+
+mod_clim_filter <- mod_clim %>% 
+  filter(ID2 %in% mod_pol_east_match$id2)
+
+```
+
+::: {.callout-tip}
+# Good practice tip
+Whenever filtering or joining data it is good to check the dimensions before and after by using `dim()` to see if the results are what you expect. Some functions will run correctly but produce unexpected results.
+:::
+
+That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.
+
+Now let's do the analysis! First is the cross validation of the modern datasets:
+
+```{r, cross-validation}
+
+mod_jant <- data.matrix(mod_clim_filter$tjan)
+
+modpoll_jant <- analogue::mat(mod_pol_east_match_prop, mod_jant, method="SQchord")
+print(modpoll_jant)
+
+```
+
+Plot the results
+
+```{r plotMAT}
+par(mfrow = c(2,2))
+plot(modpoll_jant)
+```
+
+
+```{r}
+
+devil_jant <- predict(modpoll_jant, devils_prop, k=10)
+
+```
+
+
+```{r}
+par(mfrow = c(1,1))
+devil_mindis <- minDC(devil_jant)
+plot(devil_mindis, depths = devils_ages, quantiles = FALSE, xlab = "Age (yr BP)", ylab = "minSCD")
+```
 
 ## Part 3: Exercises
 

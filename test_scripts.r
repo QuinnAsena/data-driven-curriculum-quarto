@@ -71,12 +71,8 @@ head(Climate)
 
 
 
-
-
 pol_df <- mod_pol_east %>% 
     pivot_longer(-ID2, names_to = "variablename")
-
-
 
 
 library("fuzzyjoin")
@@ -97,9 +93,7 @@ test_names2[test_names2$distance > 0.1, ]
 test_names2 %>%
   filter(distance < 0.3)  %>%
   arrange(desc(distance))
-  
-  ,
-          value.y, "arecaceae")
+
 
 test_names2 %>% 
   group_by(value.x) %>%

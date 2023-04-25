@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.2.313">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -317,7 +317,7 @@ div.csl-indent {
 <p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called k-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into k mutually exclusive subsets. For each kth subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.</p>
 <p>Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation tools built into the analogue package.</p>
 <p>Note that the <code>palaeoSig</code> package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation <span class="citation" data-cites="telford2005">(<a href="references.html#ref-telford2005" role="doc-biblioref">Telford and Birks 2005</a>)</span>.</p>
-<p>We will use the North American Modern Pollen Dataset <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (complete) data so that we can filter locations easily.</p>
+<p>We will use the North American Modern Pollen Dataset <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily.</p>
 <p>Let’s get the data ready:</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -403,8 +403,8 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 <p>Don’t worry, the function <code>dir.create()</code> will not overwrite any existing directory contents. <strong>./ and .&nbsp;between mac/pc/linux</strong></p>
 </div>
 </div>
-<p>Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil’s lake); (ii) our modern species assemblages; and (iii) our modern climate. The modern datasets are for the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the taxa in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake and the NAMPD.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/wrangle_65e4f804ad60b6af549b157a2323c3da">
+<p>Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil’s Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake and the NAMPD.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/wrangle_e56e0f2b72325b59467ce13d0b1dffee">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># several columns contain data not used for the MAT</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east <span class="ot">&lt;-</span> mod_pol <span class="sc">%&gt;%</span> </span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(LONDD <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">105</span>) <span class="sc">%&gt;%</span> <span class="co"># Filter for sites east of -105 degrees</span></span>
@@ -413,17 +413,18 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Many functions require site-by-species matrices in wide format</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Note we pivoted by age so we have an age column not used in MAT</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>devils_wide <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%</span> </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> age, <span class="at">names_from =</span> variablename, <span class="at">values_from =</span> prop)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Store ages separately for plotting later:</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>devils_ages <span class="ot">&lt;-</span> devils_wide<span class="sc">$</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> age, <span class="at">names_from =</span> variablename, <span class="at">values_from =</span> prop) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace</span>(<span class="fu">is.na</span>(.), <span class="dv">0</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Store ages separately for plotting later:</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>devils_ages <span class="ot">&lt;-</span> devils_wide<span class="sc">$</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Right, now is the tricky part of matching species names. Unfortunately, the species names between data downloaded from Neotoma and the NAMPD do not match exactly. Sometimes matching is easiest done manually but because of the number of species in both datasets we will do as much as possible programatically. The <code>fuzzyjoin</code> package allows us to match strings (names) by a distance measure and outputs a number of possible matches.</p>
 <div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">String matching code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Let’s take a closer look</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Even closer!</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p>looks like it’s done a good job for the most part!</p>
+<p>looks like it’s done a good job for the most part! Butthere are a few mismatches.</p>
 <div class="cell" data-hash="08-no-analogue_cache/html/fuzzyjoin_af5b51e2e21ea958f70687a1e2d41f2b">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the names of each dataset</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mod_pol_names <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">tolower</span>(<span class="fu">colnames</span>(mod_pol_east[<span class="sc">-</span><span class="dv">1</span>])))</span>
@@ -460,6 +461,7 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>In your console take a good look through the whole list. You don’t want anything matched twice!</p>
 <div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-1_8cec8b634d824f1781f1edb6d7465c75">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(names_matches, distance <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -491,6 +493,7 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 </div>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>Arranging by distance helps.</p>
 <div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-2_cae46e6349c5ac57f8574118d2b8f807">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>names_matches <span class="sc">%&gt;%</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(distance <span class="sc">&lt;</span> <span class="fl">0.3</span>)  <span class="sc">%&gt;%</span> <span class="co"># everything above 0.3 looks like a bad match</span></span>
@@ -532,7 +535,117 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ilex"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"piceax"</span>)  <span class="sc">%&gt;%</span> </span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">arrange</span>(<span class="fu">desc</span>(distance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now we have</p>
+<p>Now we have a dataframe with names from devils lake and their match in the NAMPD. We can select those species from the NAMPD:</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-4_6ae253727825acf8dbbc45a8fea71d96">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select species based on name</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(id2, names_matches_filter<span class="sc">$</span>value.y))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># the analoge functions need species names to match</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># so lets name everything in our filtered modern pollen the same as in Devil's Lake</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>new_names <span class="ot">&lt;-</span> <span class="fu">c</span>(names_matches_filter<span class="sc">$</span>value.y)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(new_names) <span class="ot">&lt;-</span> <span class="fu">c</span>(names_matches_filter<span class="sc">$</span>value.x)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east_match <span class="sc">%&gt;%</span> </span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">all_of</span>(new_names))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co"># recall that the Devil's Lake data are in relative proportions</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># let's create a matrix of species only for the MAT with relative proportions</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># This is an approach for calculating relative abundances on wide data:</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match_prop <span class="ot">&lt;-</span> mod_pol_east_match[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">/</span> <span class="fu">rowSums</span>(mod_pol_east_match[<span class="sc">-</span><span class="dv">1</span>])<span class="sc">*</span><span class="dv">1</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># while we are here lets make a matrix of species only from Devils Lake</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>devils_prop <span class="ot">&lt;-</span> devils_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(names_matches_filter<span class="sc">$</span>value.x) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The last bit of wrangling we need to do is filter the climate data to match the pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-5_4406da492ccfcac10aaf36965c270ef8">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod_clim_filter <span class="ot">&lt;-</span> mod_clim <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ID2 <span class="sc">%in%</span> mod_pol_east_match<span class="sc">$</span>id2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Good practice tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Whenever filtering or joining data it is good to check the dimensions before and after by using <code>dim()</code> to see if the results are what you expect. Some functions will run correctly but produce unexpected results.</p>
+</div>
+</div>
+<p>That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.</p>
+<p>Now let’s do the analysis! First is the cross validation of the modern datasets:</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/cross-validation_c3f3bb10f594811b51cb1105cb5e8080">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mod_jant <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(mod_clim_filter<span class="sc">$</span>tjan)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>modpoll_jant <span class="ot">&lt;-</span> analogue<span class="sc">::</span><span class="fu">mat</span>(mod_pol_east_match_prop, mod_jant, <span class="at">method=</span><span class="st">"SQchord"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Modern Analogue Technique
+
+Call:
+mat(x = mod_pol_east_match_prop, y = mod_jant, method = "SQchord") 
+
+Percentiles of the dissimilarities for the training set:
+
+   1%    2%    5%   10%   20% 
+0.151 0.196 0.280 0.374 0.515 
+
+Inferences based on the mean of k-closest analogues:
+
+  k  RMSEP     R2 Avg Bias Max Bias
+  1  3.607  0.889   -0.178    2.654
+  2  3.311  0.905   -0.242    3.175
+  3  3.232  0.908   -0.245    3.324
+  4  3.165  0.912   -0.245    3.422
+  5  3.131  0.914   -0.265    3.579
+  6  3.126  0.914   -0.274    3.811
+  7  3.148  0.913   -0.276    4.246
+  8  3.202  0.910   -0.287    4.285
+  9  3.244  0.907   -0.302    4.423
+ 10  3.279  0.906   -0.320    4.556
+
+Inferences based on the weighted mean of k-closest analogues:
+
+  k RMSEP   R2 Avg Bias Max Bias
+  1   NaN   NA      NaN     2.65
+  2   NaN   NA      NaN     2.97
+  3   NaN   NA      NaN     3.14
+  4   NaN   NA      NaN     3.29
+  5   NaN   NA      NaN     3.43
+  6   NaN   NA      NaN     3.59
+  7   NaN   NA      NaN     3.90
+  8   NaN   NA      NaN     3.92
+  9   NaN   NA      NaN     4.01
+ 10   NaN   NA      NaN     4.13</code></pre>
+</div>
+</div>
+<p>Plot the results</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/plotMAT_422d69be3d22ef71c14e32089f400bd5">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-no-analogue_files/figure-html/plotMAT-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-6_bd67e7106c216e0da8fe3929e3fb5b23">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>devil_jant <span class="ot">&lt;-</span> <span class="fu">predict</span>(modpoll_jant, devils_prop, <span class="at">k=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-7_7ec1778a99fe74e25806488effecb8cc">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>devil_mindis <span class="ot">&lt;-</span> <span class="fu">minDC</span>(devil_jant)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(devil_mindis, <span class="at">depths =</span> devils_ages, <span class="at">quantiles =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"minSCD"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-no-analogue_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="part-3-exercises" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">9.3</span> Part 3: Exercises</h2>
