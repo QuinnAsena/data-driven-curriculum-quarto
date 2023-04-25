@@ -3,7 +3,7 @@ project:
 
 book:
   title: "Palaeoecological data-science: a data driven curriculum"
-  author: "Quinn Asena, Jack Williams, Simon Gorring, Socorro Dominguez Vidana"
+  author: "Quinn Asena, Jack Williams, Simon Goring, Socorro Dominguez Vidana"
   date: today
   chapters:
     - index.qmd
