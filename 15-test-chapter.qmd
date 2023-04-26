@@ -28,6 +28,5 @@ Tips on version control, directory structure (and anything else) that make life 
 
 ::: {.callout-note}
 # Resources
-List of packages required for section and what they are used for
-
+Important readings
 :::
