@@ -58,7 +58,7 @@ Ready to Wrange? Let’s get the data ready:
 # Packages required for this section
 ```{r packages}
 #| output: false
-# Load up the package
+# Load up the packages
 
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
 pacman::p_load(neotoma2, tidyverse, neotoma2, analogue, vegan, readxl, fuzzyjoin)
@@ -213,7 +213,7 @@ names_matches_filter <- names_matches %>%
 ```
 
 
-Now we have a data (`names_matches_filter`) with names from Devil's Lake and their match in the NAMPD. We can select those species from the NAMPD:
+Now we have a dataframe (`names_matches_filter`) with names from Devil's Lake and their match in the NAMPD. We can select those species from the NAMPD:
 
 ```{r}
 
@@ -342,7 +342,7 @@ reconPlot(devil_jant, depth = devils_ages, display.error="bars", xlab = "Age (yr
 
 ::: {.callout-note}
 # Resources
-**Jack action point:**
+**Jacktion point:**
 
 Copy in a list of DOIs for essential reading and I'll add insert them as formatted citation links:
 
@@ -353,7 +353,7 @@ Copy in a list of DOIs for essential reading and I'll add insert them as formatt
 
 ## Part 3: Exercises
 
-**Jack action point:** review questions and question order :)
+**Jacktion point:** review questions and question order :)
 
 
 1. In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?

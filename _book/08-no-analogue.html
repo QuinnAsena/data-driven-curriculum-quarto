@@ -355,8 +355,8 @@ Packages required for this section
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<div class="cell" data-hash="08-no-analogue_cache/html/packages_eaaa714bb7d2371fbafb2c7685483c98">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the package</span></span>
+<div class="cell" data-hash="08-no-analogue_cache/html/packages_53a238b7d3b55e5516b13c89fe93c4d0">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the packages</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"pacman"</span>)) <span class="fu">install.packages</span>(<span class="st">"pacman"</span>, <span class="at">repos=</span><span class="st">"http://cran.r-project.org"</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(neotoma2, tidyverse, neotoma2, analogue, vegan, readxl, fuzzyjoin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -555,7 +555,7 @@ Respawn point
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ericaceae"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"arecaceae"</span>)  <span class="sc">%&gt;%</span> </span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">arrange</span>(<span class="fu">desc</span>(distance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now we have a data (<code>names_matches_filter</code>) with names from Devil’s Lake and their match in the NAMPD. We can select those species from the NAMPD:</p>
+<p>Now we have a dataframe (<code>names_matches_filter</code>) with names from Devil’s Lake and their match in the NAMPD. We can select those species from the NAMPD:</p>
 <div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-4_8ad1229a01480dd81791033665849808">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select species based on name</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east <span class="sc">%&gt;%</span></span>
@@ -726,7 +726,7 @@ Resources
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Jack action point:</strong></p>
+<p><strong>Jacktion point:</strong></p>
 <p>Copy in a list of DOIs for essential reading and I’ll add insert them as formatted citation links:</p>
 <ul>
 <li>DOI</li>
@@ -738,7 +738,7 @@ Resources
 </section>
 <section id="part-3-exercises" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">9.3</span> Part 3: Exercises</h2>
-<p><strong>Jack action point:</strong> review questions and question order :)</p>
+<p><strong>Jacktion point:</strong> review questions and question order :)</p>
 <ol type="1">
 <li><p>In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?</p>
 <ol type="1">
