@@ -266,7 +266,12 @@ div.csl-indent {
    
   <ul>
   <li><a href="#part-1-background" id="toc-part-1-background" class="nav-link active" data-scroll-target="#part-1-background"><span class="toc-section-number">9.1</span>  Part 1: Background</a></li>
-  <li><a href="#part-2-cross-validation" id="toc-part-2-cross-validation" class="nav-link" data-scroll-target="#part-2-cross-validation"><span class="toc-section-number">9.2</span>  Part 2: Cross-Validation</a></li>
+  <li><a href="#part-2-analysis" id="toc-part-2-analysis" class="nav-link" data-scroll-target="#part-2-analysis"><span class="toc-section-number">9.2</span>  Part 2: analysis</a>
+  <ul class="collapse">
+  <li><a href="#sec-datawrangle" id="toc-sec-datawrangle" class="nav-link" data-scroll-target="#sec-datawrangle"><span class="toc-section-number">9.2.1</span>  Data wrangling</a></li>
+  <li><a href="#sec-crossvalid" id="toc-sec-crossvalid" class="nav-link" data-scroll-target="#sec-crossvalid"><span class="toc-section-number">9.2.2</span>  Cross-validation</a></li>
+  <li><a href="#novelty-and-paleoclimatic-reconstruction" id="toc-novelty-and-paleoclimatic-reconstruction" class="nav-link" data-scroll-target="#novelty-and-paleoclimatic-reconstruction"><span class="toc-section-number">9.2.3</span>  Novelty and Paleoclimatic Reconstruction</a></li>
+  </ul></li>
   <li><a href="#part-3-exercises" id="toc-part-3-exercises" class="nav-link" data-scroll-target="#part-3-exercises"><span class="toc-section-number">9.3</span>  Part 3: Exercises</a></li>
   </ul>
 </nav>
@@ -293,7 +298,7 @@ div.csl-indent {
 
 <section id="part-1-background" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="part-1-background"><span class="header-section-number">9.1</span> Part 1: Background</h2>
-<p>The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data <span class="citation" data-cites="chevalier2020 williams2008 gavin2003 overpeck1985">(<a href="references.html#ref-chevalier2020" role="doc-biblioref">Chevalier et al. 2020</a>; <a href="references.html#ref-williams2008" role="doc-biblioref">Williams and Shuman 2008</a>; <a href="references.html#ref-gavin2003" role="doc-biblioref">Gavin et al. 2003</a>; <a href="references.html#ref-overpeck1985" role="doc-biblioref">Overpeck, Webb, and Prentice 1985</a>)</span>. The MAT relies on reasoning by analogy <span class="citation" data-cites="jackson2004">(<a href="references.html#ref-jackson2004" role="doc-biblioref">Jackson and Williams 2004</a>)</span>, in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.</p>
+<p>The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data <span class="citation" data-cites="chevalier2020 williams2008 gavin2003 overpeck1985">(<a href="references.html#ref-chevalier2020" role="doc-biblioref">Chevalier et al. 2020</a>; <a href="references.html#ref-williams2008" role="doc-biblioref">J. W. Williams and Shuman 2008</a>; <a href="references.html#ref-gavin2003" role="doc-biblioref">Gavin et al. 2003</a>; <a href="references.html#ref-overpeck1985" role="doc-biblioref">Overpeck, Webb, and Prentice 1985</a>)</span>. The MAT relies on reasoning by analogy <span class="citation" data-cites="jackson2004">(<a href="references.html#ref-jackson2004" role="doc-biblioref">Jackson and Williams 2004</a>)</span>, in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.</p>
 <p>The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more (<span class="math inline">\(k\)</span>) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.</p>
 <p>The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.</p>
 <p>To reconstruct past environments using the MAT, we need three data sets:</p>
@@ -311,14 +316,35 @@ div.csl-indent {
 </ol>
 <p>Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!</p>
 </section>
-<section id="part-2-cross-validation" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="part-2-cross-validation"><span class="header-section-number">9.2</span> Part 2: Cross-Validation</h2>
-<p>Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.</p>
-<p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called k-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into k mutually exclusive subsets. For each kth subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.</p>
-<p>Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation tools built into the analogue package.</p>
-<p>Note that the <code>palaeoSig</code> package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation <span class="citation" data-cites="telford2005">(<a href="references.html#ref-telford2005" role="doc-biblioref">Telford and Birks 2005</a>)</span>.</p>
-<p>We will use the North American Modern Pollen Dataset <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily.</p>
-<p>Let’s get the data ready:</p>
+<section id="part-2-analysis" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="part-2-analysis"><span class="header-section-number">9.2</span> Part 2: analysis</h2>
+<section id="sec-datawrangle" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="sec-datawrangle"><span class="header-section-number">9.2.1</span> Data wrangling</h3>
+<p>In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals stored in inconsistent formats. However; if you prefer to skip all the wrangling and jump directly to the anayses in <a href="#sec-crossvalid"><span>Section&nbsp;9.2.2</span></a>, the data have been saved post-wrangling and can be loaded into R directly.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Jump point
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to <a href="#sec-crossvalid"><span>Section&nbsp;9.2.2</span></a></p>
+<div class="cell" data-hash="08-no-analogue_cache/html/readdata_450711a7d338732d36c7778d9469f971">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>file_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"./data/mod_pol_east_match_prop.rds"</span>, <span class="st">"./data/mod_clim_filter.rds"</span>, <span class="st">"./data/devils_prop.rds"</span>, <span class="st">"./data/devils_ages.rds"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>obj_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"mod_pol_east_match_prop"</span>, <span class="st">"mod_clim_filter"</span>, <span class="st">"devils_prop"</span>, <span class="st">"devils_ages"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rds_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(file_names, readRDS)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(rds_list) <span class="ot">&lt;-</span> obj_names</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(rds_list, <span class="fu">globalenv</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+<p>Ready to Wrange? Let’s get the data ready:</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -329,81 +355,75 @@ Packages required for this section
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>List of packages required for section and what they are used for</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/packages_ac0876ad3d635cb4e5d3661a87596180">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the package</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"pacman"</span>)) <span class="fu">install.packages</span>(<span class="st">"pacman"</span>, <span class="at">repos=</span><span class="st">"http://cran.r-project.org"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(neotoma2, tidyr, dplyr, ggplot2, neotoma2, analogue, vegan, readxl, fuzzyjoin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="08-no-analogue_cache/html/packages_eaaa714bb7d2371fbafb2c7685483c98">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the package</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"pacman"</span>)) <span class="fu">install.packages</span>(<span class="st">"pacman"</span>, <span class="at">repos=</span><span class="st">"http://cran.r-project.org"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(neotoma2, tidyverse, neotoma2, analogue, vegan, readxl, fuzzyjoin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
-<p>The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnNa_6239dc90f8b4b28d6488743f3ab9b9ca">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following code can be done in one pipeline but we have split it into chunks to help with readablity</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">get_sites</span>(<span class="at">siteid =</span> <span class="dv">666</span>) <span class="sc">%&gt;%</span> <span class="co"># Download the site samples data</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_downloads</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">samples</span>()</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(ecologicalgroup <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"UPHE"</span>, <span class="st">"TRSH"</span>), <span class="co"># Filter ecological groups by upland heath and trees and shrubs</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                elementtype <span class="sc">==</span> <span class="st">"pollen"</span>, <span class="co"># filter bu pollen samples</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                units <span class="sc">==</span> <span class="st">"NISP"</span>) <span class="sc">%&gt;%</span> <span class="co"># Filter by sampling unit</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>         <span class="fu">mutate</span>(<span class="at">variablename =</span> <span class="fu">replace</span>(variablename,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                                stringr<span class="sc">::</span><span class="fu">str_detect</span>(variablename, <span class="st">"Pinus.*"</span>), <span class="co"># Harmonize Pinus into one group</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Pinus"</span>),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">variablename =</span> <span class="fu">replace</span>(variablename,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                                stringr<span class="sc">::</span><span class="fu">str_detect</span>(variablename, <span class="st">"Ambrosia.*"</span>),</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Ambrosia"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(siteid, sitename,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>           sampleid, variablename, units, age,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>           agetype, depth, datasetid,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>           long, lat) <span class="sc">%&gt;%</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">sum</span>(value), <span class="at">.groups=</span><span class="st">'keep'</span>) <span class="co"># The group_by function will drop columns not used as grouping variables</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%</span> <span class="co"># Calculate proportions of each species by year group</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(age) <span class="sc">%&gt;%</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pollencount =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(variablename) <span class="sc">%&gt;%</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> value <span class="sc">/</span> pollencount) <span class="sc">%&gt;%</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(age)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(devils_samples, <span class="st">"./data/devils_samples.rds"</span>) <span class="co"># Save the data for later</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>To read in the example data use:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnRDSNa_2b150c298a51b288057b7fcad994e9c1">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the data</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/devils_samples.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. <strong>JACK ACTION POINT: to use this method in other regions what databases are available.</strong> The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file. If you do not already have a directory named data from previous chapters <strong>CROSSREF INTRO set-up instructions</strong> one will be created.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/nampd_26d25aeefc7c4244df66dc908a95a05a">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"./data"</span>) <span class="co"># If the data directory exists it will not be overwritten</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://williamspaleolab.github.io/data/whitmoreetal2005.zip"</span>, <span class="st">"./data/whitmoreetal2005.zip"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"./data/whitmoreetal2005.zip"</span>, <span class="at">exdir =</span> <span class="st">"./data/whitmoreetal2005"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mod_pol <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"POLLEN DATA"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>mod_clim <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"CLIMATE+BIOCLIMATE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Oh no! <span class="emoji" data-emoji="scream">😱</span>
+Respawn point
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If you do not already have a directory named data from previous chapters <strong>CROSSREF INTRO set-up instructions</strong> one will be created. If the directory already exists you will see a warning message:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Warning</span> message:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">In</span> dir.create<span class="er">(</span><span class="st">"./data"</span><span class="kw">)</span> <span class="bu">:</span> <span class="st">'.\data'</span> already exists</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Don’t worry, the function <code>dir.create()</code> will not overwrite any existing directory contents. <strong>./ and .&nbsp;between mac/pc/linux</strong></p>
+<p>The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in <a href="04-neotoma2.html"><span>Chapter&nbsp;5</span></a> so, more easily, you can read in the pre-wrangled .rds file in the data directory. Note that this is the long format data <em>not</em> the species only matrix from the jump point above.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnNa_7440438590687665ca519c595a3f8eee">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following code can be done in one pipeline but we have split it into chunks to help with readablity</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">get_sites</span>(<span class="at">siteid =</span> <span class="dv">666</span>) <span class="sc">%&gt;%</span> <span class="co"># Download the site samples data</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_downloads</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">samples</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(ecologicalgroup <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"UPHE"</span>, <span class="st">"TRSH"</span>), <span class="co"># Filter ecological groups by upland heath and trees and shrubs</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                elementtype <span class="sc">==</span> <span class="st">"pollen"</span>, <span class="co"># filter bu pollen samples</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                units <span class="sc">==</span> <span class="st">"NISP"</span>) <span class="sc">%&gt;%</span> <span class="co"># Filter by sampling unit</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>         <span class="fu">mutate</span>(<span class="at">variablename =</span> <span class="fu">replace</span>(variablename,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                                stringr<span class="sc">::</span><span class="fu">str_detect</span>(variablename, <span class="st">"Pinus.*"</span>), <span class="co"># Harmonize Pinus into one group</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Pinus"</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">variablename =</span> <span class="fu">replace</span>(variablename,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                                stringr<span class="sc">::</span><span class="fu">str_detect</span>(variablename, <span class="st">"Ambrosia.*"</span>),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Ambrosia"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(siteid, sitename,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>           sampleid, variablename, units, age,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>           agetype, depth, datasetid,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>           long, lat) <span class="sc">%&gt;%</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">sum</span>(value), <span class="at">.groups=</span><span class="st">'keep'</span>) <span class="co"># The group_by function will drop columns not used as grouping variables</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> devils_samples <span class="sc">%&gt;%</span> <span class="co"># Calculate proportions of each species by year group</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(age) <span class="sc">%&gt;%</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pollencount =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(variablename) <span class="sc">%&gt;%</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> value <span class="sc">/</span> pollencount) <span class="sc">%&gt;%</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(age)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </div>
-<p>Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil’s Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake and the NAMPD.</p>
+</div>
+<p>To read in the pre-wrangled long data for Devil’s Lake use:</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnRDSNa_2b150c298a51b288057b7fcad994e9c1">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the data</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/devils_samples.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. <strong>JACK ACTION POINT: to use this method in other regions what databases are available.</strong> The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/nampd_f77f13e398023a23e9500bed2fecd9e3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://williamspaleolab.github.io/data/whitmoreetal2005.zip"</span>, <span class="st">"./data/whitmoreetal2005.zip"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"./data/whitmoreetal2005.zip"</span>, <span class="at">exdir =</span> <span class="st">"./data/whitmoreetal2005"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>mod_pol <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"POLLEN DATA"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>mod_clim <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"CLIMATE+BIOCLIMATE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil’s Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake and the NAMPD. We are going to keep all data West of 105°W, see <span class="citation" data-cites="krause2019">Krause et al. (<a href="references.html#ref-krause2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="williams2001">John W. Williams, Shuman, and Webb III (<a href="references.html#ref-williams2001" role="doc-biblioref">2001</a>)</span>.</p>
 <div class="cell" data-hash="08-no-analogue_cache/html/wrangle_e56e0f2b72325b59467ce13d0b1dffee">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># several columns contain data not used for the MAT</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east <span class="ot">&lt;-</span> mod_pol <span class="sc">%&gt;%</span> </span>
@@ -425,8 +445,8 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>looks like it’s done a good job for the most part! Butthere are a few mismatches.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/fuzzyjoin_af5b51e2e21ea958f70687a1e2d41f2b">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the names of each dataset</span></span>
+<div class="cell" data-hash="08-no-analogue_cache/html/fuzzyjoin_1fe3afc22ba2dda97a2c55599a5581ce">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the names of each dataset and convert all to lowercase</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mod_pol_names <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">tolower</span>(<span class="fu">colnames</span>(mod_pol_east[<span class="sc">-</span><span class="dv">1</span>])))</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>devil_names <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">tolower</span>(<span class="fu">colnames</span>(devils_wide[<span class="sc">-</span><span class="dv">1</span>])))</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -434,7 +454,7 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>names_matches <span class="ot">&lt;-</span> <span class="fu">stringdist_left_join</span>(devil_names, mod_pol_names, <span class="at">by =</span> <span class="st">"value"</span>,</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">max_dist =</span> <span class="dv">4</span>, <span class="at">distance_col =</span> <span class="st">"distance"</span>, <span class="at">method =</span> <span class="st">"jw"</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">group_by</span>(value.x) <span class="sc">%&gt;%</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">slice_min</span>(<span class="at">order_by =</span> distance, <span class="at">n =</span> <span class="dv">1</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">slice_min</span>(<span class="at">order_by =</span> distance, <span class="at">n =</span> <span class="dv">1</span>) <span class="co"># change the value of n to see more potential matches</span></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(names_matches, <span class="dv">15</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -462,8 +482,8 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>In your console take a good look through the whole list. You don’t want anything matched twice!</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-1_8cec8b634d824f1781f1edb6d7465c75">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(names_matches, distance <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-1_8abd3443398bf9d2fe0430459878900a">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>names_matches <span class="sc">%&gt;%</span> <span class="fu">filter</span>(distance <span class="sc">&gt;</span> <span class="fl">0.1</span>) <span class="co"># looks like everything below 0.1 is a good match</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 20 × 3
 # Groups:   value.x [19]
@@ -526,42 +546,39 @@ Oh no! <span class="emoji" data-emoji="scream">😱</span>
 </div>
 </div>
 <p>Ok looks like we only have a few to weed out manually:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-3_52063c7422fa1ef82bd0d3b38594ef28">
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-3_0bbf81ce7b8b60dc83a157c7f9dd6fce">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>names_matches_filter <span class="ot">&lt;-</span> names_matches <span class="sc">%&gt;%</span> </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(distance <span class="sc">&lt;</span> <span class="fl">0.3</span>,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"rhus"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"rubus"</span>,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"morus"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"cornus"</span>,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ericaceae"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"arecaceae"</span>,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ilex"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"piceax"</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ilex"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"piceax"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"rhus"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"rubus"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"morus"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"cornus"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ericaceae"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"arecaceae"</span>)  <span class="sc">%&gt;%</span> </span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">arrange</span>(<span class="fu">desc</span>(distance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now we have a dataframe with names from devils lake and their match in the NAMPD. We can select those species from the NAMPD:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-4_6ae253727825acf8dbbc45a8fea71d96">
+<p>Now we have a data (<code>names_matches_filter</code>) with names from Devil’s Lake and their match in the NAMPD. We can select those species from the NAMPD:</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-4_8ad1229a01480dd81791033665849808">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select species based on name</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(id2, names_matches_filter<span class="sc">$</span>value.y))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> <span class="co"># convert to lowercase for matching</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(id2, names_matches_filter<span class="sc">$</span>value.y)) <span class="co"># keep id column and select species</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># the analoge functions need species names to match</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># The analoge functions need species names to match between datasets</span></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># so lets name everything in our filtered modern pollen the same as in Devil's Lake</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>new_names <span class="ot">&lt;-</span> <span class="fu">c</span>(names_matches_filter<span class="sc">$</span>value.y)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(new_names) <span class="ot">&lt;-</span> <span class="fu">c</span>(names_matches_filter<span class="sc">$</span>value.x)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east_match <span class="sc">%&gt;%</span> </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">all_of</span>(<span class="fu">deframe</span>(names_matches_filter[ ,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])))</span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east_match <span class="sc">%&gt;%</span> </span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">all_of</span>(new_names))</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co"># recall that the Devil's Lake data are in relative proportions</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># let's create a matrix of species only for the MAT with relative proportions</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># This is an approach for calculating relative abundances on wide data:</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match_prop <span class="ot">&lt;-</span> mod_pol_east_match[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">/</span> <span class="fu">rowSums</span>(mod_pol_east_match[<span class="sc">-</span><span class="dv">1</span>])<span class="sc">*</span><span class="dv">1</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># while we are here lets make a matrix of species only from Devils Lake</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>devils_prop <span class="ot">&lt;-</span> devils_wide <span class="sc">%&gt;%</span> </span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(names_matches_filter<span class="sc">$</span>value.x) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># recall that the Devil's Lake data are in relative proportions</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># let's create a matrix of only species for the MAT with relative proportions</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># This is an approach for calculating relative abundances on wide data:</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match_prop <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(mod_pol_east_match[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">/</span> <span class="fu">rowSums</span>(mod_pol_east_match[<span class="sc">-</span><span class="dv">1</span>])<span class="sc">*</span><span class="dv">1</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># while we are here let's make a matrix of species only from Devils Lake</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>devils_prop <span class="ot">&lt;-</span> devils_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(names_matches_filter<span class="sc">$</span>value.x) <span class="sc">%&gt;%</span> <span class="co"># Remember we removed a few species without matches?</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The last bit of wrangling we need to do is filter the climate data to match the pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.</p>
+<p>The last bit of wrangling we need to do is filter the climate data to match the modern pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.</p>
 <div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-5_4406da492ccfcac10aaf36965c270ef8">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod_clim_filter <span class="ot">&lt;-</span> mod_clim <span class="sc">%&gt;%</span> </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ID2 <span class="sc">%in%</span> mod_pol_east_match<span class="sc">$</span>id2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -576,16 +593,31 @@ Good practice tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Whenever filtering or joining data it is good to check the dimensions before and after by using <code>dim()</code> to see if the results are what you expect. Some functions will run correctly but produce unexpected results.</p>
+<p>Whenever filtering or joining data it is good to check the dimensions before and after by using <code>dim()</code> to see if the results are what you expect. Some functions like <code>left_join()</code> or <code>full_join()</code> may run correctly but produce unexpected results.</p>
 </div>
 </div>
 <p>That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.</p>
-<p>Now let’s do the analysis! First is the cross validation of the modern datasets:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/cross-validation_c3f3bb10f594811b51cb1105cb5e8080">
+</section>
+<section id="sec-crossvalid" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="sec-crossvalid"><span class="header-section-number">9.2.2</span> Cross-validation</h3>
+<p>Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.</p>
+<p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called <span class="math inline">\(k\)</span>-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into <span class="math inline">\(k\)</span> mutually exclusive subsets. For each <span class="math inline">\(k^{th}\)</span> subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.</p>
+<p>Standard metrics include RMSE and <span class="math inline">\(R^2\)</span>. Here, we’ll use the cross-validation tools built into the analogue package.</p>
+<p>Note that the <code>palaeoSig</code> package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation <span class="citation" data-cites="telford2005">(<a href="references.html#ref-telford2005" role="doc-biblioref">Telford and Birks 2005</a>)</span>.</p>
+<p>Now let’s do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here from the Data Wrangling section, make sure you load in the pre-formatted data from <a href="#sec-datawrangle"><span>Section&nbsp;9.2.1</span></a>.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Summary</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Plots</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell" data-hash="08-no-analogue_cache/html/cross-validation_c93dd1a2c1d5461702548e7d67816de4">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mod_jant <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(mod_clim_filter<span class="sc">$</span>tjan)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>modpoll_jant <span class="ot">&lt;-</span> analogue<span class="sc">::</span><span class="fu">mat</span>(mod_pol_east_match_prop, mod_jant, <span class="at">method=</span><span class="st">"SQchord"</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>modpoll_jant <span class="ot">&lt;-</span> analogue<span class="sc">::</span><span class="fu">mat</span>(mod_pol_east_match_prop, mod_jant, <span class="at">method=</span><span class="st">"SQchord"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell" data-hash="08-no-analogue_cache/html/MATsummary_551004d65726193bb3ef0993c0b0c0da">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Modern Analogue Technique
@@ -627,28 +659,106 @@ Inferences based on the weighted mean of k-closest analogues:
  10   NaN   NA      NaN     4.13</code></pre>
 </div>
 </div>
-<p>Plot the results</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/plotMAT_422d69be3d22ef71c14e32089f400bd5">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell" data-hash="08-no-analogue_cache/html/plotMAT_21ec3ba73d4800a3459f9e5a53ae033e">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="08-no-analogue_files/figure-html/plotMAT-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-6_bd67e7106c216e0da8fe3929e3fb5b23">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>devil_jant <span class="ot">&lt;-</span> <span class="fu">predict</span>(modpoll_jant, devils_prop, <span class="at">k=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-7_7ec1778a99fe74e25806488effecb8cc">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>devil_mindis <span class="ot">&lt;-</span> <span class="fu">minDC</span>(devil_jant)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(devil_mindis, <span class="at">depths =</span> devils_ages, <span class="at">quantiles =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"minSCD"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p>To interpret the results review <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span>, Section 2.1.</p>
+</section>
+<section id="novelty-and-paleoclimatic-reconstruction" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="novelty-and-paleoclimatic-reconstruction"><span class="header-section-number">9.2.3</span> Novelty and Paleoclimatic Reconstruction</h3>
+<p><strong>Jack action point</strong> Section needs some info from the lecture content to help understand the process as a stand-alone unit.</p>
+<p>For this part of the lab, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT. Here’s some demonstration code showing the kinds of analyses that can be done and plotted timeseries.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Minimum distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Modern analogues</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Reconstruction</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p>Construct a time series of the minimum SCDs (novelty) for Devil’s Lake.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-6_3acc270f78e0ce2d485173cfe3f72d1f">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict temperatures from the fossil data and their modern analogue</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>devil_jant <span class="ot">&lt;-</span> <span class="fu">predict</span>(modpoll_jant, devils_prop, <span class="at">k=</span><span class="dv">10</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>devil_mindis <span class="ot">&lt;-</span> <span class="fu">minDC</span>(devil_jant)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(devil_mindis, <span class="at">depths =</span> devils_ages, <span class="at">quantiles =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"minSCD"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-no-analogue_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p>Construct a time series of the number of modern analogs found per fossil sample, using 0.25 as our no-analog/analog threshold.</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-7_f3bb17dd276714eaec9d11813fad3948">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>devil_cma <span class="ot">&lt;-</span> analogue<span class="sc">::</span><span class="fu">cma</span>(devil_jant, <span class="at">cutoff=</span><span class="fl">0.25</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> devils_ages, <span class="at">y =</span> devil_cma<span class="sc">$</span>n.analogs, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">xlim=</span> <span class="fu">rev</span>(<span class="fu">range</span>(devils_ages)), <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"Number of modern analogs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="08-no-analogue_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<p>Plot the reconstructed January temperatures at Devil’s Lake:</p>
+<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-8_a8612dee317aec7fc6299ccdd5cc3b4f">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reconPlot</span>(devil_jant, <span class="at">depth =</span> devils_ages, <span class="at">display.error=</span><span class="st">"bars"</span>, <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"Mean Jan temperature"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-no-analogue_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Resources
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Jack action point:</strong></p>
+<p>Copy in a list of DOIs for essential reading and I’ll add insert them as formatted citation links:</p>
+<ul>
+<li>DOI</li>
+<li>DOI</li>
+</ul>
+</div>
+</div>
+</section>
 </section>
 <section id="part-3-exercises" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">9.3</span> Part 3: Exercises</h2>
+<p><strong>Jack action point:</strong> review questions and question order :)</p>
+<ol type="1">
+<li><p>In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?</p>
+<ol type="1">
+<li>Which samples at Devil’s Lake lack modern analogs?</li>
+</ol></li>
+<li><p>Repeat the above analysis for TJul, PJul, GDD5, and MIPT. (GDD5 is growing degree days and is a measure of growing season length and strength; MIPT is an index of soil moisture availability).</p></li>
+<li><p>Which variable has the best cross-validation statistics?</p>
+<ol type="1">
+<li>Which has the worst?</li>
+</ol></li>
+<li><p>Given what you know about the climatic controls on plant distributions (and/or our ability to precisely quantify these variables), is the relative predictive skill for these different climatic variables surprising or unsurprising? Why?</p></li>
+<li><p>Check the Devil’s Lake novelty curve against the pollen diagram for Devil’s Lake. What combinations of pollen taxa produce these no-analog assemblages?</p></li>
+<li><p>According to Webb(1986), what are two general hypotheses for why we might have these past mixtures of species with no modern analogue?</p></li>
+<li><p>Why should one be dubious about the temperature reconstructions at Devil’s Lake for the high-novelty assemblages?</p></li>
+<li><p>Even for the low-novelty assemblages, name two potentially important sources of uncertainty in MAT-based reconstructions of past climate from fossil pollen data.</p>
+<ol type="1">
+<li>Conversely, based on our knowledge about the geographic climatic distributions of these taxa, why might one argue that these January temperature reconstructions are plausible?</li>
+</ol></li>
+<li><p>To get practice, make reconstructions of GDD5 and mean July precipitation. Show plots of your work.</p></li>
+</ol>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
@@ -661,8 +771,14 @@ Gavin, Daniel G, W.Wyatt Oswald, Eugene R Wahl, and John W Williams. 2003. <span
 <div id="ref-jackson2004" class="csl-entry" role="doc-biblioentry">
 Jackson, Stephen T., and John W. Williams. 2004. <span>“Modern <span>Analogs</span> in <span>Quaternary Paleoecology</span>: <span>Here Today</span>, <span>Gone Yesterday</span>, <span>Gone Tomorrow</span>?”</span> <em>Annual Review of Earth and Planetary Sciences</em> 32 (1): 495–537. <a href="https://doi.org/10.1146/annurev.earth.32.101802.120435">https://doi.org/10.1146/annurev.earth.32.101802.120435</a>.
 </div>
+<div id="ref-krause2019" class="csl-entry" role="doc-biblioentry">
+Krause, Teresa R., James M. Russell, Rui Zhang, John W. Williams, and Stephen T. Jackson. 2019. <span>“Late <span>Quaternary</span> Vegetation, Climate, and Fire History of the <span>Southeast Atlantic Coastal Plain</span> Based on a 30,000-Yr Multi-Proxy Record from <span>White Pond</span>, <span>South Carolina</span>, <span>USA</span>.”</span> <em>Quaternary Research</em> 91 (2): 861–80. <a href="https://doi.org/10.1017/qua.2018.95">https://doi.org/10.1017/qua.2018.95</a>.
+</div>
 <div id="ref-overpeck1985" class="csl-entry" role="doc-biblioentry">
 Overpeck, J. T., T. Webb, and I. C. Prentice. 1985. <span>“Quantitative <span>Interpretation</span> of <span>Fossil Pollen Spectra</span>: <span>Dissimilarity Coefficients</span> and the <span>Method</span> of <span>Modern Analogs</span>.”</span> <em>Quaternary Research</em> 23 (1): 87–108. <a href="https://doi.org/10.1016/0033-5894(85)90074-2">https://doi.org/10.1016/0033-5894(85)90074-2</a>.
+</div>
+<div id="ref-simpson2007" class="csl-entry" role="doc-biblioentry">
+Simpson, Gavin L. 2007. <span>“Analogue <span>Methods</span> in <span>Palaeoecology</span>: <span>Using</span> the Analogue <span>Package</span>.”</span> <em>Journal of Statistical Software</em> 22 (September): 1–29. <a href="https://doi.org/10.18637/jss.v022.i02">https://doi.org/10.18637/jss.v022.i02</a>.
 </div>
 <div id="ref-telford2005" class="csl-entry" role="doc-biblioentry">
 Telford, R. J., and H. J. B. Birks. 2005. <span>“The Secret Assumption of Transfer Functions: Problems with Spatial Autocorrelation in Evaluating Model Performance.”</span> <em>Quaternary Science Reviews</em> 24 (20-21): 2173–79. <a href="https://doi.org/10.1016/j.quascirev.2005.05.001">https://doi.org/10.1016/j.quascirev.2005.05.001</a>.
@@ -672,6 +788,9 @@ Whitmore, J., K. Gajewski, M. Sawada, J. W. Williams, B. Shuman, P. J. Bartlein,
 </div>
 <div id="ref-williams2008" class="csl-entry" role="doc-biblioentry">
 Williams, J. W., and B. Shuman. 2008. <span>“Obtaining Accurate and Precise Environmental Reconstructions from the Modern Analog Technique and <span>North American</span> Surface Pollen Dataset.”</span> <em>Quaternary Science Reviews</em> 27 (7-8): 669–87. <a href="https://doi.org/10.1016/j.quascirev.2008.01.004">https://doi.org/10.1016/j.quascirev.2008.01.004</a>.
+</div>
+<div id="ref-williams2001" class="csl-entry" role="doc-biblioentry">
+Williams, John W., Bryan N. Shuman, and Thompson Webb III. 2001. <span>“Dissimilarity <span>Analyses</span> of <span>Late-Quaternary Vegetation</span> and <span>Climate</span> in <span>Eastern North America</span>.”</span> <em>Ecology</em> 82 (12): 3346–62. <a href="https://doi.org/10.1890/0012-9658(2001)082[3346:DAOLQV]2.0.CO;2">https://doi.org/10.1890/0012-9658(2001)082[3346:DAOLQV]2.0.CO;2</a>.
 </div>
 </div>
 </section>

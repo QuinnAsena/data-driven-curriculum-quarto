@@ -28,35 +28,48 @@ The MAT follows four basic steps:
 
 Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!
 
-## Part 2: Cross-Validation
+## Part 2: analysis
 
-Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
+### Data wrangling {#sec-datawrangle}
 
-In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called k-fold cross-validation. In $k$-fold cross-validation the modern data set is split into k mutually exclusive subsets. For each kth subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.
+In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD [@whitmore2005] for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals stored in inconsistent formats. However; if you prefer to skip all the wrangling and jump directly to the anayses in @sec-crossvalid, the data have been saved post-wrangling and can be loaded into R directly.
 
-Standard metrics include RMSE and R^2. Here, we’ll use the cross-validation tools built into the analogue package.
 
-Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation [@telford2005].
+::: {.callout-tip}
+# Jump point
+Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to  @sec-crossvalid 
 
-We will use the North American Modern Pollen Dataset [@whitmore2005] for this cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily.
+```{r, readdata}
+#| code-fold: true
+#| eval: false
 
-Let’s get the data ready:
+file_names <- c("./data/mod_pol_east_match_prop.rds", "./data/mod_clim_filter.rds", "./data/devils_prop.rds", "./data/devils_ages.rds")
+obj_names <- c("mod_pol_east_match_prop", "mod_clim_filter", "devils_prop", "devils_ages")
+rds_list <- lapply(file_names, readRDS)
+names(rds_list) <- obj_names
+list2env(rds_list, globalenv())
+
+```
+:::
+
+Ready to Wrange? Let’s get the data ready:
 
 ::: {.callout-note}
 # Packages required for this section
-List of packages required for section and what they are used for
-
 ```{r packages}
 #| output: false
 # Load up the package
 
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(neotoma2, tidyr, dplyr, ggplot2, neotoma2, analogue, vegan, readxl, fuzzyjoin)
+pacman::p_load(neotoma2, tidyverse, neotoma2, analogue, vegan, readxl, fuzzyjoin)
 ```
 
 :::
 
-The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it to long data. More easily, you can read in the .rds file in the data directory.
+::: {.callout-tip}
+# Respawn point
+
+The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in @sec-neotoma2 so, more easily, you can read in the pre-wrangled .rds file in the data directory. Note that this is the long format data _not_ the species only matrix from the jump point above.
 
 ```{r DevilsRespawnNa}
 #| eval: false
@@ -90,10 +103,12 @@ devils_samples <- devils_samples %>% # Calculate proportions of each species by 
   arrange(desc(age)) %>%
   ungroup()
 
-saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
+# saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
 ```
 
-To read in the example data use:
+:::
+
+To read in the pre-wrangled long data for Devil's Lake use:
 
 ```{r DevilsRespawnRDSNa}
 #| output: false
@@ -102,13 +117,12 @@ devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
 
-We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. **JACK ACTION POINT: to use this method in other regions what databases are available.** The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file. If you do not already have a directory named data from previous chapters **CROSSREF INTRO set-up instructions** one will be created.
+We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. **JACK ACTION POINT: to use this method in other regions what databases are available.** The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file. 
 
 
 ```{r nampd}
 #| warning: false
 
-dir.create("./data") # If the data directory exists it will not be overwritten
 download.file("https://williamspaleolab.github.io/data/whitmoreetal2005.zip", "./data/whitmoreetal2005.zip")
 unzip("./data/whitmoreetal2005.zip", exdir = "./data/whitmoreetal2005")
 mod_pol <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "POLLEN DATA")
@@ -116,20 +130,8 @@ mod_clim <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", she
 
 ```
 
-::: {.callout-warning}
-# Oh no! :scream:
 
-If you do not already have a directory named data from previous chapters **CROSSREF INTRO set-up instructions** one will be created. If the directory already exists you will see a warning message:
-
-```bash
-Warning message:
-In dir.create("./data") : '.\data' already exists
-```
-Don't worry, the function `dir.create()` will not overwrite any existing directory contents. **./ and .\ between mac/pc/linux**
-
-:::
-
-Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil's Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake and the NAMPD.
+Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil's Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake and the NAMPD. We are going to keep all data West of 105°W, see @krause2019 and @williams2001.
 
 
 ```{r, wrangle}
@@ -161,7 +163,7 @@ looks like it's done a good job for the most part! Butthere are a few mismatches
 
 ```{r fuzzyjoin}
 
-# Save the names of each dataset
+# Save the names of each dataset and convert all to lowercase
 mod_pol_names <- as_tibble(tolower(colnames(mod_pol_east[-1])))
 devil_names <- as_tibble(tolower(colnames(devils_wide[-1])))
 
@@ -169,7 +171,7 @@ devil_names <- as_tibble(tolower(colnames(devils_wide[-1])))
 names_matches <- stringdist_left_join(devil_names, mod_pol_names, by = "value",
                                       max_dist = 4, distance_col = "distance", method = "jw") %>% 
                    group_by(value.x) %>%
-                   slice_min(order_by = distance, n = 1)
+                   slice_min(order_by = distance, n = 1) # change the value of n to see more potential matches
 
 head(names_matches, 15) 
 ```
@@ -180,7 +182,7 @@ In your console take a good look through the whole list. You don't want anything
 
 ```{r}
 
-filter(names_matches, distance > 0.1)
+names_matches %>% filter(distance > 0.1) # looks like everything below 0.1 is a good match
 
 ```
 ## Even closer!
@@ -202,46 +204,43 @@ Ok looks like we only have a few to weed out manually:
 ```{r}
 names_matches_filter <- names_matches %>% 
   filter(distance < 0.3,
+         value.x != "ilex" & value.y != "piceax",
          value.x != "rhus" & value.y != "rubus",
          value.x != "morus" & value.y != "cornus",
-         value.x != "ericaceae" & value.y != "arecaceae",
-         value.x != "ilex" & value.y != "piceax")  %>% 
+         value.x != "ericaceae" & value.y != "arecaceae")  %>% 
          arrange(desc(distance))
 
 ```
 
 
-Now we have a dataframe with names from devils lake and their match in the NAMPD. We can select those species from the NAMPD:
+Now we have a data (`names_matches_filter`) with names from Devil's Lake and their match in the NAMPD. We can select those species from the NAMPD:
 
 ```{r}
 
 # Select species based on name
 mod_pol_east_match <- mod_pol_east %>%
-  rename_with(tolower) %>% 
-  select(c(id2, names_matches_filter$value.y))
+  rename_with(tolower) %>% # convert to lowercase for matching
+  select(c(id2, names_matches_filter$value.y)) # keep id column and select species
 
-# the analoge functions need species names to match
+# The analoge functions need species names to match between datasets
 # so lets name everything in our filtered modern pollen the same as in Devil's Lake
-new_names <- c(names_matches_filter$value.y)
-names(new_names) <- c(names_matches_filter$value.x)
-
 mod_pol_east_match <- mod_pol_east_match %>% 
-  rename(all_of(new_names))
+  rename(all_of(deframe(names_matches_filter[ ,1:2])))
 
 # recall that the Devil's Lake data are in relative proportions
-# let's create a matrix of species only for the MAT with relative proportions
+# let's create a matrix of only species for the MAT with relative proportions
 # This is an approach for calculating relative abundances on wide data:
-mod_pol_east_match_prop <- mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1])*1
+mod_pol_east_match_prop <- as.matrix(mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1])*1)
 
-# while we are here lets make a matrix of species only from Devils Lake
+# while we are here let's make a matrix of species only from Devils Lake
 devils_prop <- devils_wide %>% 
   rename_with(tolower) %>% 
-  select(names_matches_filter$value.x) %>% 
+  select(names_matches_filter$value.x) %>% # Remember we removed a few species without matches?
   as.matrix()
 
 ```
 
-The last bit of wrangling we need to do is filter the climate data to match the pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.
+The last bit of wrangling we need to do is filter the climate data to match the modern pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.
 
 ```{r}
 
@@ -252,43 +251,129 @@ mod_clim_filter <- mod_clim %>%
 
 ::: {.callout-tip}
 # Good practice tip
-Whenever filtering or joining data it is good to check the dimensions before and after by using `dim()` to see if the results are what you expect. Some functions will run correctly but produce unexpected results.
+Whenever filtering or joining data it is good to check the dimensions before and after by using `dim()` to see if the results are what you expect. Some functions like `left_join()` or `full_join()` may run correctly but produce unexpected results.
 :::
 
 That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.
 
-Now let's do the analysis! First is the cross validation of the modern datasets:
+### Cross-validation {#sec-crossvalid}
 
+Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
+
+In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called $k$-fold cross-validation. In $k$-fold cross-validation the modern data set is split into $k$ mutually exclusive subsets. For each $k^{th}$ subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.
+
+Standard metrics include RMSE and $R^2$. Here, we’ll use the cross-validation tools built into the analogue package.
+
+Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation [@telford2005].
+
+Now let's do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here from the Data Wrangling section, make sure you load in the pre-formatted data from @sec-datawrangle.
+
+::: {.panel-tabset}
+
+## Code
 ```{r, cross-validation}
 
 mod_jant <- data.matrix(mod_clim_filter$tjan)
 
 modpoll_jant <- analogue::mat(mod_pol_east_match_prop, mod_jant, method="SQchord")
+
+```
+
+## Summary
+```{r MATsummary}
+
 print(modpoll_jant)
 
 ```
 
-Plot the results
-
+## Plots
 ```{r plotMAT}
+
 par(mfrow = c(2,2))
 plot(modpoll_jant)
+
 ```
 
+:::
+
+To interpret the results review @simpson2007, Section 2.1.
+
+### Novelty and Paleoclimatic Reconstruction
+
+**Jack action point** Section needs some info from the lecture content to help understand the process as a stand-alone unit.
+
+For this part of the lab, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT. Here’s some demonstration code showing the kinds of analyses that can be done and plotted timeseries.
+
+::: {.panel-tabset}
+
+## Minimum distance
+
+Construct a time series of the minimum SCDs (novelty)  for Devil’s Lake.
 
 ```{r}
-
+# Predict temperatures from the fossil data and their modern analogue
 devil_jant <- predict(modpoll_jant, devils_prop, k=10)
 
-```
-
-
-```{r}
 par(mfrow = c(1,1))
 devil_mindis <- minDC(devil_jant)
 plot(devil_mindis, depths = devils_ages, quantiles = FALSE, xlab = "Age (yr BP)", ylab = "minSCD")
 ```
 
+
+## Modern analogues
+
+Construct a time series of the number of modern analogs found per fossil sample, using 0.25 as our no-analog/analog threshold. 
+
+```{r}
+devil_cma <- analogue::cma(devil_jant, cutoff=0.25)
+
+plot(x = devils_ages, y = devil_cma$n.analogs, type = "l", xlim= rev(range(devils_ages)), xlab = "Age (yr BP)", ylab = "Number of modern analogs")
+```
+
+## Reconstruction
+
+Plot the reconstructed January temperatures at Devil's Lake:
+
+```{r}
+reconPlot(devil_jant, depth = devils_ages, display.error="bars", xlab = "Age (yr BP)", ylab = "Mean Jan temperature")
+```
+
+:::
+
+::: {.callout-note}
+# Resources
+**Jack action point:**
+
+Copy in a list of DOIs for essential reading and I'll add insert them as formatted citation links:
+
+- DOI
+- DOI
+
+:::
+
 ## Part 3: Exercises
 
+**Jack action point:** review questions and question order :)
 
+
+1. In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?
+   1. Which samples at Devil’s Lake lack modern analogs?
+
+2. Repeat the above analysis for TJul, PJul, GDD5, and MIPT. (GDD5 is growing degree days and is a measure of growing season length and strength; MIPT is an index of soil moisture availability).
+
+3. Which variable has the best cross-validation statistics?
+   1.  Which has the worst?
+
+4. Given what you know about the climatic controls on plant distributions (and/or our ability to precisely quantify these variables), is the relative predictive skill for these different climatic variables surprising or unsurprising? Why?
+
+
+5. Check the Devil’s Lake novelty curve against the pollen diagram for Devil’s Lake. What combinations of pollen taxa produce these no-analog assemblages?
+
+6. According to Webb(1986), what are two general hypotheses for why we might have these past mixtures of species with no modern analogue?
+
+7. Why should one be dubious about the temperature reconstructions at Devil’s Lake for the high-novelty assemblages?
+
+8. Even for the low-novelty assemblages, name two potentially important sources of uncertainty in MAT-based reconstructions of past climate from fossil pollen data.
+   1. Conversely, based on our knowledge about the geographic climatic distributions of these taxa, why might one argue that these January temperature reconstructions are plausible?
+
+9.  To get practice, make reconstructions of GDD5 and mean July precipitation. Show plots of your work.
