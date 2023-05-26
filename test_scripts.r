@@ -127,3 +127,17 @@ resid(ik.mat)
 coreV12.mat <- predict(ik.mat, matrix(rnorm(110*30), nrow = 110, ncol = 30), k = 3)
 coreV12.mat <- predict(ik.mat, V12.122, k = 3)
 coreV12.mat
+
+x <- devil_jant
+n.analogues <- predave$predictions$model$k
+preds <- predave$predictions$model$predicted[n.analogues, ]
+errors <- predave$model$rmsep[n.analogues]
+
+n.analogues <- x$predictions$bootstrap$k
+preds <- x$predictions$bootstrap$predicted[,n.analogues]
+if(sample.specific)
+    errors <- x$predictions$sample.errors$rmsep[, n.analogues]
+else
+    errors <- x$bootstrap$rmsep[n.analogues]
+
+plot(preds, devils_ages, type = 'l')
