@@ -10,16 +10,28 @@ This curriculum is an open-source and we welcome suggestions for improvement fro
 
 ## What this book is
 
-Many palaeo research projects follow the same general workflow, of course there will always be unique questions, challenges, and additional interests. This book is intended to cover the general workflow from obtaining data, through wrangling, analysing and visualising. There are examples throughout
+Many palaeo research projects follow the same general workflow, of course there will always be unique questions, challenges, and additional interests. This book is intended to cover the general workflow from obtaining data, through wrangling, analysing and visualising. There are examples throughout, and code that can be copied and adapted for one's own purpose.
 
 ## What this book is not
 
-Palaeo-science comprise many disciplines from biochemistry and climatology, to mathematics, and ecology. We focus on providing a workflow but cannot, in detail, cover every challenge faced in, for example, age-depth modelling or statistical analyses of proxies. To remedy this shortcoming, each section has the key references that, while not essential for this book, are a starting point to understanding essential challenges.
+Palaeo-science comprise many disciplines from biochemistry and climatology, to mathematics, and ecology. We focus on providing a workflow but cannot, in detail, cover every challenge faced in, for example, age-depth modelling or statistical analyses of proxies. To remedy this shortcoming, each section has the key references that serve as a starting point to understanding essential challenges.
 
 
 ## Is this going to hurt?
 
-Yes. But it will be worth it. Palaeoecological data are complex and demand advanced analyses and modelling methods that require anything from basic coding proficiency and a laptop, to super-computing resources and online databases.
+Probably, yes. But it will be worth it. Palaeoecological data are complex and demand advanced analyses and modelling methods that require anything from basic coding proficiency and a laptop, to super-computing resources and online databases.
+
+This book assumes a degree of knowledge of the R language (e.g., packages and data structures), and principles of tidy data (e.g., long and wide data format). We include detailed comments in the code, and the content is fully reproducible, but we do not attempt to provide a foundation to R. Many exceptional resources exist for learning R for example:
+
+- Free books by [Roger Peng](https://leanpub.com/bookstore?category=r&type=book&search=peng) 
+- and [Hadley Wickham](https://r4ds.hadley.nz/)
+
+- **(Telford biostats, environmental computing)**
+
+### Version control
+
+It is good practice to back-up your data and use version control for your code. Onve you integrate version control into your workflow you will wonder how you ever lived without it. Version control is a vast subject but knowing the basics can get you a very far. The Git language (not to be confused with GitHub the remote server) is a common method used to colaborate in software development. Git is not a pre-requisite for this book but as a necessary part of an advanced workflow we include some links to learning basic version control:
+
 
 - [ ] Set up group Zotero
 

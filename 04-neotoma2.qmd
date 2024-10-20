@@ -62,10 +62,10 @@ For this workbook we use several packages, including `leaflet`, `sf` and others.
 ```{r packages}
 #| output: false
 # Load up the package
-if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org") # devtools allows us to install from online repositories
-devtools::install_github('NeotomaDB/neotoma2') # pacman does not search github curently so we will install neotoma2 separately
+# if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org") # devtools allows us to install from online repositories
+# devtools::install_github('NeotomaDB/neotoma2') # pacman does not search github curently so we will install neotoma2 separately
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, rioja) # Pacman will load neotoma2
+pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, rioja, htmlwidgets) # Pacman will load neotoma2
 ```
 :::
 

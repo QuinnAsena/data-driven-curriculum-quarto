@@ -8,13 +8,13 @@ book:
   chapters:
     - index.qmd
     - 01-intro.qmd
-    - 02-intro-to-R.qmd
+#    - 02-intro-to-R.qmd
     - 03-age-depth-modelling.qmd
     - 04-neotoma2.qmd
     - 05-wrangling-visualisation.qmd
-    - 06-exploratory-analyses.qmd
-    - 07-dissimilarity-roc.qmd
-    - 08-no-analogue.qmd
+    - 06-dissimilarity.qmd
+    - 07-no-analogue.qmd
+    - 08-rate-of-change.qmd
     - 09-ordination-pca.qmd
     - 10-ordination-nmds.qmd
     - 11-gams.qmd
@@ -31,5 +31,6 @@ format:
     theme: cosmo
     link-external-newwindow: true
     link-external-icon: true
+    embed-resources: false # must be specified as false otherwise html file size accumulate until too large!
 execute:
   cache: true

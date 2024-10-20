@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.313">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Palaeoecological data-science: a data driven curriculum - References</title>
+<title>References – Palaeoecological data-science: a data driven curriculum</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -17,14 +17,15 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -38,8 +39,7 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -65,7 +65,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -74,8 +80,10 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -86,11 +94,16 @@ div.csl-indent {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">References</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">References</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav>
@@ -98,104 +111,115 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Palaeoecological data-science: a data driven curriculum</a> 
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01-intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Neotoma Explorer</span></a>
+  <a href="./01-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Neotoma Explorer</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02-intro-to-R.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Intro to R</span></a>
+  <a href="./03-age-depth-modelling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Age-depth modelling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-age-depth-modelling.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Age-depth modelling</span></a>
+  <a href="./04-neotoma2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>neotoma2</code> package</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-neotoma2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>neotoma2</code> package</span></a>
+  <a href="./05-wrangling-visualisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Data wrangling and visualisations</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-wrangling-visualisation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data wrangling and visualisations</span></a>
+  <a href="./06-dissimilarity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Dissimilarity</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-exploratory-analyses.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploratory analyses</span></a>
+  <a href="./07-no-analogue.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-dissimilarity-roc.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Dissimilarity and Rates of Change</span></a>
+  <a href="./08-rate-of-change.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Dissimilarity and Rates of Change</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-no-analogue.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></a>
+  <a href="./09-ordination-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ordination: Principal Component Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-ordination-pca.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ordination: Principal Component Analysis</span></a>
+  <a href="./10-ordination-nmds.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ordination: Non-metric Dimension Scaling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-ordination-nmds.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ordination: Non-metric Dimension Scaling</span></a>
+  <a href="./11-gams.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Generalised Additive Models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11-gams.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Generalised Additive Models</span></a>
+  <a href="./12-tapas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Charcoal Analysis using TAPAS</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./12-tapas.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Charcoal Analysis using TAPAS</span></a>
+  <a href="./13-psm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Proxy System Modelling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13-psm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Proxy System Modelling</span></a>
+  <a href="./15-test-chapter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Test pad to delete</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./15-test-chapter.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Test pad to delete</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link active">References</a>
+  <a href="./references.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
         
     </div>
 <!-- main -->
@@ -203,7 +227,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">References</h1>
+<h1 class="title">References</h1>
 </div>
 
 
@@ -216,43 +240,59 @@ div.csl-indent {
   </div>
   
 
+
 </header>
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
-<div id="ref-blaauw2018" class="csl-entry" role="doc-biblioentry">
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-blaauw2018" class="csl-entry" role="listitem">
 Blaauw, Maarten, J. Andrés Christen, K. D. Bennett, and Paula J. Reimer.
-2018. <span>“Double the Dates and Go for <span>Bayes</span>
+2018. <span>“Double the Dates and Go for <span>Bayes</span> —
 <span>Impacts</span> of Model Choice, Dating Density and Quality on
 Chronologies.”</span> <em>Quaternary Science Reviews</em> 188 (May):
 58–66. <a href="https://doi.org/10.1016/j.quascirev.2018.03.032">https://doi.org/10.1016/j.quascirev.2018.03.032</a>.
 </div>
-<div id="ref-blois2011" class="csl-entry" role="doc-biblioentry">
+<div id="ref-blei2012" class="csl-entry" role="listitem">
+Blei, David M. 2012. <span>“Probabilistic Topic Models.”</span>
+<em>Communications of the ACM</em> 55 (4): 77–84. <a href="https://doi.org/10.1145/2133806.2133826">https://doi.org/10.1145/2133806.2133826</a>.
+</div>
+<div id="ref-blei2007" class="csl-entry" role="listitem">
+Blei, David M., and John D. Lafferty. 2007. <span>“A Correlated Topic
+Model of <span>Science</span>.”</span> <em>The Annals of Applied
+Statistics</em> 1 (1). <a href="https://doi.org/10.1214/07-AOAS114">https://doi.org/10.1214/07-AOAS114</a>.
+</div>
+<div id="ref-blois2011" class="csl-entry" role="listitem">
 Blois, Jessica L., John W. (Jack) Williams, Eric C. Grimm, Stephen T.
 Jackson, and Russell W. Graham. 2011. <span>“A Methodological Framework
 for Assessing and Reducing Temporal Uncertainty in Paleovegetation
 Mapping from Late-<span>Quaternary</span> Pollen Records.”</span>
 <em>Quaternary Science Reviews</em> 30 (15-16): 1926–39. <a href="https://doi.org/10.1016/j.quascirev.2011.04.017">https://doi.org/10.1016/j.quascirev.2011.04.017</a>.
 </div>
-<div id="ref-chevalier2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-chevalier2020" class="csl-entry" role="listitem">
 Chevalier, Manuel, Basil A. S. Davis, Oliver Heiri, Heikki Seppä, Brian
 M. Chase, Konrad Gajewski, Terri Lacourse, et al. 2020.
 <span>“Pollen-Based Climate Reconstruction Techniques for Late
 <span>Quaternary</span> Studies.”</span> <em>Earth-Science Reviews</em>
 210 (November): 103384. <a href="https://doi.org/10.1016/j.earscirev.2020.103384">https://doi.org/10.1016/j.earscirev.2020.103384</a>.
 </div>
-<div id="ref-gavin2003" class="csl-entry" role="doc-biblioentry">
+<div id="ref-elith2008" class="csl-entry" role="listitem">
+Elith, J., J. R. Leathwick, and T. Hastie. 2008. <span>“A Working Guide
+to Boosted Regression Trees.”</span> <em>Journal of Animal Ecology</em>
+77 (4): 802–13. <a href="https://doi.org/10.1111/j.1365-2656.2008.01390.x">https://doi.org/10.1111/j.1365-2656.2008.01390.x</a>.
+</div>
+<div id="ref-gavin2003" class="csl-entry" role="listitem">
 Gavin, Daniel G, W.Wyatt Oswald, Eugene R Wahl, and John W Williams.
 2003. <span>“A Statistical Approach to Evaluating Distance Metrics and
 Analog Assignments for Pollen Records.”</span> <em>Quaternary
 Research</em> 60 (3): 356–67. <a href="https://doi.org/10.1016/S0033-5894(03)00088-7">https://doi.org/10.1016/S0033-5894(03)00088-7</a>.
 </div>
-<div id="ref-goring2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-goring2015" class="csl-entry" role="listitem">
 Goring, Simon, Andria Dawson, Gavin Simpson, Karthik Ram, Russ Graham,
 Eric Grimm, and John Williams. 2015. <span>“Neotoma: <span>A
 Programmatic Interface</span> to the <span>Neotoma Paleoecological
 Database</span>.”</span> <em>Open Quaternary</em> 1 (1): Art. 2. <a href="https://doi.org/10.5334/oq.ab">https://doi.org/10.5334/oq.ab</a>.
 </div>
-<div id="ref-goring2012" class="csl-entry" role="doc-biblioentry">
+<div id="ref-goring2012" class="csl-entry" role="listitem">
 Goring, S., J. W. Williams, J. L. Blois, S. T. Jackson, C. J. Paciorek,
 R. K. Booth, J. R. Marlon, M. Blaauw, and J. A. Christen. 2012.
 <span>“Deposition Times in the Northeastern <span>United States</span>
@@ -260,41 +300,77 @@ During the <span>Holocene</span>: Establishing Valid Priors for
 <span>Bayesian</span> Age Models.”</span> <em>Quaternary Science
 Reviews</em> 48 (August): 54–60. <a href="https://doi.org/10.1016/j.quascirev.2012.05.019">https://doi.org/10.1016/j.quascirev.2012.05.019</a>.
 </div>
-<div id="ref-jackson2004" class="csl-entry" role="doc-biblioentry">
+<div id="ref-grimm1987" class="csl-entry" role="listitem">
+Grimm, Eric C. 1987. <span>“<span>CONISS</span>: A <span>FORTRAN</span>
+77 Program for Stratigraphically Constrained Cluster Analysis by the
+Method of Incremental Sum of Squares.”</span> <em>Computers &amp;
+Geosciences</em> 13 (1): 13–35. <a href="https://doi.org/10.1016/0098-3004(87)90022-7">https://doi.org/10.1016/0098-3004(87)90022-7</a>.
+</div>
+<div id="ref-jackson2004" class="csl-entry" role="listitem">
 Jackson, Stephen T., and John W. Williams. 2004. <span>“Modern
 <span>Analogs</span> in <span>Quaternary Paleoecology</span>: <span>Here
 Today</span>, <span>Gone Yesterday</span>, <span>Gone
 Tomorrow</span>?”</span> <em>Annual Review of Earth and Planetary
 Sciences</em> 32 (1): 495–537. <a href="https://doi.org/10.1146/annurev.earth.32.101802.120435">https://doi.org/10.1146/annurev.earth.32.101802.120435</a>.
 </div>
-<div id="ref-mottl2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-krause2019" class="csl-entry" role="listitem">
+Krause, Teresa R., James M. Russell, Rui Zhang, John W. Williams, and
+Stephen T. Jackson. 2019. <span>“Late <span>Quaternary</span>
+Vegetation, Climate, and Fire History of the <span>Southeast Atlantic
+Coastal Plain</span> Based on a 30,000-Yr Multi-Proxy Record from
+<span>White Pond</span>, <span>South Carolina</span>,
+<span>USA</span>.”</span> <em>Quaternary Research</em> 91 (2): 861–80.
+<a href="https://doi.org/10.1017/qua.2018.95">https://doi.org/10.1017/qua.2018.95</a>.
+</div>
+<div id="ref-mottl2021" class="csl-entry" role="listitem">
 Mottl, Ondřej, Suzette G. A. Flantua, Kuber P. Bhatta, Vivian A. Felde,
 Thomas Giesecke, Simon Goring, Eric C. Grimm, et al. 2021. <span>“Global
 Acceleration in Rates of Vegetation Change over the Past 18,000
 Years.”</span> <em>Science</em> 372 (6544): 860–64. <a href="https://doi.org/10.1126/science.abg1685">https://doi.org/10.1126/science.abg1685</a>.
 </div>
-<div id="ref-overpeck1985" class="csl-entry" role="doc-biblioentry">
+<div id="ref-overpeck1985" class="csl-entry" role="listitem">
 Overpeck, J. T., T. Webb, and I. C. Prentice. 1985. <span>“Quantitative
 <span>Interpretation</span> of <span>Fossil Pollen Spectra</span>:
 <span>Dissimilarity Coefficients</span> and the <span>Method</span> of
 <span>Modern Analogs</span>.”</span> <em>Quaternary Research</em> 23
 (1): 87–108. <a href="https://doi.org/10.1016/0033-5894(85)90074-2">https://doi.org/10.1016/0033-5894(85)90074-2</a>.
 </div>
-<div id="ref-parnell2008" class="csl-entry" role="doc-biblioentry">
+<div id="ref-parnell2008" class="csl-entry" role="listitem">
 Parnell, A. C., J. Haslett, J. R. M. Allen, C. E. Buck, and B. Huntley.
 2008. <span>“A Flexible Approach to Assessing Synchroneity of Past
 Events Using <span>Bayesian</span> Reconstructions of Sedimentation
 History.”</span> <em>Quaternary Science Reviews</em> 27 (19-20):
 1872–85. <a href="https://doi.org/10.1016/j.quascirev.2008.07.009">https://doi.org/10.1016/j.quascirev.2008.07.009</a>.
 </div>
-<div id="ref-reimer2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-radeloff2015" class="csl-entry" role="listitem">
+Radeloff, Volker C., John W. Williams, Brooke L. Bateman, Kevin D.
+Burke, Sarah K. Carter, Evan S. Childress, Kara J. Cromwell, et al.
+2015. <span>“The Rise of Novelty in Ecosystems.”</span> <em>Ecological
+Applications</em> 25 (8): 2051–68. <a href="https://doi.org/10.1890/14-1781.1">https://doi.org/10.1890/14-1781.1</a>.
+</div>
+<div id="ref-reimer2020" class="csl-entry" role="listitem">
 Reimer, Paula J, William E N Austin, Edouard Bard, Alex Bayliss, Paul G
 Blackwell, Christopher Bronk Ramsey, Martin Butzin, et al. 2020.
 <span>“The <span>IntCal20 Northern Hemisphere Radiocarbon Age
-Calibration Curve</span> (0 Cal <span class="nocase">kBP</span>).”</span> <em>Radiocarbon</em> 62 (4): 725–57.
+Calibration Curve</span> (0–55 Cal <span class="nocase">kBP</span>).”</span> <em>Radiocarbon</em> 62 (4): 725–57.
 <a href="https://doi.org/10.1017/RDC.2020.41">https://doi.org/10.1017/RDC.2020.41</a>.
 </div>
-<div id="ref-smith1991" class="csl-entry" role="doc-biblioentry">
+<div id="ref-simpson2007" class="csl-entry" role="listitem">
+Simpson, Gavin L. 2007. <span>“Analogue <span>Methods</span> in
+<span>Palaeoecology</span>: <span>Using</span> the Analogue
+<span>Package</span>.”</span> <em>Journal of Statistical Software</em>
+22 (September): 1–29. <a href="https://doi.org/10.18637/jss.v022.i02">https://doi.org/10.18637/jss.v022.i02</a>.
+</div>
+<div id="ref-simpson2012" class="csl-entry" role="listitem">
+Simpson, Gavin L., and H. John B. Birks. 2012. <span>“Statistical
+Learning in Palaeolimnology.”</span> In <em>Tracking <span>Environmental
+Change Using Lake Sediments</span>: <span>Data Handling</span> and
+<span>Numerical Techniques</span></em>, edited by H. John B. Birks,
+André F. Lotter, Steve Juggins, and John P. Smol, 249–327. Developments
+in <span>Paleoenvironmental Research</span>. Dordrecht: Springer
+Netherlands. <a href="https://doi.org/10.1007/978-94-007-2745-8_9">https://doi.org/10.1007/978-94-007-2745-8_9</a>.
+</div>
+<div id="ref-smith1991" class="csl-entry" role="listitem">
 Smith, A. G., and I. C. Goddard. 1991. <span>“A 12500 <span>Year
 Record</span> of <span>Vegetational History</span> at <span>Sluggan
 Bog</span>, <span>Co</span>. <span>Antrim</span>, <span>N</span>.
@@ -302,29 +378,35 @@ Bog</span>, <span>Co</span>. <span>Antrim</span>, <span>N</span>.
 Scheme</span> for the <span>Non-Specialist</span>).”</span> <em>The New
 Phytologist</em> 118 (1): 167–87. <a href="https://www.jstor.org/stable/2557698">https://www.jstor.org/stable/2557698</a>.
 </div>
-<div id="ref-telford2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-telford2005" class="csl-entry" role="listitem">
 Telford, R. J., and H. J. B. Birks. 2005. <span>“The Secret Assumption
 of Transfer Functions: Problems with Spatial Autocorrelation in
 Evaluating Model Performance.”</span> <em>Quaternary Science
 Reviews</em> 24 (20-21): 2173–79. <a href="https://doi.org/10.1016/j.quascirev.2005.05.001">https://doi.org/10.1016/j.quascirev.2005.05.001</a>.
 </div>
-<div id="ref-trachsel2017" class="csl-entry" role="doc-biblioentry">
-Trachsel, Mathias, and Richard J Telford. 2017. <span>“All Agedepth
+<div id="ref-trachsel2017" class="csl-entry" role="listitem">
+Trachsel, Mathias, and Richard J Telford. 2017. <span>“All Age–Depth
 Models Are Wrong, but Are Getting Better.”</span> <em>The Holocene</em>
 27 (6): 860–69. <a href="https://doi.org/10.1177/0959683616675939">https://doi.org/10.1177/0959683616675939</a>.
 </div>
-<div id="ref-whitmore2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-whitmore2005" class="csl-entry" role="listitem">
 Whitmore, J., K. Gajewski, M. Sawada, J. W. Williams, B. Shuman, P. J.
 Bartlein, T. Minckley, et al. 2005. <span>“Modern Pollen Data from
 <span>North America</span> and <span>Greenland</span> for Multi-Scale
 Paleoenvironmental Applications.”</span> <em>Quaternary Science
 Reviews</em> 24 (16-17): 1828–48. <a href="https://doi.org/10.1016/j.quascirev.2005.03.005">https://doi.org/10.1016/j.quascirev.2005.03.005</a>.
 </div>
-<div id="ref-williams2008" class="csl-entry" role="doc-biblioentry">
+<div id="ref-williams2008" class="csl-entry" role="listitem">
 Williams, J. W., and B. Shuman. 2008. <span>“Obtaining Accurate and
 Precise Environmental Reconstructions from the Modern Analog Technique
 and <span>North American</span> Surface Pollen Dataset.”</span>
 <em>Quaternary Science Reviews</em> 27 (7-8): 669–87. <a href="https://doi.org/10.1016/j.quascirev.2008.01.004">https://doi.org/10.1016/j.quascirev.2008.01.004</a>.
+</div>
+<div id="ref-williams2001" class="csl-entry" role="listitem">
+Williams, John W., Bryan N. Shuman, and Thompson Webb III. 2001.
+<span>“Dissimilarity <span>Analyses</span> of <span>Late-Quaternary
+Vegetation</span> and <span>Climate</span> in <span>Eastern North
+America</span>.”</span> <em>Ecology</em> 82 (12): 3346–62. <a href="https://doi.org/10.1890/0012-9658(2001)082[3346:DAOLQV]2.0.CO;2">https://doi.org/10.1890/0012-9658(2001)082[3346:DAOLQV]2.0.CO;2</a>.
 </div>
 </div>
 
@@ -358,12 +440,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
     }
-  });
-  clipboard.on('success', function(e) {
+    return false;
+  }
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -395,11 +480,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -409,8 +540,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -422,9 +562,245 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -462,34 +838,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
-    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-          // target, if specified
-          link.setAttribute("target", "_blank");
-          // default icon
-          link.classList.add("external");
-      }
-    }
 });
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./15-test-chapter.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Test pad to delete</span></span>
+      <a href="./15-test-chapter.html" class="pagination-link" aria-label="Test pad to delete">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Test pad to delete</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 

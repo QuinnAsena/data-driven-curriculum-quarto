@@ -141,3 +141,31 @@ else
     errors <- x$bootstrap$rmsep[n.analogues]
 
 plot(preds, devils_ages, type = 'l')
+
+devils_samples %>%
+    tidyr::pivot_wider(id_cols = c(age, depth),
+                       names_from = variablename,
+                       values_from = prop)
+
+devils_samples %>% select(depth, variablename, pollencount, prop) %>% dplyr::filter(variablename == "Acer") %>% arrange(desc(depth))
+
+data(swapdiat, swappH, rlgh, package = "analogue")
+dat <- join(swapdiat, rlgh, verbose = TRUE)
+head(dat)
+swapdiat <- dat$swapdiat / 100
+rlgh <- dat$rlgh / 100
+
+cbind(devils_sqdist[ ,1], devils_ad)
+
+mat  <- matrix(rnorm(16), 4, 4)
+diag(mat) <- 0
+mat[row(mat)!=col(mat)]
+mat[row(mat) == col(mat) + 1]
+
+test <- cbind(devils_ad, sq_dist = c(0, devils_sqdist[row(devils_sqdist) == col(devils_sqdist) + 1]))
+plot(test[ ,"age"], test[ ,"sq_dist"],
+     xlim = c(max(test[ ,"age"]), min(test[ ,"age"])))
+
+
+plot(c(0, devils_sqdist[row(devils_sqdist) == col(devils_sqdist) + 1]), origin_top[ ,"sq_dist"])
+plot(c(0, devils_sqdist[row(devils_sqdist) == col(devils_sqdist) + 1]), origin_top[ ,"sq_dist"], xlim = c(max(origin_top[ ,"age"]), min(origin_top[ ,"age"])))

@@ -1,6 +1,9 @@
-# Age-depth modelling {#sec-age-depth}
+---
+title: "Age-depth modelling"
+author: Jack Williams and Quinn Asena
+---
 
-## Part 1: Background
+## Part 1: Background {#sec-age-depth}
 
 A foundational difference between geology and ecology is that, for geologists, time is an unknown variable that must be estimated with uncertainty. In contrast, most ecologists can assume that the temporal coordinates of their observations are known precisely, with zero uncertainty. Fortunately, geochronologists have a wide variety of natural clocks, thanks to the constant decay rates of radioactive isotopes. Each isotope has a unique decay rate, and so each is appropriate for particular timescales.
 
@@ -201,7 +204,7 @@ A more complete version of the modelling process using Bchron can be found in th
 ::: {.callout-tip}
 # Resources
 
-Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. Ket papers for understanding age depth modelling include:
+Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. Key papers for understanding age depth modelling include:
 
 - @blaauw2018
 
@@ -247,11 +250,3 @@ Commonly, only the median age is reported; however, it is good practice to repor
 1. Run the `Bchron` age-depth model on the Glendalough dataset and consider:
     i) How does uncertainty change between the plot outputs between the Glendalough (a dataset with fewer radiocarbon dates) and Sluggan Moss (a data-rich site)
     ii) Run the summary funcion on the Glendalough model, does the output reflect the plot? Is there smaller uncertainty around samples? Why is interpreting results in the context of the uncertainty important?
-
-## Learning outcomes (Rephrase/exclude)
-
-- [ ] Learn how to access and use-built in datasets
-
-- [ ] Learn how to find package vignettes
-
-# References {.unnumbered}

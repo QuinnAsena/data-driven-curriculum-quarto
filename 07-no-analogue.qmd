@@ -1,10 +1,15 @@
-# Novelty and No Analogue Futures
+---
+title: "Novelty and No Analogue Futures"
+author: Jack Williams and Quinn Asena
+---
 
-## Part 1: Background
+Cite @simpson2007 and @radeloff2015
+
+## Part 1: Background {#sec-novelty}
 
 The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data [@chevalier2020; @williams2008; @gavin2003; @overpeck1985]. The MAT relies on reasoning by analogy [@jackson2004], in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.
 
-The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.
+The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues. In @sec-dissimilarity we calculated the squared chord distance  _within_ the community matrix, the MAT uses two datasets, a training dataset and the community against which nearest neighbours are calculated.
 
 The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.
 

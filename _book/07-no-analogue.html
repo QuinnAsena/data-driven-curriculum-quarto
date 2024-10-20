@@ -2,12 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.313">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Jack Williams and Quinn Asena">
 
-<title>Palaeoecological data-science: a data driven curriculum - 9&nbsp; Novelty and No Analogue Futures</title>
+<title>7&nbsp; Novelty and No Analogue Futures – Palaeoecological data-science: a data driven curriculum</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -17,11 +18,12 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -32,7 +34,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -46,48 +48,20 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -101,8 +75,7 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -112,8 +85,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./09-ordination-pca.html" rel="next">
-<link href="./07-dissimilarity-roc.html" rel="prev">
+<link href="./08-rate-of-change.html" rel="next">
+<link href="./06-dissimilarity.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -129,7 +102,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -138,12 +117,42 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -151,11 +160,16 @@ div.csl-indent {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-no-analogue.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav>
@@ -163,116 +177,127 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Palaeoecological data-science: a data driven curriculum</a> 
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01-intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Neotoma Explorer</span></a>
+  <a href="./01-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Neotoma Explorer</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02-intro-to-R.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Intro to R</span></a>
+  <a href="./03-age-depth-modelling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Age-depth modelling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-age-depth-modelling.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Age-depth modelling</span></a>
+  <a href="./04-neotoma2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>neotoma2</code> package</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-neotoma2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>neotoma2</code> package</span></a>
+  <a href="./05-wrangling-visualisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Data wrangling and visualisations</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-wrangling-visualisation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data wrangling and visualisations</span></a>
+  <a href="./06-dissimilarity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Dissimilarity</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-exploratory-analyses.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploratory analyses</span></a>
+  <a href="./07-no-analogue.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-dissimilarity-roc.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Dissimilarity and Rates of Change</span></a>
+  <a href="./08-rate-of-change.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Dissimilarity and Rates of Change</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-no-analogue.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></a>
+  <a href="./09-ordination-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ordination: Principal Component Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-ordination-pca.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ordination: Principal Component Analysis</span></a>
+  <a href="./10-ordination-nmds.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ordination: Non-metric Dimension Scaling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-ordination-nmds.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ordination: Non-metric Dimension Scaling</span></a>
+  <a href="./11-gams.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Generalised Additive Models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11-gams.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Generalised Additive Models</span></a>
+  <a href="./12-tapas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Charcoal Analysis using TAPAS</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./12-tapas.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Charcoal Analysis using TAPAS</span></a>
+  <a href="./13-psm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Proxy System Modelling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13-psm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Proxy System Modelling</span></a>
+  <a href="./15-test-chapter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Test pad to delete</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./15-test-chapter.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Test pad to delete</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#part-1-background" id="toc-part-1-background" class="nav-link active" data-scroll-target="#part-1-background"><span class="toc-section-number">9.1</span>  Part 1: Background</a></li>
-  <li><a href="#part-2-analysis" id="toc-part-2-analysis" class="nav-link" data-scroll-target="#part-2-analysis"><span class="toc-section-number">9.2</span>  Part 2: analysis</a>
+  <li><a href="#sec-novelty" id="toc-sec-novelty" class="nav-link active" data-scroll-target="#sec-novelty"><span class="header-section-number">7.1</span> Part 1: Background</a></li>
+  <li><a href="#part-2-analysis" id="toc-part-2-analysis" class="nav-link" data-scroll-target="#part-2-analysis"><span class="header-section-number">7.2</span> Part 2: analysis</a>
   <ul class="collapse">
-  <li><a href="#sec-datawrangle" id="toc-sec-datawrangle" class="nav-link" data-scroll-target="#sec-datawrangle"><span class="toc-section-number">9.2.1</span>  Data wrangling</a></li>
-  <li><a href="#sec-crossvalid" id="toc-sec-crossvalid" class="nav-link" data-scroll-target="#sec-crossvalid"><span class="toc-section-number">9.2.2</span>  Cross-validation</a></li>
-  <li><a href="#novelty-and-paleoclimatic-reconstruction" id="toc-novelty-and-paleoclimatic-reconstruction" class="nav-link" data-scroll-target="#novelty-and-paleoclimatic-reconstruction"><span class="toc-section-number">9.2.3</span>  Novelty and Paleoclimatic Reconstruction</a></li>
+  <li><a href="#sec-datawrangle" id="toc-sec-datawrangle" class="nav-link" data-scroll-target="#sec-datawrangle"><span class="header-section-number">7.2.1</span> Data wrangling</a></li>
+  <li><a href="#sec-crossvalid" id="toc-sec-crossvalid" class="nav-link" data-scroll-target="#sec-crossvalid"><span class="header-section-number">7.2.2</span> Cross-validation</a></li>
+  <li><a href="#novelty-and-paleoclimatic-reconstruction" id="toc-novelty-and-paleoclimatic-reconstruction" class="nav-link" data-scroll-target="#novelty-and-paleoclimatic-reconstruction"><span class="header-section-number">7.2.3</span> Novelty and Paleoclimatic Reconstruction</a></li>
   </ul></li>
-  <li><a href="#part-3-exercises" id="toc-part-3-exercises" class="nav-link" data-scroll-target="#part-3-exercises"><span class="toc-section-number">9.3</span>  Part 3: Exercises</a></li>
+  <li><a href="#part-3-exercises" id="toc-part-3-exercises" class="nav-link" data-scroll-target="#part-3-exercises"><span class="header-section-number">7.3</span> Part 3: Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -281,25 +306,34 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></h1>
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Novelty and No Analogue Futures</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jack Williams and Quinn Asena </p>
+          </div>
+  </div>
     
   
     
   </div>
   
 
+
 </header>
 
-<section id="part-1-background" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="part-1-background"><span class="header-section-number">9.1</span> Part 1: Background</h2>
+
+<p>Cite <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span> and <span class="citation" data-cites="radeloff2015">Radeloff et al. (<a href="references.html#ref-radeloff2015" role="doc-biblioref">2015</a>)</span></p>
+<section id="sec-novelty" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-novelty"><span class="header-section-number">7.1</span> Part 1: Background</h2>
 <p>The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data <span class="citation" data-cites="chevalier2020 williams2008 gavin2003 overpeck1985">(<a href="references.html#ref-chevalier2020" role="doc-biblioref">Chevalier et al. 2020</a>; <a href="references.html#ref-williams2008" role="doc-biblioref">J. W. Williams and Shuman 2008</a>; <a href="references.html#ref-gavin2003" role="doc-biblioref">Gavin et al. 2003</a>; <a href="references.html#ref-overpeck1985" role="doc-biblioref">Overpeck, Webb, and Prentice 1985</a>)</span>. The MAT relies on reasoning by analogy <span class="citation" data-cites="jackson2004">(<a href="references.html#ref-jackson2004" role="doc-biblioref">Jackson and Williams 2004</a>)</span>, in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.</p>
-<p>The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more (<span class="math inline">\(k\)</span>) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.</p>
+<p>The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more (<span class="math inline">\(k\)</span>) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues. In <a href="06-dissimilarity.html#sec-dissimilarity" class="quarto-xref"><span>Section 6.1</span></a> we calculated the squared chord distance <em>within</em> the community matrix, the MAT uses two datasets, a training dataset and the community against which nearest neighbours are calculated.</p>
 <p>The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.</p>
 <p>To reconstruct past environments using the MAT, we need three data sets:</p>
 <ol type="1">
@@ -316,24 +350,24 @@ div.csl-indent {
 </ol>
 <p>Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!</p>
 </section>
-<section id="part-2-analysis" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="part-2-analysis"><span class="header-section-number">9.2</span> Part 2: analysis</h2>
-<section id="sec-datawrangle" class="level3" data-number="9.2.1">
-<h3 data-number="9.2.1" class="anchored" data-anchor-id="sec-datawrangle"><span class="header-section-number">9.2.1</span> Data wrangling</h3>
-<p>In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals stored in inconsistent formats. However; if you prefer to skip all the wrangling and jump directly to the anayses in <a href="#sec-crossvalid"><span>Section&nbsp;9.2.2</span></a>, the data have been saved post-wrangling and can be loaded into R directly.</p>
-<div class="callout-tip callout callout-style-default callout-captioned">
+<section id="part-2-analysis" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="part-2-analysis"><span class="header-section-number">7.2</span> Part 2: analysis</h2>
+<section id="sec-datawrangle" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="sec-datawrangle"><span class="header-section-number">7.2.1</span> Data wrangling</h3>
+<p>In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals stored in inconsistent formats. However; if you prefer to skip all the wrangling and jump directly to the anayses in <a href="#sec-crossvalid" class="quarto-xref"><span>Section 7.2.2</span></a>, the data have been saved post-wrangling and can be loaded into R directly.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Jump point
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to <a href="#sec-crossvalid"><span>Section&nbsp;9.2.2</span></a></p>
-<div class="cell" data-hash="08-no-analogue_cache/html/readdata_450711a7d338732d36c7778d9469f971">
-<details>
+<p>Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to <a href="#sec-crossvalid" class="quarto-xref"><span>Section 7.2.2</span></a></p>
+<div class="cell">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>file_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"./data/mod_pol_east_match_prop.rds"</span>, <span class="st">"./data/mod_clim_filter.rds"</span>, <span class="st">"./data/devils_prop.rds"</span>, <span class="st">"./data/devils_ages.rds"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>obj_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"mod_pol_east_match_prop"</span>, <span class="st">"mod_clim_filter"</span>, <span class="st">"devils_prop"</span>, <span class="st">"devils_ages"</span>)</span>
@@ -345,17 +379,17 @@ Jump point
 </div>
 </div>
 <p>Ready to Wrange? Let’s get the data ready:</p>
-<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Packages required for this section
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<div class="cell" data-hash="08-no-analogue_cache/html/packages_53a238b7d3b55e5516b13c89fe93c4d0">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the packages</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"pacman"</span>)) <span class="fu">install.packages</span>(<span class="st">"pacman"</span>, <span class="at">repos=</span><span class="st">"http://cran.r-project.org"</span>)</span>
@@ -363,19 +397,19 @@ Packages required for this section
 </div>
 </div>
 </div>
-<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Respawn point
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in <a href="04-neotoma2.html"><span>Chapter&nbsp;5</span></a> so, more easily, you can read in the pre-wrangled .rds file in the data directory. Note that this is the long format data <em>not</em> the species only matrix from the jump point above.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnNa_7440438590687665ca519c595a3f8eee">
-<details>
+<p>The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in <a href="04-neotoma2.html" class="quarto-xref"><span>Chapter 4</span></a> so, more easily, you can read in the pre-wrangled .rds file in the data directory. Note that this is the long format data <em>not</em> the species only matrix from the jump point above.</p>
+<div class="cell">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following code can be done in one pipeline but we have split it into chunks to help with readablity</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">get_sites</span>(<span class="at">siteid =</span> <span class="dv">666</span>) <span class="sc">%&gt;%</span> <span class="co"># Download the site samples data</span></span>
@@ -412,19 +446,19 @@ Respawn point
 </div>
 </div>
 <p>To read in the pre-wrangled long data for Devil’s Lake use:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/DevilsRespawnRDSNa_2b150c298a51b288057b7fcad994e9c1">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the data</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/devils_samples.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. <strong>JACK ACTION POINT: to use this method in other regions what databases are available.</strong> The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/nampd_f77f13e398023a23e9500bed2fecd9e3">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://williamspaleolab.github.io/data/whitmoreetal2005.zip"</span>, <span class="st">"./data/whitmoreetal2005.zip"</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"./data/whitmoreetal2005.zip"</span>, <span class="at">exdir =</span> <span class="st">"./data/whitmoreetal2005"</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>mod_pol <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"POLLEN DATA"</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>mod_clim <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"CLIMATE+BIOCLIMATE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil’s Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake and the NAMPD. We are going to keep all data West of 105°W, see <span class="citation" data-cites="krause2019">Krause et al. (<a href="references.html#ref-krause2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="williams2001">John W. Williams, Shuman, and Webb III (<a href="references.html#ref-williams2001" role="doc-biblioref">2001</a>)</span>.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/wrangle_e56e0f2b72325b59467ce13d0b1dffee">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># several columns contain data not used for the MAT</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east <span class="ot">&lt;-</span> mod_pol <span class="sc">%&gt;%</span> </span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(LONDD <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">105</span>) <span class="sc">%&gt;%</span> <span class="co"># Filter for sites east of -105 degrees</span></span>
@@ -440,12 +474,12 @@ Respawn point
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>devils_ages <span class="ot">&lt;-</span> devils_wide<span class="sc">$</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Right, now is the tricky part of matching species names. Unfortunately, the species names between data downloaded from Neotoma and the NAMPD do not match exactly. Sometimes matching is easiest done manually but because of the number of species in both datasets we will do as much as possible programatically. The <code>fuzzyjoin</code> package allows us to match strings (names) by a distance measure and outputs a number of possible matches.</p>
-<div class="panel-tabset">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">String matching code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Let’s take a closer look</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Even closer!</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>looks like it’s done a good job for the most part! Butthere are a few mismatches.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/fuzzyjoin_1fe3afc22ba2dda97a2c55599a5581ce">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the names of each dataset and convert all to lowercase</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mod_pol_names <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">tolower</span>(<span class="fu">colnames</span>(mod_pol_east[<span class="sc">-</span><span class="dv">1</span>])))</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>devil_names <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">tolower</span>(<span class="fu">colnames</span>(devils_wide[<span class="sc">-</span><span class="dv">1</span>])))</span>
@@ -482,7 +516,7 @@ Respawn point
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>In your console take a good look through the whole list. You don’t want anything matched twice!</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-1_8abd3443398bf9d2fe0430459878900a">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>names_matches <span class="sc">%&gt;%</span> <span class="fu">filter</span>(distance <span class="sc">&gt;</span> <span class="fl">0.1</span>) <span class="co"># looks like everything below 0.1 is a good match</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 20 × 3
@@ -514,7 +548,7 @@ Respawn point
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <p>Arranging by distance helps.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-2_cae46e6349c5ac57f8574118d2b8f807">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>names_matches <span class="sc">%&gt;%</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(distance <span class="sc">&lt;</span> <span class="fl">0.3</span>)  <span class="sc">%&gt;%</span> <span class="co"># everything above 0.3 looks like a bad match</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(distance)) <span class="sc">%&gt;%</span> </span>
@@ -546,7 +580,7 @@ Respawn point
 </div>
 </div>
 <p>Ok looks like we only have a few to weed out manually:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-3_0bbf81ce7b8b60dc83a157c7f9dd6fce">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>names_matches_filter <span class="ot">&lt;-</span> names_matches <span class="sc">%&gt;%</span> </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(distance <span class="sc">&lt;</span> <span class="fl">0.3</span>,</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>         value.x <span class="sc">!=</span> <span class="st">"ilex"</span> <span class="sc">&amp;</span> value.y <span class="sc">!=</span> <span class="st">"piceax"</span>,</span>
@@ -556,7 +590,7 @@ Respawn point
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">arrange</span>(<span class="fu">desc</span>(distance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we have a dataframe (<code>names_matches_filter</code>) with names from Devil’s Lake and their match in the NAMPD. We can select those species from the NAMPD:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-4_8ad1229a01480dd81791033665849808">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select species based on name</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east_match <span class="ot">&lt;-</span> mod_pol_east <span class="sc">%&gt;%</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> <span class="co"># convert to lowercase for matching</span></span>
@@ -579,16 +613,16 @@ Respawn point
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The last bit of wrangling we need to do is filter the climate data to match the modern pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-5_4406da492ccfcac10aaf36965c270ef8">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod_clim_filter <span class="ot">&lt;-</span> mod_clim <span class="sc">%&gt;%</span> </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ID2 <span class="sc">%in%</span> mod_pol_east_match<span class="sc">$</span>id2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Good practice tip
 </div>
 </div>
@@ -598,25 +632,25 @@ Good practice tip
 </div>
 <p>That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.</p>
 </section>
-<section id="sec-crossvalid" class="level3" data-number="9.2.2">
-<h3 data-number="9.2.2" class="anchored" data-anchor-id="sec-crossvalid"><span class="header-section-number">9.2.2</span> Cross-validation</h3>
+<section id="sec-crossvalid" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="sec-crossvalid"><span class="header-section-number">7.2.2</span> Cross-validation</h3>
 <p>Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.</p>
 <p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called <span class="math inline">\(k\)</span>-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into <span class="math inline">\(k\)</span> mutually exclusive subsets. For each <span class="math inline">\(k^{th}\)</span> subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.</p>
 <p>Standard metrics include RMSE and <span class="math inline">\(R^2\)</span>. Here, we’ll use the cross-validation tools built into the analogue package.</p>
 <p>Note that the <code>palaeoSig</code> package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation <span class="citation" data-cites="telford2005">(<a href="references.html#ref-telford2005" role="doc-biblioref">Telford and Birks 2005</a>)</span>.</p>
-<p>Now let’s do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here from the Data Wrangling section, make sure you load in the pre-formatted data from <a href="#sec-datawrangle"><span>Section&nbsp;9.2.1</span></a>.</p>
-<div class="panel-tabset">
+<p>Now let’s do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here from the Data Wrangling section, make sure you load in the pre-formatted data from <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Summary</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Plots</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="cell" data-hash="08-no-analogue_cache/html/cross-validation_c93dd1a2c1d5461702548e7d67816de4">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mod_jant <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(mod_clim_filter<span class="sc">$</span>tjan)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>modpoll_jant <span class="ot">&lt;-</span> analogue<span class="sc">::</span><span class="fu">mat</span>(mod_pol_east_match_prop, mod_jant, <span class="at">method=</span><span class="st">"SQchord"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="cell" data-hash="08-no-analogue_cache/html/MATsummary_551004d65726193bb3ef0993c0b0c0da">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -661,11 +695,15 @@ Inferences based on the weighted mean of k-closest analogues:
 </div>
 </div>
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
-<div class="cell" data-hash="08-no-analogue_cache/html/plotMAT_21ec3ba73d4800a3459f9e5a53ae033e">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modpoll_jant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="08-no-analogue_files/figure-html/plotMAT-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="07-no-analogue_files/figure-html/plotMAT-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -673,16 +711,16 @@ Inferences based on the weighted mean of k-closest analogues:
 </div>
 <p>To interpret the results review <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span>, Section 2.1.</p>
 </section>
-<section id="novelty-and-paleoclimatic-reconstruction" class="level3" data-number="9.2.3">
-<h3 data-number="9.2.3" class="anchored" data-anchor-id="novelty-and-paleoclimatic-reconstruction"><span class="header-section-number">9.2.3</span> Novelty and Paleoclimatic Reconstruction</h3>
+<section id="novelty-and-paleoclimatic-reconstruction" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="novelty-and-paleoclimatic-reconstruction"><span class="header-section-number">7.2.3</span> Novelty and Paleoclimatic Reconstruction</h3>
 <p><strong>Jack action point</strong> Section needs some info from the lecture content to help understand the process as a stand-alone unit.</p>
 <p>For this part of the lab, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT. Here’s some demonstration code showing the kinds of analyses that can be done and plotted timeseries.</p>
-<div class="panel-tabset">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Minimum distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Modern analogues</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Reconstruction</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>Construct a time series of the minimum SCDs (novelty) for Devil’s Lake.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-6_3acc270f78e0ce2d485173cfe3f72d1f">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict temperatures from the fossil data and their modern analogue</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>devil_jant <span class="ot">&lt;-</span> <span class="fu">predict</span>(modpoll_jant, devils_prop, <span class="at">k=</span><span class="dv">10</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -690,38 +728,50 @@ Inferences based on the weighted mean of k-closest analogues:
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>devil_mindis <span class="ot">&lt;-</span> <span class="fu">minDC</span>(devil_jant)</span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(devil_mindis, <span class="at">depths =</span> devils_ages, <span class="at">quantiles =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"minSCD"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="08-no-analogue_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="07-no-analogue_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>Construct a time series of the number of modern analogs found per fossil sample, using 0.25 as our no-analog/analog threshold.</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-7_f3bb17dd276714eaec9d11813fad3948">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>devil_cma <span class="ot">&lt;-</span> analogue<span class="sc">::</span><span class="fu">cma</span>(devil_jant, <span class="at">cutoff=</span><span class="fl">0.25</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> devils_ages, <span class="at">y =</span> devil_cma<span class="sc">$</span>n.analogs, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">xlim=</span> <span class="fu">rev</span>(<span class="fu">range</span>(devils_ages)), <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"Number of modern analogs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="08-no-analogue_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="07-no-analogue_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
 <div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <p>Plot the reconstructed January temperatures at Devil’s Lake:</p>
-<div class="cell" data-hash="08-no-analogue_cache/html/unnamed-chunk-8_a8612dee317aec7fc6299ccdd5cc3b4f">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reconPlot</span>(devil_jant, <span class="at">depth =</span> devils_ages, <span class="at">display.error=</span><span class="st">"bars"</span>, <span class="at">xlab =</span> <span class="st">"Age (yr BP)"</span>, <span class="at">ylab =</span> <span class="st">"Mean Jan temperature"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="08-no-analogue_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="07-no-analogue_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Resources
 </div>
 </div>
@@ -736,8 +786,8 @@ Resources
 </div>
 </section>
 </section>
-<section id="part-3-exercises" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">9.3</span> Part 3: Exercises</h2>
+<section id="part-3-exercises" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="part-3-exercises"><span class="header-section-number">7.3</span> Part 3: Exercises</h2>
 <p><strong>Jacktion point:</strong> review questions and question order :)</p>
 <ol type="1">
 <li><p>In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?</p>
@@ -761,35 +811,38 @@ Resources
 </ol>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
-<div id="ref-chevalier2020" class="csl-entry" role="doc-biblioentry">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-chevalier2020" class="csl-entry" role="listitem">
 Chevalier, Manuel, Basil A. S. Davis, Oliver Heiri, Heikki Seppä, Brian M. Chase, Konrad Gajewski, Terri Lacourse, et al. 2020. <span>“Pollen-Based Climate Reconstruction Techniques for Late <span>Quaternary</span> Studies.”</span> <em>Earth-Science Reviews</em> 210 (November): 103384. <a href="https://doi.org/10.1016/j.earscirev.2020.103384">https://doi.org/10.1016/j.earscirev.2020.103384</a>.
 </div>
-<div id="ref-gavin2003" class="csl-entry" role="doc-biblioentry">
+<div id="ref-gavin2003" class="csl-entry" role="listitem">
 Gavin, Daniel G, W.Wyatt Oswald, Eugene R Wahl, and John W Williams. 2003. <span>“A Statistical Approach to Evaluating Distance Metrics and Analog Assignments for Pollen Records.”</span> <em>Quaternary Research</em> 60 (3): 356–67. <a href="https://doi.org/10.1016/S0033-5894(03)00088-7">https://doi.org/10.1016/S0033-5894(03)00088-7</a>.
 </div>
-<div id="ref-jackson2004" class="csl-entry" role="doc-biblioentry">
+<div id="ref-jackson2004" class="csl-entry" role="listitem">
 Jackson, Stephen T., and John W. Williams. 2004. <span>“Modern <span>Analogs</span> in <span>Quaternary Paleoecology</span>: <span>Here Today</span>, <span>Gone Yesterday</span>, <span>Gone Tomorrow</span>?”</span> <em>Annual Review of Earth and Planetary Sciences</em> 32 (1): 495–537. <a href="https://doi.org/10.1146/annurev.earth.32.101802.120435">https://doi.org/10.1146/annurev.earth.32.101802.120435</a>.
 </div>
-<div id="ref-krause2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-krause2019" class="csl-entry" role="listitem">
 Krause, Teresa R., James M. Russell, Rui Zhang, John W. Williams, and Stephen T. Jackson. 2019. <span>“Late <span>Quaternary</span> Vegetation, Climate, and Fire History of the <span>Southeast Atlantic Coastal Plain</span> Based on a 30,000-Yr Multi-Proxy Record from <span>White Pond</span>, <span>South Carolina</span>, <span>USA</span>.”</span> <em>Quaternary Research</em> 91 (2): 861–80. <a href="https://doi.org/10.1017/qua.2018.95">https://doi.org/10.1017/qua.2018.95</a>.
 </div>
-<div id="ref-overpeck1985" class="csl-entry" role="doc-biblioentry">
+<div id="ref-overpeck1985" class="csl-entry" role="listitem">
 Overpeck, J. T., T. Webb, and I. C. Prentice. 1985. <span>“Quantitative <span>Interpretation</span> of <span>Fossil Pollen Spectra</span>: <span>Dissimilarity Coefficients</span> and the <span>Method</span> of <span>Modern Analogs</span>.”</span> <em>Quaternary Research</em> 23 (1): 87–108. <a href="https://doi.org/10.1016/0033-5894(85)90074-2">https://doi.org/10.1016/0033-5894(85)90074-2</a>.
 </div>
-<div id="ref-simpson2007" class="csl-entry" role="doc-biblioentry">
+<div id="ref-radeloff2015" class="csl-entry" role="listitem">
+Radeloff, Volker C., John W. Williams, Brooke L. Bateman, Kevin D. Burke, Sarah K. Carter, Evan S. Childress, Kara J. Cromwell, et al. 2015. <span>“The Rise of Novelty in Ecosystems.”</span> <em>Ecological Applications</em> 25 (8): 2051–68. <a href="https://doi.org/10.1890/14-1781.1">https://doi.org/10.1890/14-1781.1</a>.
+</div>
+<div id="ref-simpson2007" class="csl-entry" role="listitem">
 Simpson, Gavin L. 2007. <span>“Analogue <span>Methods</span> in <span>Palaeoecology</span>: <span>Using</span> the Analogue <span>Package</span>.”</span> <em>Journal of Statistical Software</em> 22 (September): 1–29. <a href="https://doi.org/10.18637/jss.v022.i02">https://doi.org/10.18637/jss.v022.i02</a>.
 </div>
-<div id="ref-telford2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-telford2005" class="csl-entry" role="listitem">
 Telford, R. J., and H. J. B. Birks. 2005. <span>“The Secret Assumption of Transfer Functions: Problems with Spatial Autocorrelation in Evaluating Model Performance.”</span> <em>Quaternary Science Reviews</em> 24 (20-21): 2173–79. <a href="https://doi.org/10.1016/j.quascirev.2005.05.001">https://doi.org/10.1016/j.quascirev.2005.05.001</a>.
 </div>
-<div id="ref-whitmore2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-whitmore2005" class="csl-entry" role="listitem">
 Whitmore, J., K. Gajewski, M. Sawada, J. W. Williams, B. Shuman, P. J. Bartlein, T. Minckley, et al. 2005. <span>“Modern Pollen Data from <span>North America</span> and <span>Greenland</span> for Multi-Scale Paleoenvironmental Applications.”</span> <em>Quaternary Science Reviews</em> 24 (16-17): 1828–48. <a href="https://doi.org/10.1016/j.quascirev.2005.03.005">https://doi.org/10.1016/j.quascirev.2005.03.005</a>.
 </div>
-<div id="ref-williams2008" class="csl-entry" role="doc-biblioentry">
+<div id="ref-williams2008" class="csl-entry" role="listitem">
 Williams, J. W., and B. Shuman. 2008. <span>“Obtaining Accurate and Precise Environmental Reconstructions from the Modern Analog Technique and <span>North American</span> Surface Pollen Dataset.”</span> <em>Quaternary Science Reviews</em> 27 (7-8): 669–87. <a href="https://doi.org/10.1016/j.quascirev.2008.01.004">https://doi.org/10.1016/j.quascirev.2008.01.004</a>.
 </div>
-<div id="ref-williams2001" class="csl-entry" role="doc-biblioentry">
+<div id="ref-williams2001" class="csl-entry" role="listitem">
 Williams, John W., Bryan N. Shuman, and Thompson Webb III. 2001. <span>“Dissimilarity <span>Analyses</span> of <span>Late-Quaternary Vegetation</span> and <span>Climate</span> in <span>Eastern North America</span>.”</span> <em>Ecology</em> 82 (12): 3346–62. <a href="https://doi.org/10.1890/0012-9658(2001)082[3346:DAOLQV]2.0.CO;2">https://doi.org/10.1890/0012-9658(2001)082[3346:DAOLQV]2.0.CO;2</a>.
 </div>
 </div>
@@ -823,12 +876,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
     }
-  });
-  clipboard.on('success', function(e) {
+    return false;
+  }
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -860,11 +916,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -874,8 +976,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -887,9 +998,245 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -927,37 +1274,22 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
-    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-          // target, if specified
-          link.setAttribute("target", "_blank");
-          // default icon
-          link.classList.add("external");
-      }
-    }
 });
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./07-dissimilarity-roc.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Dissimilarity and Rates of Change</span></span>
+      <a href="./06-dissimilarity.html" class="pagination-link" aria-label="Dissimilarity">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Dissimilarity</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./09-ordination-pca.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ordination: Principal Component Analysis</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./08-rate-of-change.html" class="pagination-link" aria-label="Dissimilarity and Rates of Change">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Dissimilarity and Rates of Change</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 
