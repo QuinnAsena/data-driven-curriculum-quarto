@@ -1,15 +1,17 @@
 ---
-title: "Novelty and No Analogue Futures"
+# title: "Novelty and No Analogue Futures"
 author: Jack Williams and Quinn Asena
 ---
 
+# Novelty and No Analogue Futures {#sec-novelty}
+
 Cite @simpson2007 and @radeloff2015
 
-## Part 1: Background {#sec-novelty}
+## Part 1: Background
 
 The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data [@chevalier2020; @williams2008; @gavin2003; @overpeck1985]. The MAT relies on reasoning by analogy [@jackson2004], in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.
 
-The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues. In @sec-dissimilarity we calculated the squared chord distance  _within_ the community matrix, the MAT uses two datasets, a training dataset and the community against which nearest neighbours are calculated.
+The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues. 
 
 The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.
 
@@ -37,12 +39,12 @@ Note that we are taking a detour into paleoclimatology for two reasons. First, b
 
 ### Data wrangling {#sec-datawrangle}
 
-In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD [@whitmore2005] for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals stored in inconsistent formats. However; if you prefer to skip all the wrangling and jump directly to the anayses in @sec-crossvalid, the data have been saved post-wrangling and can be loaded into R directly.
+In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD [@whitmore2005] for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats. However, if you prefer to skip all the wrangling and jump directly to the anayses in @sec-crossvalid, the data have been saved post-wrangling and can be loaded into R directly.
 
 
 ::: {.callout-tip}
 # Jump point
-Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to  @sec-crossvalid 
+Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to @sec-crossvalid 
 
 ```{r, readdata}
 #| code-fold: true
@@ -74,7 +76,7 @@ pacman::p_load(neotoma2, tidyverse, neotoma2, analogue, vegan, readxl, fuzzyjoin
 ::: {.callout-tip}
 # Respawn point
 
-The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in @sec-neotoma2 so, more easily, you can read in the pre-wrangled .rds file in the data directory. Note that this is the long format data _not_ the species only matrix from the jump point above.
+The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in @sec-neotoma2 so, more easily, you can read in the pre-wrangled .rds file from the data directory. Note that this is the long format data _not_ the species only matrix from the jump point above.
 
 ```{r DevilsRespawnNa}
 #| eval: false
@@ -122,21 +124,34 @@ devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
 
-We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. **JACK ACTION POINT: to use this method in other regions what databases are available.** The following code downloads the NAMPD from the server to your data directory, unzips the downloaded data, and reads in the relevant datasheets from the excel file. 
+We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. **JACK ACTION POINT: to use this method in other regions what databases are available.** The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data.
 
 
 ```{r nampd}
 #| warning: false
+#| eval: false
 
 download.file("https://williamspaleolab.github.io/data/whitmoreetal2005.zip", "./data/whitmoreetal2005.zip")
 unzip("./data/whitmoreetal2005.zip", exdir = "./data/whitmoreetal2005")
+
+```
+
+Since the data are already saved in the data directory, let's read it in from there.
+
+```{r}
+#| warning: false
 mod_pol <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "POLLEN DATA")
 mod_clim <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "CLIMATE+BIOCLIMATE")
 
 ```
 
+Still with me? Great! Now we have our three datasets:
 
-Still with me? Great! Now we have our three datasets: (i) our site of interest (Devil's Lake palaeo data); (ii) our modern pollen data; and (iii) our modern climate measurements. The modern datasets include the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake and the NAMPD. We are going to keep all data West of 105°W, see @krause2019 and @williams2001.
+1. our site of interest (Devil's Lake palaeo data);
+2. our modern pollen data;
+3. our modern climate measurements.
+
+The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data West of 105°W, see @krause2019 and @williams2001.
 
 
 ```{r, wrangle}
@@ -218,7 +233,11 @@ names_matches_filter <- names_matches %>%
 ```
 
 
-Now we have a dataframe (`names_matches_filter`) with names from Devil's Lake and their match in the NAMPD. We can select those species from the NAMPD:
+Now we have a dataframe (`names_matches_filter`) with names from Devil's Lake and their match in the NAMPD. There are two routes for this analysis:
+
+1. Join the two datasets so that the species match by creating a larger dataset, species missing from one dataset is filled with zero. 
+2. Conduct the analysis on the intersect of the two datasets, i.e., a smaller dataset of the species common between the two.
+
 
 ```{r}
 
@@ -235,14 +254,14 @@ mod_pol_east_match <- mod_pol_east_match %>%
 # recall that the Devil's Lake data are in relative proportions
 # let's create a matrix of only species for the MAT with relative proportions
 # This is an approach for calculating relative abundances on wide data:
-mod_pol_east_match_prop <- as.matrix(mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1])*1)
+mod_pol_east_match_prop <- as.matrix(mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1]))
 
 # while we are here let's make a matrix of species only from Devils Lake
 devils_prop <- devils_wide %>% 
   rename_with(tolower) %>% 
   select(names_matches_filter$value.x) %>% # Remember we removed a few species without matches?
   as.matrix()
-
+devils_prop <- devils_prop / rowSums(devils_prop) # Recalculate proportions after dropping columns.
 ```
 
 The last bit of wrangling we need to do is filter the climate data to match the modern pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.

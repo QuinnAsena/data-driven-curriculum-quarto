@@ -169,3 +169,38 @@ plot(test[ ,"age"], test[ ,"sq_dist"],
 
 plot(c(0, devils_sqdist[row(devils_sqdist) == col(devils_sqdist) + 1]), origin_top[ ,"sq_dist"])
 plot(c(0, devils_sqdist[row(devils_sqdist) == col(devils_sqdist) + 1]), origin_top[ ,"sq_dist"], xlim = c(max(origin_top[ ,"age"]), min(origin_top[ ,"age"])))
+
+
+library(analogue)
+data(swapdiat, swappH, rlgh, package = "analogue")
+dat <- join(swapdiat, rlgh, verbose = TRUE)
+swapdiat <- dat$swapdiat / 100
+rlgh <- dat$rlgh / 100
+swap.mat <- mat(swapdiat, swappH, method = "SQchord")
+
+
+
+
+
+mod_pol_east %>%
+  rename_with(tolower) %>% # convert to lowercase for matching
+  select(c(id2, names_matches_filter$value.y))
+
+
+mod_pol_east_match <- mod_pol_east %>%
+  rename_with(tolower) %>% 
+  rename(all_of(deframe(names_matches_filter[ ,1:2])))
+
+mod_pol_east_match[which(is.na(mod_pol_east_match))] <- 0
+mod_pol_east_match_prop <- as.matrix(mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1]))
+rowSums(mod_pol_east_match_prop)
+rowSums(mod_pol_east[-1], na.rm = TRUE)
+mod_pol_east[2465:2470, ]
+
+
+rowSums(devils_prop)
+rowSums(devils_wide[-1])
+
+
+
+full_join(mod_pol_east_match, devils_wide[-1])
