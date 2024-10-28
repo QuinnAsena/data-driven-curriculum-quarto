@@ -189,18 +189,63 @@ mod_pol_east %>%
 
 mod_pol_east_match <- mod_pol_east %>%
   rename_with(tolower) %>% 
-  rename(all_of(deframe(names_matches_filter[ ,1:2])))
+  rename(all_of(deframe(names_matches_filter[ ,1:2]))) %>% 
+  select(-id2) %>%
+  as.matrix()
 
-mod_pol_east_match[which(is.na(mod_pol_east_match))] <- 0
-mod_pol_east_match_prop <- as.matrix(mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1]))
+mod_pol_east_match[is.na(mod_pol_east_match)] <- 0
+mod_pol_east_match[2465:2470, ]
+mod_pol_east_match_prop <- mod_pol_east_match / rowSums(mod_pol_east_match)
 rowSums(mod_pol_east_match_prop)
-rowSums(mod_pol_east[-1], na.rm = TRUE)
-mod_pol_east[2465:2470, ]
 
+devils_prop <- devils_wide %>% 
+  rename_with(tolower) %>% 
+  select(-age) %>% # Remember we removed a few species without matches?
+  as.matrix()
+devils_prop <- devils_prop / rowSums(devils_prop) # Recalculate proportions after dropping columns.
 
 rowSums(devils_prop)
 rowSums(devils_wide[-1])
 
+colnames(mod_pol_east_match_prop) %in% colnames(devils_prop)
+colnames(mod_pol_east_match_prop[,colnames(mod_pol_east_match_prop) %in% colnames(devils_prop)])
+colnames(mod_pol_east[-1][ ,!colnames(mod_pol_east_match_prop) %in% colnames(devils_prop)])
 
 
-full_join(mod_pol_east_match, devils_wide[-1])
+mod_pol_east_match_prop <- as.data.frame(mod_pol_east_match_prop)
+devils_prop <- as.data.frame(devils_prop)
+
+
+
+mod_pol_east_match <- mod_pol_east %>%
+  rename_with(tolower) %>% 
+  rename(all_of(deframe(names_matches_filter[ ,1:2]))) %>% 
+  select(-id2) %>% # We do not want the ID column in the calculation
+  mutate(across(everything(), ~ replace_na(.x, 0))) # Data contain some NA values that we can safely assume to be a zero-count
+
+as.matrix(mod_pol_east_match[2465:2470, ])
+rowSums(mod_pol_east_match / rowSums(mod_pol_east_match))
+mod_pol_east_match_prop <- mod_pol_east_match / rowSums(mod_pol_east_match) # I prefer the BASE R way of doing this calculation
+rowSums(mod_pol_east_match)
+
+
+devils_prop <- devils_wide %>% 
+  rename_with(tolower) %>% 
+  select(-age)
+rowSums(devils_prop)
+devils_prop <- devils_prop / rowSums(devils_prop) # Recalculate proportions after dropping columns.
+
+
+xxx <- join(mod_pol_east_match_prop, devils_prop, verbose = TRUE)
+
+xxx.mat <- mat(xxx$mod_pol_east_match_prop, mod_jant, method = "SQchord")
+par(mfrow = c(2,2))
+plot(xxx.mat)
+
+
+devil_jant <- predict(xxx.mat, xxx$devils_prop, k=10)
+
+par(mfrow = c(1,1))
+devil_mindis <- minDC(devil_jant)
+plot(devil_mindis, depths = devils_ages, quantiles = FALSE, xlab = "Age (yr BP)", ylab = "minSCD")
+

@@ -172,6 +172,14 @@ devils_ages <- devils_wide$age
 
 ```
 
+We will also filter the modern climate records by the same ID to match the modern pollen records.
+```{r}
+
+mod_clim_filter <- mod_clim %>% 
+  filter(ID2 %in% mod_pol_east$ID2)
+
+```
+
 Right, now is the tricky part of matching species names. Unfortunately, the species names between data downloaded from Neotoma and the NAMPD do not match exactly. Sometimes matching is easiest done manually but because of the number of species in both datasets we will do as much as possible programatically. The `fuzzyjoin` package allows us to match strings (names) by a distance measure and outputs a number of possible matches.
 
 
@@ -235,43 +243,74 @@ names_matches_filter <- names_matches %>%
 
 Now we have a dataframe (`names_matches_filter`) with names from Devil's Lake and their match in the NAMPD. There are two routes for this analysis:
 
-1. Join the two datasets so that the species match by creating a larger dataset, species missing from one dataset is filled with zero. 
+1. Join the two datasets so that both contain the same spicies column names, creating two larger dataset. Species missing from one dataset are filled with zero. 
 2. Conduct the analysis on the intersect of the two datasets, i.e., a smaller dataset of the species common between the two.
 
+Now that we have matched the names between the two datasets, it is not difficult to accomplish either method. The datasets can be expanded so that both contain all the same species using the `join` function in the `analogue` package. Conversely, the datasets can be shrunk by selecting the species common to both using the names filter. The code for running the MAT for both methods is the same, so we will create  datasets for both methods. We will use the first, more conventional, method for the rest of the chapter and, if you want to explore the second method, you can replace the data in the code with the 'Intersec' data.
+
+::: {.panel-tabset}
+
+## Join
+
+This code joins the modern pollen data and the Devil's Lake core data so that the number of columns is expanded to contain the same species.
 
 ```{r}
 
+mod_pol_east_join <- mod_pol_east %>%
+  rename_with(tolower) %>% 
+  rename(all_of(deframe(names_matches_filter[ ,1:2]))) %>% 
+  select(-id2) %>% # We do not want the ID column in the calculation
+  mutate(across(everything(), ~ replace_na(.x, 0))) # Data contain some NA values that we can safely assume to be a zero-count
+mod_pol_east_join <- mod_pol_east_join / rowSums(mod_pol_east_join) # I prefer the BASE R way of doing this calculation
+# rowSums(mod_pol_east_join) # I regularly use rowSums on wide data as a data check.
+# Prevents accidentally using counts or percentages instead of proportions, or including age/depth/ID columns
+
+devils_prop <- devils_wide %>% 
+  rename_with(tolower) %>% 
+  select(-age)
+# rowSums(devils_prop) # Data check
+
+join_dat <- join(mod_pol_east_join, devils_prop, verbose = TRUE)
+
+mod_pol_east_join <- join_dat$mod_pol_east_join
+devils_prop <- join_dat$devils_prop
+
+```
+
+
+## Intersect
+
+This code selects the common species of both the modern pollen data and the Devil's Lake core data and reduces the number of columns of both.
+
+```{r}
+#| eval: false
 # Select species based on name
-mod_pol_east_match <- mod_pol_east %>%
+mod_pol_east_intersect <- mod_pol_east %>%
   rename_with(tolower) %>% # convert to lowercase for matching
   select(c(id2, names_matches_filter$value.y)) # keep id column and select species
 
 # The analoge functions need species names to match between datasets
 # so lets name everything in our filtered modern pollen the same as in Devil's Lake
-mod_pol_east_match <- mod_pol_east_match %>% 
+mod_pol_east_intersect <- mod_pol_east_intersect %>% 
   rename(all_of(deframe(names_matches_filter[ ,1:2])))
 
-# recall that the Devil's Lake data are in relative proportions
-# let's create a matrix of only species for the MAT with relative proportions
+# Let's create a matrix of only species for the MAT with relative proportions
 # This is an approach for calculating relative abundances on wide data:
-mod_pol_east_match_prop <- as.matrix(mod_pol_east_match[-1] / rowSums(mod_pol_east_match[-1]))
+mod_pol_east_prop_intersect <- as.matrix(mod_pol_east_intersect[-1] / rowSums(mod_pol_east_intersect[-1]))
 
 # while we are here let's make a matrix of species only from Devils Lake
-devils_prop <- devils_wide %>% 
+devils_prop_intersect <- devils_wide %>% 
   rename_with(tolower) %>% 
   select(names_matches_filter$value.x) %>% # Remember we removed a few species without matches?
   as.matrix()
-devils_prop <- devils_prop / rowSums(devils_prop) # Recalculate proportions after dropping columns.
+
+# Recall that we already converted the Devil's Lake data to proportions,
+# but, we do need to re-cecalculate proportions after dropping columns.
+devils_prop_intersect <- devils_prop_intersect / rowSums(devils_prop_intersect) 
 ```
 
-The last bit of wrangling we need to do is filter the climate data to match the modern pollen data. This part is easy because both climate and pollen are from the same data-source and have associated IDs.
+:::
 
-```{r}
-
-mod_clim_filter <- mod_clim %>% 
-  filter(ID2 %in% mod_pol_east_match$id2)
-
-```
 
 ::: {.callout-tip}
 # Good practice tip
@@ -280,7 +319,16 @@ Whenever filtering or joining data it is good to check the dimensions before and
 
 That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.
 
+
 ### Cross-validation {#sec-crossvalid}
+
+The Modern Analogue Technique (MAT) needs the species in both the modern dataset and the core data to be the same, and can be calculated in two ways (restated here if you skipped the data wrangling in @sec-datawrangle):
+
+1. By joining the two datasets so that both contain the same spicies column names, creating two larger dataset. Species missing from one dataset are filled with zero. 
+2. By conducting the analysis on the intersect of the two datasets, i.e., a smaller dataset of the species common between the two.
+
+The remainder of the chapter will use the first, more conventional, method of joining datasets to contain the same species. In @sec-datawrangle, we created a dataset for both methods. The code below works for both methods, and you can switch out the data if you want to.
+
 
 Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
 
@@ -299,7 +347,7 @@ Now let's do the analysis! First is the cross validation of the modern datasets.
 
 mod_jant <- data.matrix(mod_clim_filter$tjan)
 
-modpoll_jant <- analogue::mat(mod_pol_east_match_prop, mod_jant, method="SQchord")
+modpoll_jant <- analogue::mat(mod_pol_east_join, mod_jant, method="SQchord")
 
 ```
 
@@ -320,7 +368,13 @@ plot(modpoll_jant)
 
 :::
 
-To interpret the results review @simpson2007, Section 2.1.
+Much of the information in this chapter comes from @simpson2007, and we recommend this paper for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (@sec-dissimilarity). With some additional considerations regarding transfer functions:
+
+- Time intervals and chronological uncertainties are not accounted for. The difference in time between successive samples often varies in palaeo-data.
+- Time averaging is not taken into account, and each sample may contain a different time-span of ecological productivity.
+- Squared chord distance is one of many distance measures available in `analogue`, and may not always be the most appropriate.
+
+For deeper considerations of reconstructing temperatures using transfer functions see @telford2005.
 
 ### Novelty and Paleoclimatic Reconstruction
 

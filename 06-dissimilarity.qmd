@@ -159,6 +159,7 @@ origin_top %>%
   as_tibble() %>% 
   ggplot(aes(x = age, y = sq_dist)) + 
   geom_point() +
+  geom_line() +
   scale_x_reverse(breaks = scales::pretty_breaks(6)) +
   theme_minimal()
 ```
