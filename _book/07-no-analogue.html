@@ -290,7 +290,7 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#part-1-background" id="toc-part-1-background" class="nav-link active" data-scroll-target="#part-1-background"><span class="header-section-number">7.1</span> Part 1: Background</a></li>
+  <li><a href="#sec-background" id="toc-sec-background" class="nav-link active" data-scroll-target="#sec-background"><span class="header-section-number">7.1</span> Part 1: Background</a></li>
   <li><a href="#part-2-analysis" id="toc-part-2-analysis" class="nav-link" data-scroll-target="#part-2-analysis"><span class="header-section-number">7.2</span> Part 2: analysis</a>
   <ul class="collapse">
   <li><a href="#sec-datawrangle" id="toc-sec-datawrangle" class="nav-link" data-scroll-target="#sec-datawrangle"><span class="header-section-number">7.2.1</span> Data wrangling</a></li>
@@ -330,31 +330,26 @@ window.Quarto = {
 
 
 <p>Cite <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span> and <span class="citation" data-cites="radeloff2015">Radeloff et al. (<a href="references.html#ref-radeloff2015" role="doc-biblioref">2015</a>)</span></p>
-<section id="part-1-background" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="part-1-background"><span class="header-section-number">7.1</span> Part 1: Background</h2>
+<section id="sec-background" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-background"><span class="header-section-number">7.1</span> Part 1: Background</h2>
 <p>The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data <span class="citation" data-cites="chevalier2020 williams2008 gavin2003 overpeck1985">(<a href="references.html#ref-chevalier2020" role="doc-biblioref">Chevalier et al. 2020</a>; <a href="references.html#ref-williams2008" role="doc-biblioref">J. W. Williams and Shuman 2008</a>; <a href="references.html#ref-gavin2003" role="doc-biblioref">Gavin et al. 2003</a>; <a href="references.html#ref-overpeck1985" role="doc-biblioref">Overpeck, Webb, and Prentice 1985</a>)</span>. The MAT relies on reasoning by analogy <span class="citation" data-cites="jackson2004">(<a href="references.html#ref-jackson2004" role="doc-biblioref">Jackson and Williams 2004</a>)</span>, in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.</p>
-<p>The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more (<span class="math inline">\(k\)</span>) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.</p>
+<p>The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a <span class="math inline">\(k\)</span>-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more (<span class="math inline">\(k\)</span>) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues.</p>
 <p>The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.</p>
 <p>To reconstruct past environments using the MAT, we need three data sets:</p>
 <ol type="1">
-<li><p>modern species assemblages</p></li>
-<li><p>modern environmental variables</p></li>
-<li><p>fossil species assemblages</p></li>
+<li><p>Modern species assemblages.</p></li>
+<li><p>Modern environmental variables.</p></li>
+<li><p>Fossil species assemblages.</p></li>
 </ol>
 <p>The MAT follows four basic steps:</p>
 <ol type="1">
-<li><p>Calculate dissimilarities between a fossil species assemblage i and all modern species assemblages in set <span class="math inline">\(S\)</span>.</p></li>
-<li><p>Discard modern samples with dissimilarities greater than a threshold Dthreshold.</p></li>
-<li><p>Identify and retain the k closest modern analogs.</p></li>
+<li><p>Calculate dissimilarities between a fossil species assemblage <span class="math inline">\(i\)</span> and all modern species assemblages in set <span class="math inline">\(S\)</span>.</p></li>
+<li><p>Discard modern samples with dissimilarities greater than a threshold threshold.</p></li>
+<li><p>Identify and retain the <span class="math inline">\(k\)</span> closest modern analogs.</p></li>
 <li><p>Average the environmental conditions associated with the modern analogs and assign them to fossil sample <span class="math inline">\(i\)</span>.</p></li>
 </ol>
-<p>Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!</p>
-</section>
-<section id="part-2-analysis" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="part-2-analysis"><span class="header-section-number">7.2</span> Part 2: analysis</h2>
-<section id="sec-datawrangle" class="level3" data-number="7.2.1">
-<h3 data-number="7.2.1" class="anchored" data-anchor-id="sec-datawrangle"><span class="header-section-number">7.2.1</span> Data wrangling</h3>
-<p>In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats. However, if you prefer to skip all the wrangling and jump directly to the anayses in <a href="#sec-crossvalid" class="quarto-xref"><span>Section 7.2.2</span></a>, the data have been saved post-wrangling and can be loaded into R directly.</p>
+<p>Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the <code>analogue</code> package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!</p>
+<p>The following section, <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>, takes you through some pretty advanced data wrangling required to match species names between the datasets we will use. However, if you prefer to skip all the wrangling and jump directly to the anayses in <a href="#sec-crossvalid" class="quarto-xref"><span>Section 7.2.2</span></a>, the data have been saved post-wrangling and can be loaded into R directly. Run the ‘Jump point’ code below and portal to <a href="#sec-crossvalid" class="quarto-xref"><span>Section 7.2.2</span></a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -378,6 +373,12 @@ Jump point
 </div>
 </div>
 </div>
+</section>
+<section id="part-2-analysis" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="part-2-analysis"><span class="header-section-number">7.2</span> Part 2: analysis</h2>
+<section id="sec-datawrangle" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="sec-datawrangle"><span class="header-section-number">7.2.1</span> Data wrangling</h3>
+<p>In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD <span class="citation" data-cites="whitmore2005">(<a href="references.html#ref-whitmore2005" role="doc-biblioref">Whitmore et al. 2005</a>)</span> for the cross-validation analysis. Note that the NAMPD is pre-loaded into the <code>analogue</code> package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats.</p>
 <p>Ready to Wrange? Let’s get the data ready:</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -450,23 +451,23 @@ Respawn point
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load up the data</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>devils_samples <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/devils_samples.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. <strong>JACK ACTION POINT: to use this method in other regions what databases are available.</strong> The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data.</p>
+<p>We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison, WI. <strong>JACK ACTION POINT: to use this method in other regions what databases are available?</strong> The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data from R.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://williamspaleolab.github.io/data/whitmoreetal2005.zip"</span>, <span class="st">"./data/whitmoreetal2005.zip"</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"./data/whitmoreetal2005.zip"</span>, <span class="at">exdir =</span> <span class="st">"./data/whitmoreetal2005"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Since the data are already saved in the data directory, let’s read it in from there.</p>
+<p>Since the data are already saved in the data directory, let’s read it in from there. The step of downloading data might often be done manually, the point of including the R code is to maintain a reproducible work-flow. It is always good to keep your own copy of the data just in case. Servers may not be maintained forever, or data may be removed for example.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mod_pol <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"POLLEN DATA"</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mod_clim <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls"</span>, <span class="at">sheet =</span> <span class="st">"CLIMATE+BIOCLIMATE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Still with me? Great! Now we have our three datasets:</p>
 <ol type="1">
-<li>our site of interest (Devil’s Lake palaeo data);</li>
-<li>our modern pollen data;</li>
-<li>our modern climate measurements.</li>
+<li>Our site of interest (Devil’s Lake palaeo data).</li>
+<li>Our modern pollen data.</li>
+<li>Our modern climate measurements.</li>
 </ol>
-<p>The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data West of 105°W, see <span class="citation" data-cites="krause2019">Krause et al. (<a href="references.html#ref-krause2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="williams2001">John W. Williams, Shuman, and Webb III (<a href="references.html#ref-williams2001" role="doc-biblioref">2001</a>)</span>.</p>
+<p>The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil’s Lake. We’re first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil’s Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data East of 105°W, see <span class="citation" data-cites="krause2019">Krause et al. (<a href="references.html#ref-krause2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="williams2001">John W. Williams, Shuman, and Webb III (<a href="references.html#ref-williams2001" role="doc-biblioref">2001</a>)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># several columns contain data not used for the MAT</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east <span class="ot">&lt;-</span> mod_pol <span class="sc">%&gt;%</span> </span>
@@ -613,7 +614,7 @@ Respawn point
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Intersect</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<p>This code joins the modern pollen data and the Devil’s Lake core data so that the number of columns is expanded to contain the same species.</p>
+<p>This code joins the modern pollen data and the Devil’s Lake core data so that the number of columns is expanded to contain the same species in both. Note that while the variables (columns and species names) have been matched, each dataset remains independent. The two datasets have not been <em>merged</em> into one dataset like the <code>*_join</code> functions from <code>tidyr</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mod_pol_east_join <span class="ot">&lt;-</span> mod_pol_east <span class="sc">%&gt;%</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
@@ -649,26 +650,29 @@ Merged:     2717  142</code></pre>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select species based on name</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>mod_pol_east_intersect <span class="ot">&lt;-</span> mod_pol_east <span class="sc">%&gt;%</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> <span class="co"># convert to lowercase for matching</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(id2, names_matches_filter<span class="sc">$</span>value.y)) <span class="co"># keep id column and select species</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># The analoge functions need species names to match between datasets</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># so lets name everything in our filtered modern pollen the same as in Devil's Lake</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>mod_pol_east_intersect <span class="ot">&lt;-</span> mod_pol_east_intersect <span class="sc">%&gt;%</span> </span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">all_of</span>(<span class="fu">deframe</span>(names_matches_filter[ ,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])))</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a matrix of only species for the MAT with relative proportions</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># This is an approach for calculating relative abundances on wide data:</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>mod_pol_east_prop_intersect <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(mod_pol_east_intersect[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">/</span> <span class="fu">rowSums</span>(mod_pol_east_intersect[<span class="sc">-</span><span class="dv">1</span>]))</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># while we are here let's make a matrix of species only from Devils Lake</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>devils_prop_intersect <span class="ot">&lt;-</span> devils_wide <span class="sc">%&gt;%</span> </span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(names_matches_filter<span class="sc">$</span>value.x) <span class="sc">%&gt;%</span> <span class="co"># Remember we removed a few species without matches?</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Recall that we already converted the Devil's Lake data to proportions,</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co"># but, we do need to re-cecalculate proportions after dropping columns.</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>devils_prop_intersect <span class="ot">&lt;-</span> devils_prop_intersect <span class="sc">/</span> <span class="fu">rowSums</span>(devils_prop_intersect) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(names_matches_filter<span class="sc">$</span>value.y) <span class="sc">%&gt;%</span>  <span class="co"># keep id column and select species</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># The analoge functions need species names to match between datasets</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># so lets name everything in our filtered modern pollen the same as in Devil's Lake</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>mod_pol_east_intersect <span class="ot">&lt;-</span> mod_pol_east_intersect <span class="sc">%&gt;%</span> </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">all_of</span>(<span class="fu">deframe</span>(names_matches_filter[ ,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])))</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a matrix of only species for the MAT with relative proportions</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># This is an approach for calculating relative abundances on wide data:</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>mod_pol_east_prop_intersect <span class="ot">&lt;-</span> mod_pol_east_intersect <span class="sc">/</span> <span class="fu">rowSums</span>(mod_pol_east_intersect)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># data check: rowSums(mod_pol_east_prop_intersect)</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co"># while we are here let's make a matrix of species only from Devils Lake</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>devils_prop_intersect <span class="ot">&lt;-</span> devils_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(tolower) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(names_matches_filter<span class="sc">$</span>value.x) <span class="sc">%&gt;%</span> <span class="co"># Remember we removed a few species without matches?</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Recall that we already converted the Devil's Lake data to proportions,</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># but, we need to re-cecalculate proportions after dropping columns.</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># data check: rowSums(devils_prop_intersect)</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>devils_prop_intersect <span class="ot">&lt;-</span> devils_prop_intersect <span class="sc">/</span> <span class="fu">rowSums</span>(devils_prop_intersect) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -683,24 +687,24 @@ Good practice tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Whenever filtering or joining data it is good to check the dimensions before and after by using <code>dim()</code> to see if the results are what you expect. Some functions like <code>left_join()</code> or <code>full_join()</code> may run correctly but produce unexpected results.</p>
+<p>Whenever filtering or joining data it is good to check the dimensions before and after by using <code>dim()</code> to see if the results are what you expect. Some functions like <code>left_join()</code> or <code>full_join()</code> may run without error but produce unexpected results. It is also good to regularly use <code>rowSums()</code> to make sure you are using the correct data type (counts, proportions or percentages), and have not accidentaly included age, depth, or ID columns if they should be excluded.</p>
 </div>
 </div>
 <p>That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.</p>
 </section>
 <section id="sec-crossvalid" class="level3" data-number="7.2.2">
 <h3 data-number="7.2.2" class="anchored" data-anchor-id="sec-crossvalid"><span class="header-section-number">7.2.2</span> Cross-validation</h3>
-<p>The Modern Analogue Technique (MAT) needs the species in both the modern dataset and the core data to be the same, and can be calculated in two ways (restated here if you skipped the data wrangling in <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>):</p>
+<p>The Modern Analogue Technique (MAT) needs the same set of species in both the modern dataset and the core data, and can be calculated in two ways (restated here if you skipped the data wrangling in <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>):</p>
 <ol type="1">
 <li>By joining the two datasets so that both contain the same spicies column names, creating two larger dataset. Species missing from one dataset are filled with zero.</li>
-<li>By conducting the analysis on the intersect of the two datasets, i.e., a smaller dataset of the species common between the two.</li>
+<li>By conducting the analysis on the intersect of the two datasets, i.e., smaller datasets of the species common between the two.</li>
 </ol>
-<p>The remainder of the chapter will use the first, more conventional, method of joining datasets to contain the same species. In <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>, we created a dataset for both methods. The code below works for both methods, and you can switch out the data if you want to.</p>
+<p>The remainder of the chapter will use the first, more conventional, method of joining datasets to contain the same species. In <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>, we created a dataset for both methods. The code below works for both methods, and you can switch out the data if you want to (create the intersect data by running the code block “intersect” at the end of the previous section).</p>
 <p>Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.</p>
-<p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called <span class="math inline">\(k\)</span>-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into <span class="math inline">\(k\)</span> mutually exclusive subsets. For each <span class="math inline">\(k^{th}\)</span> subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.</p>
-<p>Standard metrics include RMSE and <span class="math inline">\(R^2\)</span>. Here, we’ll use the cross-validation tools built into the analogue package.</p>
+<p>In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called <span class="math inline">\(k\)</span>-fold cross-validation. In <span class="math inline">\(k\)</span>-fold cross-validation the modern data set is split into <span class="math inline">\(k\)</span> mutually exclusive subsets. For each <span class="math inline">\(k^{th}\)</span> subset, the calibration dataset comprises all the samples not in <span class="math inline">\(k\)</span>, while the samples in <span class="math inline">\(k\)</span> comprise the validation dataset. The simplest form of <span class="math inline">\(k\)</span>-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The <code>analogue</code> package uses leave-one-out cross-validation.</p>
+<p>Standard metrics include root mean square error (RMSE) and <span class="math inline">\(R^2\)</span>. Here, we’ll use the cross-validation tools built into the analogue package.</p>
 <p>Note that the <code>palaeoSig</code> package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation <span class="citation" data-cites="telford2005">(<a href="references.html#ref-telford2005" role="doc-biblioref">Telford and Birks 2005</a>)</span>.</p>
-<p>Now let’s do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here from the Data Wrangling section, make sure you load in the pre-formatted data from <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>.</p>
+<p>Now let’s do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here and skipped the Data Wrangling in <a href="#sec-datawrangle" class="quarto-xref"><span>Section 7.2.1</span></a>, make sure you load in the pre-formatted data from <a href="#sec-background" class="quarto-xref"><span>Section 7.1</span></a>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Summary</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Plots</a></li></ul>
 <div class="tab-content">
@@ -771,7 +775,7 @@ Inferences based on the weighted mean of k-closest analogues:
 </div>
 </div>
 </div>
-<p>Much of the information in this chapter comes from <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span>, and we recommend this paper for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (<a href="06-dissimilarity.html" class="quarto-xref"><span>Chapter 6</span></a>). With some additional considerations regarding transfer functions:</p>
+<p>Much of the information in this chapter comes from <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span>, and we recommend <span class="citation" data-cites="simpson2007">Simpson (<a href="references.html#ref-simpson2007" role="doc-biblioref">2007</a>)</span> for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (<a href="06-dissimilarity.html" class="quarto-xref"><span>Chapter 6</span></a>). With some additional considerations regarding transfer functions:</p>
 <ul>
 <li>Time intervals and chronological uncertainties are not accounted for. The difference in time between successive samples often varies in palaeo-data.</li>
 <li>Time averaging is not taken into account, and each sample may contain a different time-span of ecological productivity.</li>

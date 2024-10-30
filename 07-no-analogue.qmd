@@ -7,40 +7,35 @@ author: Jack Williams and Quinn Asena
 
 Cite @simpson2007 and @radeloff2015
 
-## Part 1: Background
+## Part 1: Background {#sec-background}
 
 The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data [@chevalier2020; @williams2008; @gavin2003; @overpeck1985]. The MAT relies on reasoning by analogy [@jackson2004], in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.
 
-The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a k-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues. 
+The MAT can also be thought of as a non-parametric statistical technique, that computer scientists call a $k$-nearest neighbors algorithm. It is a simple form of machine learning. Each fossil pollen assemblage is matched to 1 or more ($k$) modern pollen assemblages, then is assigned the ecological and environmental characteristics associated with those modern analogues. 
 
 The MAT is a popular approach for reconstructing past environments and climates, due to its relative simplicity and intuitive appeal. However, like any algorithm, if used unwisely, it can produce spurious results. More generally, when reasoning by analogy, be careful! Analogies are always incomplete and imperfect, and you must use your critical judgment to determine whether these imperfections are minor or serious.
 
 To reconstruct past environments using the MAT, we need three data sets:
 
-1. modern species assemblages
+1. Modern species assemblages.
 
-2. modern environmental variables
+2. Modern environmental variables.
 
-3. fossil species assemblages
+3. Fossil species assemblages.
 
 The MAT follows four basic steps:
 
-1. Calculate dissimilarities between a fossil species assemblage i and all modern species assemblages in set $S$.
+1. Calculate dissimilarities between a fossil species assemblage $i$ and all modern species assemblages in set $S$.
 
-2. Discard modern samples with dissimilarities greater than a threshold Dthreshold.
+2. Discard modern samples with dissimilarities greater than a threshold threshold.
 
-3. Identify and retain the k closest modern analogs.
+3. Identify and retain the $k$ closest modern analogs.
 
 4. Average the environmental conditions associated with the modern analogs and assign them to fossil sample $i$.
 
-Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the analogue package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!
+Note that we are taking a detour into paleoclimatology for two reasons. First, because paleoclimatic reconstructions are still a primary use for fossil pollen and other micropaleontological data. Second, because the MAT and the `analogue` package, as a dissimilarity-based approach, also lets us explore the novelty of past communities - perhaps of more interest to paleoecologists than inferred paleoclimates!
 
-## Part 2: analysis
-
-### Data wrangling {#sec-datawrangle}
-
-In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD [@whitmore2005] for the cross-validation analysis. Note that the NAMPD is pre-loaded into the analogue package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats. However, if you prefer to skip all the wrangling and jump directly to the anayses in @sec-crossvalid, the data have been saved post-wrangling and can be loaded into R directly.
-
+The following section, @sec-datawrangle, takes you through some pretty advanced data wrangling required to match species names between the datasets we will use. However, if you prefer to skip all the wrangling and jump directly to the anayses in @sec-crossvalid, the data have been saved post-wrangling and can be loaded into R directly. Run the 'Jump point' code below and portal to @sec-crossvalid.
 
 ::: {.callout-tip}
 # Jump point
@@ -58,6 +53,13 @@ list2env(rds_list, globalenv())
 
 ```
 :::
+
+
+## Part 2: analysis
+
+### Data wrangling {#sec-datawrangle}
+
+In this case, data are coming from two separate sources, NeotomaDB and the North American Modern Pollen Dataset (NAMPD). We will use the NAMPD [@whitmore2005] for the cross-validation analysis. Note that the NAMPD is pre-loaded into the `analogue` package, but here we’ll use use the original (more complete) data so that we can filter locations easily. Some of the data wrangling required to get two matrices containing the same species with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats.
 
 Ready to Wrange? Let’s get the data ready:
 
@@ -124,8 +126,7 @@ devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
 
-We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison WI. **JACK ACTION POINT: to use this method in other regions what databases are available.** The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data.
-
+We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison, WI. **JACK ACTION POINT: to use this method in other regions what databases are available?** The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data from R.
 
 ```{r nampd}
 #| warning: false
@@ -136,7 +137,7 @@ unzip("./data/whitmoreetal2005.zip", exdir = "./data/whitmoreetal2005")
 
 ```
 
-Since the data are already saved in the data directory, let's read it in from there.
+Since the data are already saved in the data directory, let's read it in from there. The step of downloading data might often be done manually, the point of including the R code is to maintain a reproducible work-flow. It is always good to keep your own copy of the data just in case. Servers may not be maintained forever, or data may be removed for example.
 
 ```{r}
 #| warning: false
@@ -147,11 +148,11 @@ mod_clim <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", she
 
 Still with me? Great! Now we have our three datasets:
 
-1. our site of interest (Devil's Lake palaeo data);
-2. our modern pollen data;
-3. our modern climate measurements.
+1. Our site of interest (Devil's Lake palaeo data).
+2. Our modern pollen data.
+3. Our modern climate measurements.
 
-The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data West of 105°W, see @krause2019 and @williams2001.
+The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data East of 105°W, see @krause2019 and @williams2001.
 
 
 ```{r, wrangle}
@@ -252,7 +253,7 @@ Now that we have matched the names between the two datasets, it is not difficult
 
 ## Join
 
-This code joins the modern pollen data and the Devil's Lake core data so that the number of columns is expanded to contain the same species.
+This code joins the modern pollen data and the Devil's Lake core data so that the number of columns is expanded to contain the same species in both. Note that while the variables (columns and species names) have been matched, each dataset remains independent. The two datasets have not been _merged_ into one dataset like the `*_join` functions from `tidyr`. 
 
 ```{r}
 
@@ -287,7 +288,8 @@ This code selects the common species of both the modern pollen data and the Devi
 # Select species based on name
 mod_pol_east_intersect <- mod_pol_east %>%
   rename_with(tolower) %>% # convert to lowercase for matching
-  select(c(id2, names_matches_filter$value.y)) # keep id column and select species
+  select(names_matches_filter$value.y) %>%  # keep id column and select species
+  as.matrix()
 
 # The analoge functions need species names to match between datasets
 # so lets name everything in our filtered modern pollen the same as in Devil's Lake
@@ -296,7 +298,8 @@ mod_pol_east_intersect <- mod_pol_east_intersect %>%
 
 # Let's create a matrix of only species for the MAT with relative proportions
 # This is an approach for calculating relative abundances on wide data:
-mod_pol_east_prop_intersect <- as.matrix(mod_pol_east_intersect[-1] / rowSums(mod_pol_east_intersect[-1]))
+mod_pol_east_prop_intersect <- mod_pol_east_intersect / rowSums(mod_pol_east_intersect)
+# data check: rowSums(mod_pol_east_prop_intersect)
 
 # while we are here let's make a matrix of species only from Devils Lake
 devils_prop_intersect <- devils_wide %>% 
@@ -305,7 +308,8 @@ devils_prop_intersect <- devils_wide %>%
   as.matrix()
 
 # Recall that we already converted the Devil's Lake data to proportions,
-# but, we do need to re-cecalculate proportions after dropping columns.
+# but, we need to re-cecalculate proportions after dropping columns.
+# data check: rowSums(devils_prop_intersect)
 devils_prop_intersect <- devils_prop_intersect / rowSums(devils_prop_intersect) 
 ```
 
@@ -314,7 +318,7 @@ devils_prop_intersect <- devils_prop_intersect / rowSums(devils_prop_intersect)
 
 ::: {.callout-tip}
 # Good practice tip
-Whenever filtering or joining data it is good to check the dimensions before and after by using `dim()` to see if the results are what you expect. Some functions like `left_join()` or `full_join()` may run correctly but produce unexpected results.
+Whenever filtering or joining data it is good to check the dimensions before and after by using `dim()` to see if the results are what you expect. Some functions like `left_join()` or `full_join()` may run without error but produce unexpected results. It is also good to regularly use `rowSums()` to make sure you are using the correct data type (counts, proportions or percentages), and have not accidentaly included age, depth, or ID columns if they should be excluded. 
 :::
 
 That took some pretty advanced wrangling to get the data in order. Such is often the case when using multiple sources of data. As always, there are many ways to achieve the same result. You can use these data wrangling tricks on different datasets and save a lot of time doing manual work.
@@ -322,23 +326,22 @@ That took some pretty advanced wrangling to get the data in order. Such is often
 
 ### Cross-validation {#sec-crossvalid}
 
-The Modern Analogue Technique (MAT) needs the species in both the modern dataset and the core data to be the same, and can be calculated in two ways (restated here if you skipped the data wrangling in @sec-datawrangle):
+The Modern Analogue Technique (MAT) needs the same set of species in both the modern dataset and the core data, and can be calculated in two ways (restated here if you skipped the data wrangling in @sec-datawrangle):
 
 1. By joining the two datasets so that both contain the same spicies column names, creating two larger dataset. Species missing from one dataset are filled with zero. 
-2. By conducting the analysis on the intersect of the two datasets, i.e., a smaller dataset of the species common between the two.
+2. By conducting the analysis on the intersect of the two datasets, i.e., smaller datasets of the species common between the two.
 
-The remainder of the chapter will use the first, more conventional, method of joining datasets to contain the same species. In @sec-datawrangle, we created a dataset for both methods. The code below works for both methods, and you can switch out the data if you want to.
-
+The remainder of the chapter will use the first, more conventional, method of joining datasets to contain the same species. In @sec-datawrangle, we created a dataset for both methods. The code below works for both methods, and you can switch out the data if you want to (create the intersect data by running the code block "intersect" at the end of the previous section).
 
 Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
 
-In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called $k$-fold cross-validation. In $k$-fold cross-validation the modern data set is split into $k$ mutually exclusive subsets. For each $k^{th}$ subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The analogue package uses leave-one-out cross-validation.
+In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and - possibly - independent. To cross-validate MAT, we usually use a technique called $k$-fold cross-validation. In $k$-fold cross-validation the modern data set is split into $k$ mutually exclusive subsets. For each $k^{th}$ subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The `analogue` package uses leave-one-out cross-validation.
 
-Standard metrics include RMSE and $R^2$. Here, we’ll use the cross-validation tools built into the analogue package.
+Standard metrics include root mean square error (RMSE) and $R^2$. Here, we’ll use the cross-validation tools built into the analogue package.
 
 Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this lab, but it’s useful for testing whether apparently strong cross-validation results are merely an artifact of spatial autocorrelation [@telford2005].
 
-Now let's do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here from the Data Wrangling section, make sure you load in the pre-formatted data from @sec-datawrangle.
+Now let's do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here and skipped the Data Wrangling in @sec-datawrangle, make sure you load in the pre-formatted data from @sec-background.
 
 ::: {.panel-tabset}
 
@@ -368,7 +371,7 @@ plot(modpoll_jant)
 
 :::
 
-Much of the information in this chapter comes from @simpson2007, and we recommend this paper for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (@sec-dissimilarity). With some additional considerations regarding transfer functions:
+Much of the information in this chapter comes from @simpson2007, and we recommend @simpson2007 for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (@sec-dissimilarity). With some additional considerations regarding transfer functions:
 
 - Time intervals and chronological uncertainties are not accounted for. The difference in time between successive samples often varies in palaeo-data.
 - Time averaging is not taken into account, and each sample may contain a different time-span of ecological productivity.

@@ -22,12 +22,12 @@ pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
 :::
 
 
-We will be using the Devil's Lake dataset downloaded in @sec-neotoma2. We've included a catch-up block of code that downloads and formats the data so that this section can be run independently of @sec-neotoma2. This respawn code shows all the steps of downloading and formatting the data, so you can return to it if any errors have been introduced along the way. 
+We will be using the Devil's Lake dataset downloaded in @sec-neotoma2. We will read in the pre-formatted data from the data directory directly so that this section can be run independently of @sec-neotoma2. We've also included a catch-up block of code (below) that shows the process of downloading and formatting the data to maintain a reproducible record of the steps required to start this section.
 
 ::: {.callout-tip}
 # Respawn code
 
-The following code recreates the necessary formatted data from Devil's Lake using the `neotoma2` package. We have also provided the formatted dataset as an `.rds` file in the data directory, it is preferable to read the dataset rather than repeatedly download it to avoid unnecessary API calls. This code block is included so that you can manipulate the inputs (e.g., `sideid = ` and harmonising taxa) and object name to download and experiment with different datasets.
+The following code recreates the necessary formatted data from Devil's Lake using the `neotoma2` package. We have also provided the formatted dataset as an `.rds` file in the data directory, it is preferable to read the dataset rather than repeatedly download it to avoid unnecessary API calls. This code block is included so that you can manipulate the inputs (e.g., `sideid = `, and harmonising taxa) and object name to download and experiment with different datasets.
 
 ```{r DevilsRespawn}
 #| eval: false
