@@ -1,5 +1,118 @@
 # Data wrangling and visualisations {#wrangle-vis-sec}
 
+
+## Simple Analytics
+
+### Stratigraphic Plotting: Building a Pollen Diagram
+As you've seen already, stratigraphic diagrams are a very common way of viewing geological data, in which time is represented vertically and with older materials at bottom, just like in the sediment record. Palynologists use a particular form of a stratigraphic diagram called a pollen diagram.
+
+We can use packages like `rioja` to do stratigraphic plotting for a single dataset. Here, we'll take a few key species at a single site and plot them.
+
+```{r stratiplot2}
+#| output: false
+#| eval: false
+# Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
+# Transform to proportion values.
+devils_samples <- get_sites(siteid = 666) %>%
+  get_downloads() %>%
+  samples()
+
+devils_samples <- devils_samples %>%
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus")) %>%
+  group_by(siteid, sitename,
+           sampleid, variablename, units, age,
+           agetype, depth, datasetid,
+           long, lat) %>%
+  summarise(value = sum(value), .groups='keep')
+
+
+onesite <- devils_samples %>%
+  group_by(age) %>%
+  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
+  group_by(variablename) %>%
+  mutate(prop = value / pollencount) %>%
+  arrange(desc(age))
+
+# Spread the data to a "wide" table, with taxa as column headings.
+widetable <- onesite %>%
+  dplyr::select(age, variablename, prop) %>%
+  mutate(prop = as.numeric(prop))  %>%
+  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
+                             "Tsuga", "Ulmus", "Picea"))
+
+props <- tidyr::pivot_wider(widetable,
+                             id_cols = age,
+                             names_from = variablename,
+                             values_from = prop,
+                             values_fill = 0)
+```
+
+This appears to be a fairly long set of commands, but the code is pretty straightforward, and it provides you with significant control over the taxa for display, units pf measurement, and other elements of your data before you get them into the wide matrix (`depth` by `taxon`) that most statistical tools such as the `vegan` package or `rioja` use. To plot we can use `rioja`'s `strat.plot()`, sorting the taxa using weighted averaging scores (`wa.order`). We've also added a CONISS plot to the edge of the plot, to show how the new *wide* data frame works with distance metric functions. (We'll talk more about distance and dissimilarity metrics in upcoming labs.)
+
+```{r plotStrigraph}
+#| warning: false
+#| eval: false
+clust <- rioja::chclust(dist(sqrt(props)),
+                        method = "coniss")
+
+plot <- rioja::strat.plot(props[,-1] * 100, yvar = props$age,
+                  title = devils_samples$sitename[1],
+                  ylabel = "Calibrated Years BP",
+                  #xlabel = "Pollen (%)",
+                  y.rev = TRUE,
+                  clust = clust,
+                  wa.order = "topleft", scale.percent = TRUE)
+
+rioja::addClustZone(plot, clust, 4, col = "red")
+```
+
+
+
+### Change Taxon Distributions Across Space and Time
+
+The true power of Neotoma is its ability to support large-scale analyses across many sites, many s time periods within sites, many proxies, and many taxa. As a first dipping of our toes in the water, lets look at temporal trends in abundance when averaged across ites. We now have site information across Michigan, with samples, and with taxon names. Let's say we are interested in looking at the distributions of the selected taxa across time, their presence/absence:
+
+```{r summarizeByTime}
+#| warning: false
+#| eval: false
+taxabyage <- allSamp %>%
+  dplyr:::filter(variablename %in% c("Pinus", "Betula", "Quercus",
+                             "Tsuga", "Ulmus", "Picea"),
+                             age < 11000) %>%
+  group_by(variablename, "age" = round(age * 2, -3) / 2) %>%
+  summarise(n = length(unique(siteid)), .groups = 'keep')
+
+samplesbyage <- allSamp %>%
+  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
+                             "Tsuga", "Ulmus", "Picea")) %>%
+  group_by("age" = round(age * 2, -3) / 2) %>%
+  summarise(samples = length(unique(siteid)), .groups = 'keep')
+
+groupbyage <- taxabyage %>%
+  inner_join(samplesbyage, by = "age") %>%
+  mutate(proportion = n / samples)
+
+ggplot(groupbyage, aes(x = age, y = proportion)) +
+  geom_point() +
+  geom_smooth(method = 'gam',
+              method.args = list(family = 'binomial')) +
+  facet_wrap(~variablename) +
+  #coord_cartesian(xlim = c(22500, 0), ylim = c(0, 1)) +
+  scale_x_reverse() +
+  xlab("Proportion of Sites with Taxon") +
+  theme_bw()
+
+```
+
+We can see clear patterns of change for at least some taxa, and the smoothed surfaces are modeled using Generalized Additive Models (GAMs) in R, so we can have more or less control over the actual modeling using the `gam` or `mgcv` packages. Depending on how we divide the data we can also look at shifts in altitude, latitude or longitude to better understand how species distributions and abundances changed over time in this region.
+
+Note that for some taxa, they always have a few pollen grains in all pollen samples, so this 'proportion of sites with taxon' isn't very informative. Calculating a metric like average abundance might be more useful. 
+
+**Exercise question 7**: Repeat the above example, for a different state or other geographic region of your choice.
+
+
 - [ ] Data checks
 
 - [ ] Tidying data

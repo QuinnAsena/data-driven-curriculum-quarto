@@ -2,13 +2,11 @@
 
 ## Part 1: Background
 
-This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/Application_programming_interface)) to communicate with the Neotoma Paleoecology Database, so we'll begin with an introduction to APIs. 
+This series of exercises is designed to give you hands-on practice in using the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. This section is a condensed version of the [current workshop link]() and focuses on data structures and the core functions in the `neotoma2` R package for downloading and manipulating data. A hard-won lesson for a practicing data scientist is how much time and attention goes into data handling! For a more extended introduction to Neotoma, see the [current workshop link](). If you’re planning on working with Neotoma more in the future, please join us on [Slack](https://join.slack.com/t/neotomadb/shared_invite/zt-cvsv53ep-wjGeCTkq7IhP6eUNA9NxYQ), where we manage a channel specifically for questions about the R package. You may also wish to join Neotoma's Google Groups mailing list, and if so [contact us](mailto:neotoma-contact@googlegroups.com) to be added.
 
-Much of this exercise is based on [A Simple Workflow](https://open.neotomadb.org/EPD_binder/simple_workflow.html) and [A Not so Simple Workflow](https://open.neotomadb.org/EPD_binder/complex_workflow.html) tutorials that were originally developed for a workshop convened by the European Pollen Database in June 2022. Today we'll keep the initial analyses relatively simple, so that you can focus on learning the data structures and functions used by `neotoma2`. A hard-won lesson for a practicing data scientist is how much time and attention goes into data handling!
+This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package, both for practical reasons and for insights into how open-data systems work. `neotoma2`’s primary purpose is to pass data from the Neotoma DB server into your local R computing environment.
 
 In this tutorial you will learn how to:
-
-- Use the Neotoma API
 
 - Search for sites using site names and geographic parameters
 
@@ -16,61 +14,30 @@ In this tutorial you will learn how to:
 
 - Obtain sample information for the selected datasets
 
-- Perform basic analysis including the use of climate data from rasters
-
-This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package, both for practical reasons and for insights into how open-data systems work. `neotoma2`’s primary purpose is to pass data from the Neotoma DB server into your local R computing environment. Neotoma relies on Application Programming Interfaces ([APIs](https://en.wikipedia.org/wiki/API)) to communicate with the Neotoma Paleoecology Database, so we’ll begin with an introduction to APIs.
-
-## The Wide, Wide World of APIs
-
-The Neotoma Paleoecology Database is a relational database, hosted on servers at [Penn State’s Center for Environmental Informatics](https://sites.psu.edu/environmentalinformatics/). For security reasons, direct access to these servers is quite limited, and available only to a few Neotoma and CEI programmers.
-
-**APIs** offer public access points into Neotoma that anyone can use. Each API is basically a function: you provide the API with a set of operational parameters, and it returns a set of data or metadata. Each API hence is designed to support one particular task or set of tasks; it offers a narrow window into the larger Neotoma DB. [REST-ful APIs](https://en.wikipedia.org/wiki/Representational_state_transfer) follow a particular set of standards that allow them to be read by web browsers (i.e. within the HTTP protocol) and return data objects, typically in HTML, XML, JSON or other human- & machine-readable formats.
-
-The [Neotoma APIs](https://api.neotomadb.org/api-docs/) provide a series of functions for retrieving different kinds of data from Neotoma DB. Data objects are returned in [JSON](https://en.wikipedia.org/wiki/JSON) format. For this exercise, we strongly recommend adding an extension to your browser that formats the JSON output to make it easier to read, such as [JSONView](https://addons.mozilla.org/en-US/firefox/addon/jsonview/) for Firefox, and [JSON Formatter](https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa?hl=en) for Chrome.
-
-The APIs for Neotoma can be found here: https://api.neotomadb.org/api-docs/. Look through the lists of different APIs and find the one labeled `GET /v2.0/data/sites/{siteid}`. Then, click on the Try It Out button at right, enter 666 into the site identifier box, and click Execute. Then scroll down. You should see some example code in curl format (ignore this) and as a URL. If you scroll down further, you’ll see the actual data return, in JSON format. JSON is a structured data format designed to be both human-readable and machine-readable. It looks like a nested series of lists. 
-
-Now, let's go from the API sandbox to direct use of the API URLs in a browser. Copy and paste the below URL into the URL box in your browser:
-
-`https://api.neotomadb.org/v2.0/data/sites?sitename=%devil%`
-
-This should open a new web page in your browser with a returned JSON object. For this search, the JSON object should include 16 or more sites with the name ‘devil’ in them (note the use of % as wildcards), including Devil’s Lake, WI. The opening line "status" = "success" means that the API ran successfully. Note that it is possible for an API to run successfully but return no data! For example, try:
-
-`https://api.neotomadb.org/v2.0/data/sites?sitename=devil`
-
-Here, "status" = "success" but data=[], i.e. the API successfully reported back to you that no sites in Neotoma have the exact name of ‘devil’.
-
-Once you know what an API is, you will quickly see how widely these are used by modern browsers and websites. For example, try:
-
-`https://www.google.com/search?q=neotoma&ei=-xE_Y4XHA8GF0PEPi6-p-AU&ved=0ahUKEwjFsPSAksz6AhXBAjQIHYtXCl8Q4dUDCA0&uact=5&oq=neotoma&gs_lcp=Cgdnd3Mtd2l6EAMyDgguEIAEEIsDEKgDEJ4DMggILhCABBCLAzIICC4QgAQQiwMyCAguEIAEEIsDMggILhCABBCLAzIICAAQkQIQiwMyCAguEIAEEIsDMggILhCABBCLAzIICC4QgAQQiwMyCAgAEIAEEIsDOgoIABBHENYEELADOgcIABCwAxBDOg0IABDkAhDWBBCwAxgBOgwILhDIAxCwAxBDGAI6DwguENQCEMgDELADEEMYAjoOCC4QgAQQxwEQ0QMQ1AI6CwgAEIAEELEDEIMBOhEILhCABBCxAxCDARDHARDRAzoOCC4QgAQQsQMQgwEQ1AI6FAguEIAEELEDEIMBENQCEJsDEKgDOg4ILhCABBDHARDRAxCLAzoOCAAQgAQQsQMQgwEQiwM6EQguEIAEENQCEIsDEKgDEKQDOg4IABCRAhCLAxCmAxCoAzoNCAAQQxCLAxCoAxCmAzoFCAAQgAQ6CAguELEDEIMBOgsILhCABBDHARCvAToHCAAQQxCLAzoICC4QgAQQsQM6CAgAEIAEELEDOhEILhCABBCxAxDUAhCjAxCoAzoLCC4QsQMQgwEQiwM6BwgAEIAEEAo6DggAELEDEIMBEJECEIsDOhAIABCABBCxAxCDARAKEIsDOgoIABCABBAKEIsDOgUIABCRAkoECEEYAEoECEYYAVC5BVirCmDFDGgBcAF4AIABjAGIAdcFkgEDMy40mAEAoAEByAERuAEDwAEB2gEGCAEQARgJ2gEGCAIQARgI&sclient=gws-wiz`
-
-Note that in this demo use of the Google search API, all we did is enter 'neotoma' in the standard Google search window and then Google produced and formatted the above API query with a ?search parameter (and who knows what else is lurking in that massive text parameter...)
-
-OK, now your turn: 
-
-**Exercise question 1** Use the *sites* API to retrieve site data for sites of interest. The *sites* API has a few different parameters, so try out options. Try copying and pasting the URLs into the address line of your browser, and then hitting return. In your homework exercise, provide at least two *sites* API calls (as URLs) with a comment line for each that explains what the API command is doing.
-
 ## Part 2: Getting Started With `neotoma2`
 
-For this workbook we use several packages, including `leaflet`, `sf` and others. We load the packages using the `pacman` package, which will automatically install the packages if they do not currently exist in your set of packages.
+The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology Database (Neotoma DB) server into your local R environment. `neotoma2` has a layered structure of core functions for obtaining data:
+
+1. sites
+2. datasets
+3. downloads
+4. samples
+
+There are many more functions for maipulating data and conducting other operations that we will encounter along the way while we take you through these four data layers. For this workbook we use several packages, including `leaflet`, `sf` and others. We load the packages using the `pacman` package, which will automatically install the packages if they do not currently exist in your set of packages.
 
 ::: {.callout-note}
 # Packages required for this section
 
-`neotoma2` is available from GitHub and can be installed in R using the `devtools` package via `devtools`:
-
 ```{r packages}
 #| output: false
 # Load up the package
-# if (!require("devtools")) install.packages("devtools", repos="http://cran.r-project.org") # devtools allows us to install from online repositories
-# devtools::install_github('NeotomaDB/neotoma2') # pacman does not search github curently so we will install neotoma2 separately
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
 pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, raster, DT, rioja, htmlwidgets) # Pacman will load neotoma2
 ```
 :::
 
 ### Good coding practice: explicitly naming packages and functions
-Different packages in R are created independently by different teams of developers, and it's very common for two different packages to use the same function names (the English language is finite...). This can lead to coding errors if you call a function that you know is in one package, but R guesses wrongly that you wanted a function of the same name from an entirely different package. For example, for a function like `filter()`, which exists in both `neotoma2` and other packages such as `dplyr`, you may see an error that looks like:
+Different packages in R are created independently by different teams of developers, and it's very common for two different packages to use the same function names. This can lead to coding errors if you call a function that you know is in one package, but R guesses wrongly that you wanted a function of the same name from an entirely different package. For example, for a function like `filter()`, which exists in both `neotoma2` and other packages such as `dplyr`, you may see an error that looks like:
 
 ::: {.callout-warning}
 # Oh no! :scream:
@@ -79,17 +46,9 @@ Different packages in R are created independently by different teams of develope
 Error in UseMethod("filter") :
  no applicable method for 'filter' applied to an object of class "sites"
 ```
-
 :::
 
-
 You can avoid this error by explicitly naming which package has the function that you want to use, through the standard convention of double colons (`package.name::function.name`). For example, using `neotoma2::filter()` tells R explicitly that you want to use the `filter()` function in the `neotoma2` package, not some other package version.
-
-*Summary*: It's good coding practice to always explicitly link packages to the functions that you are using! Your future self will thank you.
-
-### Getting Help with Neotoma (APIs, R, Explorer, Tilia, ...)
-
-For Geog523, the class Slack workspace is your first and best option. If you’re planning on working with Neotoma more in the future, please join us on [Slack](https://join.slack.com/t/neotomadb/shared_invite/zt-cvsv53ep-wjGeCTkq7IhP6eUNA9NxYQ), where we manage a channel specifically for questions about the R package. You may also wish to join Neotoma's Google Groups mailing list, and if so [contact us](mailto:neotoma-contact@googlegroups.com) to be added.
 
 ## Neotoma2: Site Searches: `get_sites()`
 
@@ -131,7 +90,6 @@ plotLeaflet(devil_sites)
 
 :::
 
-**Exercise question 2** How many sites have the name 'clear' in them?  Show both your code and provide the total count.
 
 #### Searching by Location: `loc=c()`
 
@@ -186,8 +144,6 @@ neotoma2::plotLeaflet(mich_sites) %>%
 
 :::
 
-
-**Exercise question 3** Which state has more sites in Neotoma, Minnesota or Wisconsin? How many in each state? Provide both code and answer.
 
 #### Helper Functions for Site Searches
 
@@ -249,9 +205,6 @@ datasets(mich_datasets) %>%
 ```
 
 :::
-
-
-**Exercise question 4**: How many different kinds of datasets are available at Devil's Lake, WI? Show both code and answer. Ensure that your code just retrieves datasets for just this single site.
 
 ### Filter Records
 
@@ -396,8 +349,6 @@ neotomatx %>%
 :::
 
 
-**Exercise question 5**: Follow the *Pinus* example above, but now for *Picea.* How many taxon names were aggregated into your *Picea* name?
-
 If we want to store a record of our choices outside of R, we can use an external table. For example, a table of pairs (what we want changed, and the name we want it replaced with) can be generated, and it can include regular expressions (if we choose):
 
 | original | replacement |
@@ -440,118 +391,21 @@ ggplot(data = taxaplots, aes(x = sites, y = samples)) +
 
 The plot is mostly for illustration, but we can see, as a sanity check, that the relationship is as we'd expect.
 
-## Simple Analytics
-
-### Stratigraphic Plotting: Building a Pollen Diagram
-As you've seen already, stratigraphic diagrams are a very common way of viewing geological data, in which time is represented vertically and with older materials at bottom, just like in the sediment record. Palynologists use a particular form of a stratigraphic diagram called a pollen diagram.
-
-We can use packages like `rioja` to do stratigraphic plotting for a single dataset. Here, we'll take a few key species at a single site and plot them.
-
-```{r stratiplot2}
-#| output: false
-# Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
-# Transform to proportion values.
-devils_samples <- get_sites(siteid = 666) %>%
-  get_downloads() %>%
-  samples()
-
-devils_samples <- devils_samples %>%
-  mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"),
-                                "Pinus")) %>%
-  group_by(siteid, sitename,
-           sampleid, variablename, units, age,
-           agetype, depth, datasetid,
-           long, lat) %>%
-  summarise(value = sum(value), .groups='keep')
-
-
-onesite <- devils_samples %>%
-  group_by(age) %>%
-  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
-  group_by(variablename) %>%
-  mutate(prop = value / pollencount) %>%
-  arrange(desc(age))
-
-# Spread the data to a "wide" table, with taxa as column headings.
-widetable <- onesite %>%
-  dplyr::select(age, variablename, prop) %>%
-  mutate(prop = as.numeric(prop))  %>%
-  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
-                             "Tsuga", "Ulmus", "Picea"))
-
-props <- tidyr::pivot_wider(widetable,
-                             id_cols = age,
-                             names_from = variablename,
-                             values_from = prop,
-                             values_fill = 0)
-```
-
-This appears to be a fairly long set of commands, but the code is pretty straightforward, and it provides you with significant control over the taxa for display, units pf measurement, and other elements of your data before you get them into the wide matrix (`depth` by `taxon`) that most statistical tools such as the `vegan` package or `rioja` use. To plot we can use `rioja`'s `strat.plot()`, sorting the taxa using weighted averaging scores (`wa.order`). We've also added a CONISS plot to the edge of the plot, to show how the new *wide* data frame works with distance metric functions. (We'll talk more about distance and dissimilarity metrics in upcoming labs.)
-
-```{r plotStrigraph}
-#| warning: false
-clust <- rioja::chclust(dist(sqrt(props)),
-                        method = "coniss")
-
-plot <- rioja::strat.plot(props[,-1] * 100, yvar = props$age,
-                  title = devils_samples$sitename[1],
-                  ylabel = "Calibrated Years BP",
-                  #xlabel = "Pollen (%)",
-                  y.rev = TRUE,
-                  clust = clust,
-                  wa.order = "topleft", scale.percent = TRUE)
-
-rioja::addClustZone(plot, clust, 4, col = "red")
-```
-
-**Exercise question 6**: Make a stratigraphic pollen diagram in `rioja`, for a site of your choice (not Devils Lake) and taxa of your choice. Show code and resulting diagram.
-
-### Change Taxon Distributions Across Space and Time
-
-The true power of Neotoma is its ability to support large-scale analyses across many sites, many s time periods within sites, many proxies, and many taxa. As a first dipping of our toes in the water, lets look at temporal trends in abundance when averaged across ites. We now have site information across Michigan, with samples, and with taxon names. Let's say we are interested in looking at the distributions of the selected taxa across time, their presence/absence:
-
-```{r summarizeByTime}
-#| warning: false
-taxabyage <- allSamp %>%
-  dplyr:::filter(variablename %in% c("Pinus", "Betula", "Quercus",
-                             "Tsuga", "Ulmus", "Picea"),
-                             age < 11000) %>%
-  group_by(variablename, "age" = round(age * 2, -3) / 2) %>%
-  summarise(n = length(unique(siteid)), .groups = 'keep')
-
-samplesbyage <- allSamp %>%
-  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
-                             "Tsuga", "Ulmus", "Picea")) %>%
-  group_by("age" = round(age * 2, -3) / 2) %>%
-  summarise(samples = length(unique(siteid)), .groups = 'keep')
-
-groupbyage <- taxabyage %>%
-  inner_join(samplesbyage, by = "age") %>%
-  mutate(proportion = n / samples)
-
-ggplot(groupbyage, aes(x = age, y = proportion)) +
-  geom_point() +
-  geom_smooth(method = 'gam',
-              method.args = list(family = 'binomial')) +
-  facet_wrap(~variablename) +
-  #coord_cartesian(xlim = c(22500, 0), ylim = c(0, 1)) +
-  scale_x_reverse() +
-  xlab("Proportion of Sites with Taxon") +
-  theme_bw()
-
-```
-
-We can see clear patterns of change for at least some taxa, and the smoothed surfaces are modeled using Generalized Additive Models (GAMs) in R, so we can have more or less control over the actual modeling using the `gam` or `mgcv` packages. Depending on how we divide the data we can also look at shifts in altitude, latitude or longitude to better understand how species distributions and abundances changed over time in this region.
-
-Note that for some taxa, they always have a few pollen grains in all pollen samples, so this 'proportion of sites with taxon' isn't very informative. Calculating a metric like average abundance might be more useful. 
-
-**Exercise question 7**: Repeat the above example, for a different state or other geographic region of your choice.
-
-
 ## Conclusion
 
 So, we've done a lot in this exercise. We've (1) learned how APIs work (2) searched for sites using site names and geographic parameters, (3) filtered results using temporal and spatial parameters, (4) built a pollen diagram, and (5) done a first-pass spatial mapping of taxa. We will build upon this methodological foundation in future lab exercises.
+
+## Part 3 Exercises
+
+- How many sites have the name 'clear' in them?  Show both your code and provide the total count.
+
+- Which state has more sites in Neotoma, Minnesota or Wisconsin? How many in each state? Provide both code and answer.
+
+- How many different kinds of datasets are available at Devil's Lake, WI? Show both code and answer. Ensure that your code just retrieves datasets for just this single site.
+
+- Follow the *Pinus* example above, but now for *Picea.* How many taxon names were aggregated into your *Picea* name?
+
+- Make a stratigraphic pollen diagram in `rioja`, for a site of your choice (not Devils Lake) and taxa of your choice. Show code and resulting diagram.
 
 ## To do:
 
