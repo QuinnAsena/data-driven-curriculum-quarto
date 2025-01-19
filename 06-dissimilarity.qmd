@@ -37,7 +37,7 @@ devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
   get_downloads() %>%
   samples()
 
-devils_samples <- devils_samples %>%+
+devils_samples <- devils_samples %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland heath and trees and shrubs
          elementtype == "pollen", # filter bu pollen samples
          units == "NISP") %>% # Filter by sampling unit
