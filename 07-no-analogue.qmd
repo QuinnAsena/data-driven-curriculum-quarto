@@ -1,13 +1,10 @@
 ---
-# title: "Novelty and No Analogue Futures"
 author: Jack Williams and Quinn Asena
 ---
 
 # Novelty and No Analogue Futures {#sec-novelty}
 
-Cite @simpson2007 and @radeloff2015
-
-## Part 1: Background {#sec-background}
+## Background {#sec-background}
 
 The modern analog technique (MAT) is a standard approach for making quantitative inferences about past vegetation and climate from fossil pollen data – and from many other forms of paleoecological data [@chevalier2020; @williams2008; @gavin2003; @overpeck1985]. The MAT relies on reasoning by analogy [@jackson2004], in which it is assumed that two compositionally similar pollen assemblages were produced by similar plant communities, growing under similar environments. The similarity of pollen assemblages is determined by the calculation of dissimilarity metrics.
 
@@ -55,7 +52,7 @@ list2env(rds_list, globalenv())
 :::
 
 
-## Part 2: analysis
+## Code
 
 ### Data wrangling {#sec-datawrangle}
 
@@ -126,7 +123,7 @@ devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
 
-We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison, WI. **JACK ACTION POINT: to use this method in other regions what databases are available?** The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data from R.
+We will use the North American Modern Pollen Database (NAMPD) to create modern analogues. The NAMPD includes both modern surface pollen samples, and climate measurements. The NAMPD is not (yet) accessible through neotoma but is stored on servers at the University of Madison, WI. The following code does not need to be run but shows how to download the NAMPD from the server to your data directory and unzip the downloaded data from R.
 
 ```{r nampd}
 #| warning: false
@@ -379,9 +376,7 @@ Much of the information in this chapter comes from @simpson2007, and we recommen
 
 For deeper considerations of reconstructing temperatures using transfer functions see @telford2005.
 
-### Novelty and Paleoclimatic Reconstruction
-
-**Jack action point** Section needs some info from the lecture content to help understand the process as a stand-alone unit.
+### Novelty and palaeoclimatic reconstruction
 
 For this part of the lab, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT. Here’s some demonstration code showing the kinds of analyses that can be done and plotted timeseries.
 
@@ -421,20 +416,7 @@ reconPlot(devil_jant, depth = devils_ages, display.error="bars", xlab = "Age (yr
 
 :::
 
-::: {.callout-note}
-# Resources
-**Jacktion point:**
-
-Copy in a list of DOIs for essential reading and I'll add insert them as formatted citation links:
-
-- DOI
-- DOI
-
-:::
-
-## Part 3: Exercises
-
-**Jacktion point:** review questions and question order :)
+## Exercises
 
 
 1. In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?

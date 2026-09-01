@@ -1,3 +1,22 @@
+# --- Quarto build state and rendered output ---
 /.quarto/
+/_book/
 /*_cache/
 /*_files/
+*.rmarkdown
+*.knit.md
+
+# NOTE: /_freeze/ is deliberately NOT ignored. Frozen computation results are
+# committed so the GitHub Action can render the book without an R toolchain,
+# without compiling rioja, and without calling the Neotoma API.
+
+# --- R ---
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# --- Claude Code working context (local only, not shared with co-authors) ---
+/.notes/
+/CLAUDE.md

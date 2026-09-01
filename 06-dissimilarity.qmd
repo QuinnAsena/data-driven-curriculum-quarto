@@ -1,11 +1,10 @@
 ---
-# title: "Dissimilarity"
 author: Quinn Asena and Jack Williams
 ---
 
 # Dissimilarity {#sec-dissimilarity}
 
-## Part 1: Background
+## Background
 
 There are multiple methods of describing palaeoecological data in terms of species communities. Older, but still valid, methods include CONISS [@grimm1987], more modern methods include machine learning methods such as boosted regression trees [@elith2008; @simpson2012], and latent dirichlet allocation [@blei2007; @blei2012]. Here, we are going to look at a measure of dissimilarity, the squared chord distance, of samples through time. That is, a measure of how similar/dissimilar a community at time $t$ is to the community at $t_{+1}$.
 
@@ -152,7 +151,7 @@ One way we can visualise these data is by picking an origin from which to compar
 origin_top <- cbind(devils_ad, sq_dist = devils_sqdist[ ,1])
 ```
 
-## plot
+## Plot
 
 ```{r SqDistPlot}
 origin_top %>%
@@ -178,6 +177,6 @@ Some consiterations of this method are:
 Squared chord distance is one of many measures of dissimilarity, and is not necessarily the best for a given dataset [see @simpson2007]. The documentation of the `distance` function (accessed by `?distance`). The `vegan` package also includes functions for calculating distance, and provides many useful references in the documentation of the function `vegdist`.
 
 
-## Part 2: Exercises
+## Exercises
 
 Plot diagonal elements offset by 1?

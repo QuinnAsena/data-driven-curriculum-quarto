@@ -1,0 +1,43 @@
+name: Render and publish book
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      # No R setup step on purpose. `execute: freeze: auto` in _quarto.yml means the
+      # committed _freeze/ directory supplies every computed result, so this job needs
+      # neither an R toolchain, nor a rioja compile, nor any Neotoma API calls.
+      #
+      # The consequence: whenever a code chunk changes, re-render locally and commit the
+      # updated _freeze/ alongside the source. If _freeze/ is stale, the published book
+      # will show stale output rather than failing, so treat a re-render as part of any
+      # commit that touches R code.
+      - name: Confirm frozen results are present
+        run: |
+          if [ ! -d "_freeze" ]; then
+            echo "::error::_freeze/ is missing. Render locally and commit it, or this build will produce a book with no computed output."
+            exit 1
+          fi
+          echo "_freeze/ present:"
+          find _freeze -name "*.json" | head -20
+
+      - name: Publish to gh-pages
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

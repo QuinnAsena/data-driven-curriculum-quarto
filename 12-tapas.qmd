@@ -1,3 +1,0 @@
-# Charcoal Analysis using TAPAS
-
-Tapas is a R package for analysing charcoal

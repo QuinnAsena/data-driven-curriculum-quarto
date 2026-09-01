@@ -1,3 +1,2 @@
-# Ordination: Non-metric Dimension Scaling
+# Ordination: non-metric multidimensional scaling {#sec-nmds}
 
-I need wifi.

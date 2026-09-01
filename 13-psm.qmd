@@ -1,3 +1,0 @@
-# Proxy System Modelling
-
-Should this be replaced with LDA/CTM?

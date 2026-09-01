@@ -1,4 +1,4 @@
-# Neotoma Explorer 
+# Neotoma Explorer {#sec-neotoma-explorer}
 
 
 ## Lab overview

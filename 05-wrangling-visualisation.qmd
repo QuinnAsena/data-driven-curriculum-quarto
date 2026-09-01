@@ -1,4 +1,4 @@
-# Data wrangling and visualisations {#wrangle-vis-sec}
+# Data wrangling and visualisation {#sec-wrangle-vis}
 
 
 ## Simple Analytics
@@ -78,7 +78,7 @@ The true power of Neotoma is its ability to support large-scale analyses across 
 #| warning: false
 #| eval: false
 taxabyage <- allSamp %>%
-  dplyr:::filter(variablename %in% c("Pinus", "Betula", "Quercus",
+  dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
                              "Tsuga", "Ulmus", "Picea"),
                              age < 11000) %>%
   group_by(variablename, "age" = round(age * 2, -3) / 2) %>%
@@ -112,9 +112,3 @@ Note that for some taxa, they always have a few pollen grains in all pollen samp
 
 **Exercise question 7**: Repeat the above example, for a different state or other geographic region of your choice.
 
-
-- [ ] Data checks
-
-- [ ] Tidying data
-
-- [ ] Plotting data

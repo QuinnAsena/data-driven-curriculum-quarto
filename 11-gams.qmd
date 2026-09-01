@@ -1,6 +1,5 @@
-# Generalised Additive Models
-
-Gavin GAMs
+# Generalised additive models {#sec-gams}
 
 
-## Hierarchical Generalised Additive Models.
+
+## Hierarchical generalised additive models

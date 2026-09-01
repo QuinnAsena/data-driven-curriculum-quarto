@@ -31,7 +31,7 @@ As an example, this book itself is version controlled and collaborated on using 
 
 ## Packages
 
-R is equiped with packages for data wrangling aside from the `BASE` R language, notably `data.table` and several packages inside the `tidyverse` library. We won't debate the differences here. We will primarily use packages from the `tidyverse` (`dplyr, ggplot2...) because they integrate with the `neotoma2` package used for interacting with the Neotoma(link) API.
+R is equiped with packages for data wrangling aside from the `BASE` R language, notably `data.table` and several packages inside the `tidyverse` library. We won't debate the differences here. We will primarily use packages from the `tidyverse` (`dplyr`, `ggplot2`...) because they integrate with the `neotoma2` package used for interacting with the Neotoma(link) API.
 
 
 ## Packages used in this book

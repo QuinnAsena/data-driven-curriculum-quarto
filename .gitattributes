@@ -1,0 +1,38 @@
+# Normalise text files to LF in the repository, check out native on each platform.
+# Without this, edits from macOS/Linux co-authors produce whole-file diffs against
+# the CRLF files committed from Windows.
+* text=auto
+
+# Be explicit for the text formats we actually author, so detection is never in play.
+*.qmd    text
+*.md     text
+*.yml    text
+*.yaml   text
+*.bib    text
+*.R      text
+*.r      text
+*.css    text
+*.scss   text
+*.csv    text
+*.json   text
+
+# Binary. Never touch these, in particular the cached .rds datasets.
+*.rds    binary
+*.RData  binary
+*.xls    binary
+*.xlsx   binary
+*.zip    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.pdf    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+
+# Treat SVG as text for diffing but do not let it be mangled on checkout.
+*.svg    text eol=lf
+
+# Collapse rendered output and frozen results in diffs and PR reviews.
+_freeze/**  linguist-generated=true -diff

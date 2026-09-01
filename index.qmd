@@ -6,7 +6,7 @@ For instructors, the repository can be forked and edited to suit different needs
 
 If you do use this resource for teaching or learning please cite it: DOI XXX. This will help us keep track of the impact and use of such open-source curricula and inform future work.
 
-This curriculum is an open-source and we welcome suggestions for improvement from the community that will be reviewed by the developers. We will also keep the resource up-to-date with the latest package improvements. The development of this curriculum is tracked with version control using git and the `renv` package is used to control package versions. **section perhaps should be edited and moved to readme with instructions for raising github issues**
+This curriculum is an open-source and we welcome suggestions for improvement from the community that will be reviewed by the developers. We will also keep the resource up-to-date with the latest package improvements. The development of this curriculum is tracked with version control using git and the `renv` package is used to control package versions.
 
 ## What this book is
 
@@ -32,23 +32,3 @@ This book assumes a degree of knowledge of the R language (e.g., packages and da
 
 It is good practice to back-up your data and use version control for your code. Onve you integrate version control into your workflow you will wonder how you ever lived without it. Version control is a vast subject but knowing the basics can get you a very far. The Git language (not to be confused with GitHub the remote server) is a common method used to colaborate in software development. Git is not a pre-requisite for this book but as a necessary part of an advanced workflow we include some links to learning basic version control:
 
-
-- [ ] Set up group Zotero
-
-- [ ] Complete writing
-
-- [ ] Complete YAML file
-
-- [ ] Author order? Authors per chapter?
-
-- [ ] `renv`
-
-- [ ] replace PSM with LDA?
-
-- [ ] host and track with google analytics?
-
-- [ ] check literature is open access? 
-
-- [ ] include `saveRDS` for devils lake.
-
-- [ ] `cache: false` for programatically generated tabset panel code chunks
