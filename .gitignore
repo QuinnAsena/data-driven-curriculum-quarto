@@ -17,6 +17,10 @@
 .Ruserdata
 *.Rproj
 
+# --- editors ---
+.vscode/
+.Rproj.user/
+
 # --- Claude Code working context (local only, not shared with co-authors) ---
 /.notes/
 /CLAUDE.md

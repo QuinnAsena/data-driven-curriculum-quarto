@@ -1,6 +1,19 @@
 # Data wrangling and visualisation {#sec-wrangle-vis}
 
 
+::: {.callout-note}
+# Packages required for this section
+
+`rioja` provides the stratigraphic plotting and the CONISS constrained clustering used below.
+The rest are for wrangling and plotting.
+
+```{r wranglePackages}
+#| output: false
+if (!require("pacman")) install.packages("pacman", repos = "https://cran.r-project.org")
+pacman::p_load(dplyr, tidyr, ggplot2, stringr, rioja, neotoma2)
+```
+:::
+
 ## Simple Analytics
 
 ### Stratigraphic Plotting: Building a Pollen Diagram
@@ -110,5 +123,15 @@ We can see clear patterns of change for at least some taxa, and the smoothed sur
 
 Note that for some taxa, they always have a few pollen grains in all pollen samples, so this 'proportion of sites with taxon' isn't very informative. Calculating a metric like average abundance might be more useful. 
 
-**Exercise question 7**: Repeat the above example, for a different state or other geographic region of your choice.
 
+## Exercises
+
+::: {#exr-wrangle-region}
+Repeat the taxon-distribution example above for a different state, or another geographic
+region of your choice.
+:::
+
+::: {#exr-wrangle-stratplot}
+Make a stratigraphic pollen diagram in `rioja`, for a site of your choice (not Devil's Lake)
+and taxa of your choice. Show the code and the resulting diagram.
+:::

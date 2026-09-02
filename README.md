@@ -21,14 +21,38 @@ cd data-driven-curriculum-quarto
 quarto render
 ```
 
-Each chapter loads its own packages with `pacman::p_load()`, which installs anything missing,
-so the first render downloads a fair number of packages:
+Install the packages once, up front:
 
 ```r
-install.packages("pacman")
-pacman::p_load(tidyverse, Bchron, neotoma2, analogue, vegan, rioja, mgcv,
-               sf, geojsonsf, leaflet, terra, DT, htmlwidgets, readxl, fuzzyjoin)
+source("install.R")
 ```
+
+Every chapter also loads what it needs with `pacman::p_load()`, which installs anything
+missing, so `install.R` is a convenience rather than a requirement. It exists so that
+installation happens before a lesson rather than in the middle of one.
+
+### Which R Quarto uses
+
+Quarto picks R off your `PATH`, which is not necessarily the R you work in. If you have more
+than one version installed, check with:
+
+```bash
+quarto check knitr
+```
+
+If it reports the wrong one, point Quarto at the right R with the `QUARTO_R` environment
+variable, set to the full path of `Rscript`. On Windows, in PowerShell:
+
+```powershell
+[Environment]::SetEnvironmentVariable("QUARTO_R", "C:\Program Files\R\R-4.6.1\bin\x64\Rscript.exe", "User")
+```
+
+On macOS or Linux, add `export QUARTO_R=/usr/local/bin/Rscript` (or wherever `which Rscript`
+points) to your shell profile.
+
+Restart your terminal and editor afterwards; environment variables are only picked up by new
+processes. Note that a project-level `_environment` file does **not** work for this: Quarto
+resolves R before reading it.
 
 ### Frozen results
 

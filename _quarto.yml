@@ -7,19 +7,20 @@ book:
   date: today
   repo-url: https://github.com/QuinnAsena/data-driven-curriculum-quarto
   repo-actions: [edit, issue]
+  # Chapter order lives here and only here. Filenames carry no numbers on purpose:
+  # a numeric prefix drifts from the rendered chapter number as soon as a chapter is
+  # commented out, and the {#sec-} labels are the stable identifiers for cross-references.
   chapters:
     - index.qmd
-    - 01-intro.qmd
-#    - 02-intro-to-R.qmd
-    - 03-neotoma2.qmd
-    - 04-age-depth-modelling.qmd
-    - 05-wrangling-visualisation.qmd
-    - 06-dissimilarity.qmd
-    - 07-no-analogue.qmd
-    - 08-rate-of-change.qmd
-    - 09-ordination-pca.qmd
-    - 10-ordination-nmds.qmd
-    - 11-gams.qmd
+    - neotoma2.qmd
+    - age-depth-modelling.qmd
+    - wrangling-visualisation.qmd
+    - dissimilarity.qmd
+    - no-analogue.qmd
+    - rate-of-change.qmd
+    - ordination-pca.qmd
+    - ordination-nmds.qmd
+    - gams.qmd
     - references.qmd
 
 bibliography: data-driven-curriculum.bib

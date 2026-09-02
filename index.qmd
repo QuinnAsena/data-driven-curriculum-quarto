@@ -1,34 +1,43 @@
 # Introduction {#sec-introduction}
 
-Welcome to palaeoecological data-science! This book is designed as a reproducible workflow for a semester-long course in palaeoecological data-science with the accompany publication XXX. For students, the book is carefully designed as both an educational resource with working examples and exercises, and as a coding resource that can be transferred to your own analyses. The cautionary note being that the most appropriate analyses (e.g., NMDS or GAMs?), or parameterisation of the analyses will likely be different for your data. To help, the key resources associated with each analytical method are cited throughout. Some R knowledge is assumed but we have tried to make it as easy-to-follow as possible with reproducible, working code chunks.
+Welcome to palaeoecological data-science! This book is designed as a reproducible workflow for a semester-long course in palaeoecological data-science. For students, the book is carefully designed as both an educational resource with working examples and exercises, and as a coding resource that can be transferred to your own analyses. The cautionary note is that the most appropriate analyses, and the parameterisation of those analyses, will likely be different for your data. To help, the key resources associated with each analytical method are cited throughout. Some R knowledge is assumed but we have tried to make it as easy-to-follow as possible with reproducible, working code chunks.
 
 For instructors, the repository can be forked and edited to suit different needs. The pollen data from Devil's Lake (Wisconsin, USA) used as an example dataset can be swapped out for a different region or proxy (e.g., diatoms) and the workflow edited to accommodate for the change. We would love to know how the resource is adapted and used so drop us an email and let us know!
 
-If you do use this resource for teaching or learning please cite it: DOI XXX. This will help us keep track of the impact and use of such open-source curricula and inform future work.
-
-This curriculum is an open-source and we welcome suggestions for improvement from the community that will be reviewed by the developers. We will also keep the resource up-to-date with the latest package improvements. The development of this curriculum is tracked with version control using git and the `renv` package is used to control package versions.
+This curriculum is open-source and we welcome suggestions for improvement from the community that will be reviewed by the developers. We will also keep the resource up-to-date with the latest package improvements. The development of this curriculum is tracked with version control using git.
 
 ## What this book is
 
-Many palaeo research projects follow the same general workflow, of course there will always be unique questions, challenges, and additional interests. This book is intended to cover the general workflow from obtaining data, through wrangling, analysing and visualising. There are examples throughout, and code that can be copied and adapted for one's own purpose.
+Many palaeo research projects follow the same general workflow. Of course there will always be unique questions, challenges, and additional interests. This book is intended to cover the general workflow from obtaining data, through wrangling, analysing and visualising. There are examples throughout, and code that can be copied and adapted for one's own purpose.
 
 ## What this book is not
 
-Palaeo-science comprise many disciplines from biochemistry and climatology, to mathematics, and ecology. We focus on providing a workflow but cannot, in detail, cover every challenge faced in, for example, age-depth modelling or statistical analyses of proxies. To remedy this shortcoming, each section has the key references that serve as a starting point to understanding essential challenges.
+Palaeo-science comprises many disciplines, from biochemistry and climatology to mathematics and ecology. We focus on providing a workflow but cannot, in detail, cover every challenge faced in, for example, age-depth modelling or statistical analyses of proxies. To remedy this shortcoming, each chapter has the key references that serve as a starting point to understanding essential challenges.
 
+## The Neotoma Paleoecology Database
+
+Most of the worked examples in this book draw on the Neotoma Paleoecology Database. Neotoma is an open and community-curated resource for palaeoecological data. Open means that anyone can find and download data from it. Community-curated means that the data are augmented and maintained by a community of experts, with many scientists contributing their own records and actively working to improve them.
+
+There are two ways in to the same data. [Neotoma Explorer](https://apps.neotomadb.org/explorer/index.html) is a graphical interface, and it is the quickest way to search, discover and view records a few sites at a time. It is worth browsing before you write any code, simply to get a feel for what exists. The rest of the book uses the `neotoma2` R package (@sec-neotoma2), which is what you need once you want many sites at once, queries you can re-run, or anything you intend to analyse.
 
 ## Is this going to hurt?
 
 Probably, yes. But it will be worth it. Palaeoecological data are complex and demand advanced analyses and modelling methods that require anything from basic coding proficiency and a laptop, to super-computing resources and online databases.
 
-This book assumes a degree of knowledge of the R language (e.g., packages and data structures), and principles of tidy data (e.g., long and wide data format). We include detailed comments in the code, and the content is fully reproducible, but we do not attempt to provide a foundation to R. Many exceptional resources exist for learning R for example:
+This book assumes a degree of knowledge of the R language (e.g., packages and data structures), and principles of tidy data (e.g., long and wide data format). We include detailed comments in the code, and the content is fully reproducible, but we do not attempt to provide a foundation to R. Many exceptional resources exist for learning R, for example:
 
-- Free books by [Roger Peng](https://leanpub.com/bookstore?category=r&type=book&search=peng) 
-- and [Hadley Wickham](https://r4ds.hadley.nz/)
+- Free books by [Roger Peng](https://leanpub.com/bookstore?category=r&type=book&search=peng) and [Hadley Wickham](https://r4ds.hadley.nz/)
 
-- **(Telford biostats, environmental computing)**
+- [Enough R to write a thesis](https://biostats-r.github.io/biostats/), from the universities of Bergen and Trondheim, which also covers reproducible documents and version control
+
+- [Environmental Computing](https://environmentalcomputing.net/), which teaches R, graphics and statistics specifically for the environmental sciences
 
 ### Version control
 
-It is good practice to back-up your data and use version control for your code. Onve you integrate version control into your workflow you will wonder how you ever lived without it. Version control is a vast subject but knowing the basics can get you a very far. The Git language (not to be confused with GitHub the remote server) is a common method used to colaborate in software development. Git is not a pre-requisite for this book but as a necessary part of an advanced workflow we include some links to learning basic version control:
+It is good practice to back up your data and use version control for your code. Once you integrate version control into your workflow you will wonder how you ever lived without it. Version control is a vast subject, but knowing the basics will get you a long way. Git (not to be confused with GitHub, the remote server that hosts git repositories) is the version control system most commonly used to collaborate in software development. Git is not a pre-requisite for this book, but it is a necessary part of an advanced workflow.
 
+## Citing this book
+
+The book is developed in the open and released in versions. Each tagged release of the repository is archived on [Zenodo](https://zenodo.org/), which mints a DOI for that specific version. Cite the version you used, so that your work points at the text and code you actually ran rather than at a moving target. The DOI for the current release is listed on the repository's releases page.
+
+If you use this resource for teaching or learning, please do cite it. It helps us keep track of the impact and use of open-source curricula, and informs future work.

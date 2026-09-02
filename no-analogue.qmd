@@ -38,7 +38,7 @@ The following section, @sec-datawrangle, takes you through some pretty advanced 
 # Jump point
 Run this code (unfold the code chunk below) to load in the pre-wranged data and portal to @sec-crossvalid 
 
-```{r, readdata}
+```{r readdata}
 #| code-fold: true
 #| eval: false
 
@@ -62,7 +62,7 @@ Ready to Wrange? Let’s get the data ready:
 
 ::: {.callout-note}
 # Packages required for this section
-```{r packages}
+```{r noAnaloguePackages}
 #| output: false
 # Load up the packages
 
@@ -136,7 +136,7 @@ unzip("./data/whitmoreetal2005.zip", exdir = "./data/whitmoreetal2005")
 
 Since the data are already saved in the data directory, let's read it in from there. The step of downloading data might often be done manually, the point of including the R code is to maintain a reproducible work-flow. It is always good to keep your own copy of the data just in case. Servers may not be maintained forever, or data may be removed for example.
 
-```{r}
+```{r readWhitmore}
 #| warning: false
 mod_pol <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "POLLEN DATA")
 mod_clim <- read_excel("./data/whitmoreetal2005/whitmoreetal2005_v1-72.xls", sheet = "CLIMATE+BIOCLIMATE")
@@ -152,7 +152,7 @@ Still with me? Great! Now we have our three datasets:
 The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data East of 105°W, see @krause2019 and @williams2001.
 
 
-```{r, wrangle}
+```{r wrangle}
 
 # several columns contain data not used for the MAT
 mod_pol_east <- mod_pol %>% 
@@ -171,7 +171,7 @@ devils_ages <- devils_wide$age
 ```
 
 We will also filter the modern climate records by the same ID to match the modern pollen records.
-```{r}
+```{r filterModernClimate}
 
 mod_clim_filter <- mod_clim %>% 
   filter(ID2 %in% mod_pol_east$ID2)
@@ -206,7 +206,7 @@ head(names_matches, 15)
 
 In your console take a good look through the whole list. You don't want anything matched twice!
 
-```{r}
+```{r inspectMatchesLoose}
 
 names_matches %>% filter(distance > 0.1) # looks like everything below 0.1 is a good match
 
@@ -215,7 +215,7 @@ names_matches %>% filter(distance > 0.1) # looks like everything below 0.1 is a 
 
 Arranging by distance helps.
 
-```{r}
+```{r inspectMatchesTight}
 
 names_matches %>%
   filter(distance < 0.3)  %>% # everything above 0.3 looks like a bad match
@@ -227,7 +227,7 @@ names_matches %>%
 
 Ok looks like we only have a few to weed out manually:
 
-```{r}
+```{r filterMatches}
 names_matches_filter <- names_matches %>% 
   filter(distance < 0.3,
          value.x != "ilex" & value.y != "piceax",
@@ -252,7 +252,7 @@ Now that we have matched the names between the two datasets, it is not difficult
 
 This code joins the modern pollen data and the Devil's Lake core data so that the number of columns is expanded to contain the same species in both. Note that while the variables (columns and species names) have been matched, each dataset remains independent. The two datasets have not been _merged_ into one dataset like the `*_join` functions from `tidyr`. 
 
-```{r}
+```{r joinModernFossil}
 
 mod_pol_east_join <- mod_pol_east %>%
   rename_with(tolower) %>% 
@@ -280,7 +280,7 @@ devils_prop <- join_dat$devils_prop
 
 This code selects the common species of both the modern pollen data and the Devil's Lake core data and reduces the number of columns of both.
 
-```{r}
+```{r intersectModernFossil}
 #| eval: false
 # Select species based on name
 mod_pol_east_intersect <- mod_pol_east %>%
@@ -343,7 +343,7 @@ Now let's do the analysis! First is the cross validation of the modern datasets.
 ::: {.panel-tabset}
 
 ## Code
-```{r, cross-validation}
+```{r cross-validation}
 
 mod_jant <- data.matrix(mod_clim_filter$tjan)
 
@@ -386,7 +386,7 @@ For this part of the lab, we’ll first assess the novelty of the fossil pollen 
 
 Construct a time series of the minimum SCDs (novelty)  for Devil’s Lake.
 
-```{r}
+```{r predictJanT}
 # Predict temperatures from the fossil data and their modern analogue
 devil_jant <- predict(modpoll_jant, devils_prop, k=10)
 
@@ -400,7 +400,7 @@ plot(devil_mindis, depths = devils_ages, quantiles = FALSE, xlab = "Age (yr BP)"
 
 Construct a time series of the number of modern analogs found per fossil sample, using 0.25 as our no-analog/analog threshold. 
 
-```{r}
+```{r countAnalogues}
 devil_cma <- analogue::cma(devil_jant, cutoff=0.25)
 
 plot(x = devils_ages, y = devil_cma$n.analogs, type = "l", xlim= rev(range(devils_ages)), xlab = "Age (yr BP)", ylab = "Number of modern analogs")
@@ -410,7 +410,7 @@ plot(x = devils_ages, y = devil_cma$n.analogs, type = "l", xlim= rev(range(devil
 
 Plot the reconstructed January temperatures at Devil's Lake:
 
-```{r}
+```{r plotReconstruction}
 reconPlot(devil_jant, depth = devils_ages, display.error="bars", xlab = "Age (yr BP)", ylab = "Mean Jan temperature")
 ```
 
