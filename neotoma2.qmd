@@ -36,6 +36,41 @@ pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, DT, htmlwidgets
 ```
 :::
 
+### What the package is actually doing {#sec-apis}
+
+`neotoma2` is a thin wrapper around an [application programming interface](https://en.wikipedia.org/wiki/API),
+or API. Every function that fetches something builds a web address, sends it to Neotoma's
+servers, and parses the reply. Nothing more mysterious than that.
+
+You can see the whole mechanism by looking at the address. When you call
+`get_sites(sitename = "Devils Lake")`, the package assembles this and requests it:
+
+<https://api.neotomadb.org/v2.0/data/sites?sitename=Devils%20Lake>
+
+**Open that link.** Your browser will show the raw reply, a block of
+[JSON](https://en.wikipedia.org/wiki/JSON) beginning `{"status":"success","data":[...`, and
+inside it you will find `"siteid":666` along with the site description and coordinates. That is
+precisely what `get_sites()` receives and turns into a `sites` object for you.
+
+Two details in that address are worth noticing, because they explain behaviour you will meet
+later:
+
+- The `%20` stands for the space in "Devils Lake". Addresses cannot contain spaces, so
+  characters outside a small permitted set are written as `%` followed by a code. The wildcard
+  search `sitename = "%Devil%"` therefore travels as
+  <https://api.neotomadb.org/v2.0/data/sites?sitename=%25Devil%25>, because the percent sign
+  itself has to be encoded, as `%25`. Try that one too and compare the results.
+- Everything you ask for has to fit in the address. Web addresses have a length limit, which is
+  why very long or intricate spatial searches fail rather than being sent, as we will see in
+  the next section.
+
+Because the data live on someone else's server, your code depends on that server being
+reachable. If a call fails for no apparent reason, check the service before debugging your own
+code: `neotoma2::pingNeotoma()` returns a status of 200 when the API is answering, and anything
+else, or a timeout, means the problem is not in your script. Neotoma does occasionally go down
+for maintenance, which is one reason this book saves downloaded data into `data/` rather than
+fetching it afresh on every run.
+
 ### Good coding practice: explicitly naming packages and functions
 Different packages in R are created independently by different teams of developers, and it's very common for two different packages to use the same function names. This can lead to coding errors if you call a function that you know is in one package, but R guesses wrongly that you wanted a function of the same name from an entirely different package. For example, for a function like `filter()`, which exists in both `neotoma2` and other packages such as `dplyr`, you may see an error that looks like:
 
@@ -112,7 +147,7 @@ How many sites have "clear" in the name? Show your code and give the total count
 
 #### Searching by Location: `loc=c()`
 
-The `neotoma` package used a bounding box for locations, structured as a vector of latitude and longitude values: `c(xmin, ymin, xmax, ymax)`.  The `neotoma2` R package supports both this simple bounding box and also more complex spatial objects, using the [`sf` package](https://r-spatial.github.io/sf/). Using the `sf` package allows us to more easily work with raster and polygon data in R, and to select sites using more complex spatial objects.  The `loc` parameter works with the simple vector, [WKT](https://arthur-e.github.io/Wicket/sandbox-gmaps3.html), [geoJSON](http://geojson.io/#map=2/20.0/0.0) objects and native `sf` objects in R.  **Note however** that the `neotoma2` package is a wrapper for a simple API call using a URL (see APIs above), and URL strings have a maximum limit of 1028 characters, so the API currently cannot accept very long/complex spatial objects.  
+The `neotoma` package used a bounding box for locations, structured as a vector of latitude and longitude values: `c(xmin, ymin, xmax, ymax)`.  The `neotoma2` R package supports both this simple bounding box and also more complex spatial objects, using the [`sf` package](https://r-spatial.github.io/sf/). Using the `sf` package allows us to more easily work with raster and polygon data in R, and to select sites using more complex spatial objects.  The `loc` parameter works with the simple vector, [WKT](https://arthur-e.github.io/Wicket/sandbox-gmaps3.html), [geoJSON](http://geojson.io/#map=2/20.0/0.0) objects and native `sf` objects in R.  **Note however** that the `neotoma2` package is a wrapper for a simple API call using a URL (see @sec-apis), and URL strings have a maximum limit of 1028 characters, so the API currently cannot accept very long/complex spatial objects.  
 
 As an example of different ways that you can search by location, let's say you wanted to search for all sites in the state of Michigan.  Here are three spatial representations of Michigan: (i) a geoJSON list with five elements, (ii) WKT, and (iii) bounding box representation.  And, as a fourth variant, we've transformed the `mich$geoJSON` element to an object for the `sf` package.  Any of these four spatial representations work with the `neotoma2` package.
 
@@ -272,6 +307,21 @@ neotoma2::summary(mich_pollen) %>%
 
 Note, that we are filtering on two conditions. (You may want to look up the operators being used in the above code: `==`, `&`, and `!` to understand what they accomplish in the code.) We can see now that the data table looks different, and there are fewer total sites.
 
+::: {#exr-michigan-count}
+How many pollen sites are there in Michigan?
+
+This sounds like one question but it has several defensible answers, so give a number for each
+of the following and say in one sentence why they differ:
+
+1. sites returned by the `get_sites()` call above,
+2. collection units contained in those sites,
+3. sites still present after `get_datasets()`,
+4. sites left after the pollen-and-chronology filter.
+
+Which of those four would you report in a paper, and what would you have to say about the
+other three?
+:::
+
 ### Retrieving `samples()` data
 
 The sample data are the actual data that scientists usually want - counts of pollen grains, lists of vertebrate fossil occurrences, etc. Because sample data can have fairly large data volumes (each dataset may contain many samples), which can strain server bandwidth and local computing memory, we try to call `get_downloads()` *after* we've done our preliminary filtering. After `get_datasets()`, you have enough information to filter based on location, time bounds, and dataset type. When we move to `get_downloads()` we can do more fine-tuned filtering at the analysis unit or taxon level.
@@ -303,6 +353,30 @@ colnames(allSamp)
 ```
 
 For some dataset types, or analyses some of these columns may not be needed, however, for other dataset types they may be critically important. To allow the `neotoma2` package to be as useful as possible for the community we've included as many as we can.
+
+#### A first look at the samples
+
+That is a lot of table, so it is worth seeing some of it. Each row is one taxon in one sample:
+where it came from, how deep, how old, what was counted, in what units, and how much of it.
+
+```{r sampleHead}
+#| echo: false
+allSamp %>%
+  dplyr::select(sitename, sampleid, depth, age, variablename, units, value) %>%
+  head(10) %>%
+  DT::datatable(rownames = FALSE, options = list(scrollX = "100%", dom = 't'))
+```
+
+The samples table contains all the necessary information for plotting data over time and space, for rebuilding chronologies, and anything else you need to do. It is also the largest in terms of memory, and so, it is worth saving to disk to avoid repeated `get_downloads()` calls.
+
+One column repays a closer look before you aggregate anything. Most rows are `NISP`, the
+number of identified specimens, which is a plain count of pollen grains, but the same `value`
+column also carries concentrations (`grains/ml`), volumes (`ml`, `cm^3`) and masses (`g`).
+Summing `value` without first restricting to a single unit therefore adds grain counts to
+millilitres, and it does so silently rather than raising an error. Summed blindly, the average
+sample here appears to hold over four thousand grains; restricted to `NISP` the figure is
+nearer three hundred and fifty, which is what a palynologist would expect at the microscope.
+This is why the harmonisation code below keeps `units` among its grouping variables.
 
 #### Extracting Taxa
 
@@ -393,6 +467,17 @@ Follow the *Pinus* example above, but for *Picea*. How many taxon names were agg
 your *Picea* group?
 :::
 
+::: {#exr-pine-lumping}
+Now do the same for Devil's Lake, Wisconsin, the site used throughout the rest of this book.
+Download it with `get_sites(siteid = 666)`, and find how many *Pinus* morphotypes it holds.
+
+Then think about what the harmonisation costs you. Two of the names you will have lumped
+together are `Pinus subg. Pinus` and `Pinus subg. Strobus`, the hard and the soft pines. In
+the upper Midwest those correspond to different species with different habitats, fire
+responses and successional roles. Describe a research question for which lumping them would
+be reasonable, and one for which it would throw away the signal you were looking for.
+:::
+
 If we want to store a record of our choices outside of R, we can use an external table. For example, a table of pairs (what we want changed, and the name we want it replaced with) can be generated, and it can include regular expressions (if we choose):
 
 | original | replacement |
@@ -435,17 +520,73 @@ ggplot(data = taxaplots, aes(x = sites, y = samples)) +
 
 The plot is mostly for illustration, but we can see, as a sanity check, that the relationship is as we'd expect.
 
+### What we finished with
+
+The harmonisation reshaped `allSamp` into the table the rest of the book works from:
+`r nrow(allSamp)` observations across `r dplyr::n_distinct(allSamp$sampleid)` samples from
+`r dplyr::n_distinct(allSamp$siteid)` sites, covering `r dplyr::n_distinct(allSamp$variablename)`
+harmonised taxa, and now entirely in `NISP` counts because filtering to the upland-herb and
+tree-and-shrub ecological groups removed the concentration and volume measurements along the
+way.
+
+Two simple questions can be asked of every sample: how many taxa were identified in it, and
+how many grains were counted. The first is a measure of richness, the second of counting
+effort, and they are not independent, because rare taxa cannot turn up in a small count.
+
+::: {.panel-tabset}
+
+## Code
+
+```{r sampleSummary}
+#| eval: false
+sample_summary <- allSamp %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(siteid, sitename, sampleid, age) %>%
+  dplyr::summarise(richness = dplyr::n_distinct(variablename),
+                   count = sum(value),
+                   .groups = "drop")
+
+summary(sample_summary[, c("richness", "count")])
+```
+
+## Result
+
+```{r sampleSummaryOut}
+#| ref.label: sampleSummary
+#| echo: false
+```
+
+:::
+
+The `ungroup()` there is not decoration. The harmonisation finished with `.groups = "keep"`,
+so `allSamp` arrives carrying eleven grouping variables, and anything you pipe it into will
+either inherit those groups or quietly add them back to your selection. Dropping them first
+saves a good deal of confusion.
+
+A typical sample yields around twenty taxa from a few hundred grains, and counting effort
+varies several-fold between samples. Both facts matter later: dissimilarity measures and
+ordinations are sensitive to how many taxa you have and to how unevenly they were counted,
+which is why most of them are run on proportions rather than raw counts.
+
+We will explore these data visually, and turn them into pollen diagrams, in @sec-wrangle-vis.
+
 ## Conclusion
 
-We have searched Neotoma for sites by name and by location, inspected what datasets those
-sites hold, filtered down to the records we wanted, pulled the sample data into R, and
-harmonised a set of pollen morphotypes into a single taxon. Later chapters build on the objects
-produced here.
+We have seen what an API is and what `neotoma2` does with one, searched Neotoma for sites by
+name and by location, inspected the datasets those sites hold, filtered down to the records we
+wanted, pulled the sample data into R, harmonised a set of pollen morphotypes, and taken a
+first look at the resulting table. Later chapters build directly on the objects produced here.
 
-Along the way there were four exercises. If you skipped any, they are worth returning to before
-moving on, because the later chapters assume you are comfortable with searching and filtering:
+Two habits from this chapter are worth carrying forward, because they will save you time and
+grief later: save downloaded data to disk rather than re-fetching it, and check `units` before
+you aggregate anything.
+
+Along the way there were six exercises. If you skipped any, they are worth returning to before
+moving on, because later chapters assume you are comfortable searching and filtering:
 
 - @exr-clear-sites, searching by site name
 - @exr-state-counts, searching by geopolitical unit
 - @exr-devils-datasets, inspecting the datasets at a single site
+- @exr-michigan-count, what "how many sites" actually means
 - @exr-picea, taxonomic harmonisation
+- @exr-pine-lumping, and what harmonisation costs you

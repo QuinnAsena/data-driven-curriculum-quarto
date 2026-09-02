@@ -28,7 +28,7 @@ from: markdown+emoji
 
 format:
   html:
-    theme: cosmo
+    theme: [cosmo, styles.scss]
     toc: true
     toc-depth: 3
     code-link: true

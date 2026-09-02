@@ -1,0 +1,39 @@
+/*-- scss:defaults --*/
+
+// Exercises get their own colour, distinct from the callouts already in use
+// (note = blue, tip = green, warning = orange). Purple is unclaimed.
+$exercise-accent: #6f42c1 !default;
+
+/*-- scss:rules --*/
+
+// Exercise blocks.
+//
+// These are Quarto theorem-environment divs written as ::: {#exr-label}, which render with
+// class="theorem exercise" and an auto-numbered, cross-referenceable "Exercise N.N" title.
+// They are styled here rather than being written as callouts because:
+//   - combining a crossref id with a callout class is a fatal Quarto error, and
+//   - cross-referenceable callouts cannot be relabelled, so they read "Important 1".
+// Styling the div keeps the numbering and the @exr- links, and leaves the callout-caution
+// and callout-important types free for their actual meanings.
+.theorem.exercise {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 0.3rem solid $exercise-accent;
+  border-radius: 0.25rem;
+  background-color: rgba(111, 66, 193, 0.04);
+  padding: 0.7rem 1rem;
+  margin: 1.3rem 0;
+
+  .theorem-title {
+    color: $exercise-accent;
+  }
+
+  // the title sits inline with the first paragraph by default; give it room
+  > p:first-child .theorem-title {
+    display: inline-block;
+    margin-bottom: 0.15rem;
+  }
+
+  > p:last-child {
+    margin-bottom: 0;
+  }
+}
