@@ -124,6 +124,28 @@ We can see clear patterns of change for at least some taxa, and the smoothed sur
 Note that for some taxa, they always have a few pollen grains in all pollen samples, so this 'proportion of sites with taxon' isn't very informative. Calculating a metric like average abundance might be more useful. 
 
 
+
+```{r}
+#| warning: false
+#| eval: false
+pol_count_plot <- ggplot(all_composite_plot, aes(x = age, y = value)) +
+  geom_area(colour = "grey90") +
+  geom_segment(data = all_composite_plot,
+               aes(x = age, xend = age,
+                   y = 0, yend = value), colour = "grey30", linewidth = 0.6) +
+  scale_x_reverse() +
+  coord_flip() +
+  ylim(0, 400) +
+  labs(y = "Pollen counts", x = "Time (ybp)") +
+  facet_wrap(~name,
+             nrow = 1) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 10),
+    strip.text = element_markdown()
+  )
+```
+
 ## Exercises
 
 ::: {#exr-wrangle-region}
