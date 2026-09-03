@@ -148,37 +148,43 @@ How many sites have "clear" in the name? Show your code and give the total count
 
 ### Searching by location
 
-The `neotoma` package used a bounding box for locations, structured as a vector of latitude and longitude values: `c(xmin, ymin, xmax, ymax)`.  The `neotoma2` R package supports both this simple bounding box and also more complex spatial objects, using the [`sf` package](https://r-spatial.github.io/sf/). Using the `sf` package allows us to more easily work with raster and polygon data in R, and to select sites using more complex spatial objects.  The `loc` parameter works with the simple vector, [WKT](https://arthur-e.github.io/Wicket/sandbox-gmaps3.html), [geoJSON](http://geojson.io/#map=2/20.0/0.0) objects and native `sf` objects in R.  **Note however** that the `neotoma2` package is a wrapper for a simple API call using a URL (see @sec-apis), and URL strings have a maximum limit of 1028 characters, so the API currently cannot accept very long/complex spatial objects.
+The `neotoma` package used a bounding box for locations, structured as a vector of latitude and longitude values: `c(xmin, ymin, xmax, ymax)`.  The `neotoma2` R package supports both this simple bounding box and also more complex spatial objects, using the [`sf` package](https://r-spatial.github.io/sf/). Using the `sf` package allows us to more easily work with raster and polygon data in R, and to select sites using more complex spatial objects.  The `loc` parameter works with the simple vector, [WKT](https://arthur-e.github.io/Wicket/sandbox-gmaps3.html), [geoJSON](http://geojson.io/#map=2/20.0/0.0) objects and native `sf` objects in R.  **Note, however,** that the `neotoma2` package is a wrapper for a simple API call using a URL (see @sec-apis), and a URL can only be so long, so the API cannot accept very long or intricate spatial objects.
 
-As an example of different ways that you can search by location, let's say you wanted to search for all sites in the state of Michigan.  Here are three spatial representations of Michigan: (i) a geoJSON list with five elements, (ii) WKT, and (iii) bounding box representation.  And, as a fourth variant, we've transformed the `mich$geoJSON` element to an object for the `sf` package.  Any of these four spatial representations work with the `neotoma2` package.
+As an example of the different ways you can search by location, say you wanted every site in the state of Michigan. Below are four descriptions of the same area, each in a format that the `loc` argument accepts. Only the GeoJSON is used in the search that follows, and the `sf` object is used further down to draw the outline on a map, but any of the four would work as the search input.
 
 ```{r boundingBox}
-mich <- list(geoJSON = '{"type": "Polygon",
+# GeoJSON
+mich_geojson <- '{"type": "Polygon",
         "coordinates": [[
             [-86.95, 41.55],
             [-82.43, 41.55],
             [-82.43, 45.88],
             [-86.95, 45.88],
             [-86.95, 41.55]
-            ]]}',
-        WKT = 'POLYGON ((-86.95 41.55,
-                         -82.43 41.55,
-                         -82.43 45.88,
-                         -86.95 45.88,
-                         -86.95 41.55))',
-        bbox = c(-86.95, 41.55, -82.43, 45.88))
+            ]]}'
 
-mich$sf <- geojsonsf::geojson_sf(mich$geoJSON)[[1]]
+# Well-known text (WKT)
+mich_wkt <- 'POLYGON ((-86.95 41.55,
+                       -82.43 41.55,
+                       -82.43 45.88,
+                       -86.95 45.88,
+                       -86.95 41.55))'
+
+# Bounding box, as c(xmin, ymin, xmax, ymax)
+mich_bbox <- c(-86.95, 41.55, -82.43, 45.88)
+
+# sf polygon, converted from the GeoJSON above
+mich_sf <- geojsonsf::geojson_sf(mich_geojson)[[1]]
 
 if (!file.exists("./data/mich_sites.rds")) {
-  mich_sites <- neotoma2::get_sites(loc = mich$geoJSON, all_data = TRUE)
+  mich_sites <- neotoma2::get_sites(loc = mich_geojson, all_data = TRUE)
   saveRDS(mich_sites, "./data/mich_sites.rds")
 } else {
   mich_sites <- readRDS("./data/mich_sites.rds")
 }
 ```
 
-You can always simply `plot()` the `sites` objects, but this won't show any geographic context. The `neotoma2::plotLeaflet()` function returns a `leaflet()` map, and allows you to further customize it, or add additional spatial data (like our original bounding polygon, `mich$sf`, which works directly with the R `leaflet` package):
+You can always simply `plot()` the `sites` objects, but this won't show any geographic context. The `neotoma2::plotLeaflet()` function returns a `leaflet()` map, and allows you to further customize it, or add additional spatial data (like our original bounding polygon, `mich_sf`, which works directly with the R `leaflet` package):
 
 ::: {.panel-tabset}
 
@@ -188,7 +194,7 @@ You can always simply `plot()` the `sites` objects, but this won't show any geog
 #| eval: false
 neotoma2::plotLeaflet(mich_sites) %>%
   leaflet::addPolygons(map = .,
-                       data = mich$sf,
+                       data = mich_sf,
                        color = "green")
 ```
 
@@ -244,7 +250,7 @@ We can see that there are no chronologies associated with the `site` objects. Th
 
 Now that we know how to search for sites, we can start to search for datasets. As we've discussed before, in the Neotoma data model, each site can contain one or more collection units, each of which can contain one or more datasets. Similarly, a `sites` object contains `collectionunits` which contain `datasets`. From the table above, we can see that some of the sites we've looked at contain pollen data. However, so far we have only downloaded the `sites` data object and not any of the actual pollen data, it's just that (for convenience) the `sites` API returns some information about datasets, to make it easier to navigate the records.
 
-With a `sites` object we can directly call `get_datasets()`, to pull in more metadata about the datasets. At any time we can use `datasets()` to get more information about any datasets that a `sites` object may contain. Compare the output of `datasets(mich_sites)` to the output of a similar call using the following:
+With a `sites` object we can directly call `get_datasets()`, to pull in more metadata about the datasets. At any time we can use `datasets()` to get more information about any datasets that a `sites` object may contain:
 
 ::: {.panel-tabset}
 
@@ -416,7 +422,7 @@ Let's say we want to know the past distribution of *Pinus*. We want all the vari
 
 Programmatically, we can harmonize all the taxon names using matching and transformation. We're using `dplyr` type coding here to `mutate()` the column `variablename` so that any time we detect (`str_detect()`) a `variablename` that starts with `Pinus` (the `.*` represents a wildcard for any character [`.`], zero or more times [`*`]) we `replace()` it with the character string `"Pinus"`. Note that this changes *Pinus* in the `allSamp` object, but if we were to call `samples()` again, the taxonomy would return to its original form.
 
-As a first step, we're going to filter the ecological groups to include only *UPHE* (upland/heath) and *TRSH* (trees and shrubs). (More information about ecological groups is available from the [Neotoma Online Manual](https://open.neotomadb.org/manual).) After converting all _Pinus.*_ records to *Pinus* we then sum the counts of the *Pinus* records.
+As a first step, we're going to filter the ecological groups to include only *UPHE* (upland herbs) and *TRSH* (trees and shrubs). (More information about ecological groups is available from the [Neotoma Online Manual](https://open.neotomadb.org/manual).) After converting all _Pinus.*_ records to *Pinus* we then sum the counts of the *Pinus* records.
 
 ```{r simpleTaxonChange}
 allSamp <- allSamp %>%
@@ -478,49 +484,6 @@ the upper Midwest those correspond to different species with different habitats,
 responses and successional roles. Describe a research question for which lumping them would
 be reasonable, and one for which it would throw away the signal you were looking for.
 :::
-
-If we want to store a record of our choices outside of R, we can use an external table. For example, a table of pairs (what we want changed, and the name we want it replaced with) can be generated, and it can include regular expressions (if we choose):
-
-| original | replacement |
-| -------- | ----------- |
-| Abies.*  | Abies |
-| Vaccinium.* | Ericaceae |
-| Typha.* | Aquatic |
-| Nymphaea  | Aquatic |
-| ... | ... |
-
-We can get the list of original names directly from the `taxa()` call, applied to a `sites` object, and then export it using `write.csv()`. We can also do some exploratory plots of the data:
-
-::: {.panel-tabset}
-
-## Code
-
-```{r countbySitesSamples}
-#| eval: false
-taxaplots <- neotoma2::taxa(mich_dl)
-# Save the taxon list to file so we can edit it subsequently.
-readr::write_csv(taxaplots, "data/mytaxontable.csv")
-```
-
-## Result
-
-```{r PlotTaxonCounts}
-#| echo: false
-#| label: fig-taxa-sites
-#| fig-cap: "The number of sites a taxon appears in, against the number of samples it appears in."
-taxaplots <- neotoma2::taxa(mich_dl)
-ggplot(data = taxaplots, aes(x = sites, y = samples)) +
-  geom_point() +
-  stat_smooth(method = 'glm',
-              method.args = list(family = 'poisson')) +
-  xlab("Number of Sites") +
-  ylab("Number of Samples") +
-  theme_bw()
-```
-
-:::
-
-The plot is mostly for illustration, but we can see, as a sanity check, that the relationship is as we'd expect.
 
 ### What we finished with
 
