@@ -352,7 +352,7 @@ Once we've downloaded the sample data, we now have information for each site abo
 allSamp <- neotoma2::samples(mich_dl)
 ```
 
-When we've done this, we get a `data.frame` that is `r nrow(allSamp)` rows long and `r ncol(allSamp)` columns wide. The reason the table is so wide is that we are returning data in a **long** format. Each row contains all the information you should need to properly interpret it:
+When we've done this, we get a `data.frame` that is `r nrow(allSamp)` rows long and `r ncol(allSamp)` columns wide. We are returning data in a **long** format. Each row contains all the information you should need to properly interpret it, `variablename` and `value` hold the measurement itself for a given taxon:
 
 ```{r colNamesAllSamp}
 #| echo: false
