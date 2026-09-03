@@ -2,17 +2,27 @@
 
 ## Background
 
-This series of exercises is designed to give you hands-on practice in using the `neotoma2` R package [@goring2015], both for practical reasons and for insights into how open-data systems work. This section is a condensed version of the [current workshop](https://github.com/NeotomaDB/Current_Workshop) and focuses on data structures and the core functions in the `neotoma2` R package for downloading and manipulating data. A hard-won lesson for a practicing data scientist is how much time and attention goes into data handling! For a more extended introduction to Neotoma, see the [current workshop](https://github.com/NeotomaDB/Current_Workshop). If you’re planning on working with Neotoma more in the future, please join us on [Slack](https://join.slack.com/t/neotomadb/shared_invite/zt-cvsv53ep-wjGeCTkq7IhP6eUNA9NxYQ), where we manage a channel specifically for questions about the R package. You may also wish to join Neotoma's Google Groups mailing list, and if so [contact us](mailto:neotoma-contact@googlegroups.com) to be added.
+This chapter gives you hands-on practice with the `neotoma2` R package [@goring2015], both for
+practical reasons and for the insight it gives into how open-data systems work. It is a
+condensed version of the [Neotoma workshop](https://github.com/NeotomaDB/Current_Workshop),
+focusing on the data structures and the core functions for downloading and manipulating data.
+A hard-won lesson for any practising data scientist is how much time and attention go into
+data handling.
 
-This series of exercises is designed to give you hands-on practice in using APIs and the `neotoma2` R package, both for practical reasons and for insights into how open-data systems work. `neotoma2`’s primary purpose is to pass data from the Neotoma DB server into your local R computing environment.
+If you plan to work with Neotoma beyond this book, the
+[Slack workspace](https://join.slack.com/t/neotomadb/shared_invite/zt-cvsv53ep-wjGeCTkq7IhP6eUNA9NxYQ)
+has a channel for questions about the R package, and you can
+[contact us](mailto:neotoma-contact@googlegroups.com) to join the Google Groups mailing list.
 
-In this tutorial you will learn how to:
+In this chapter you will learn how to:
 
-- Search for sites using site names and geographic parameters
+- Search for sites by name and by geographic area
 
-- Filter results using temporal and spatial parameters
+- Filter those results by dataset type and by age
 
-- Obtain sample information for the selected datasets
+- Obtain the sample data for the datasets you selected
+
+- Harmonise taxon names into groups you can analyse
 
 ## Getting started with `neotoma2`
 
@@ -23,7 +33,7 @@ The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology 
 3. downloads
 4. samples
 
-There are many more functions for manipulating data and conducting other operations that we will encounter along the way while we take you through these four data layers. For this workbook we use several packages, including `leaflet`, `sf` and others. We load the packages using the `pacman` package, which will automatically install the packages if they do not currently exist in your set of packages.
+There are many more functions for manipulating data and conducting other operations that we will encounter along the way while we take you through these four data layers. For this chapter we use several packages, including `leaflet` and `sf`. We load them with the `pacman` package, which installs anything you do not already have.
 
 ::: {.callout-note}
 # Packages required for this section
@@ -102,9 +112,9 @@ We may know exactly what site we're looking for (*"Devil's Lake"*), or have an a
 
 We use the general format: `get_sites(sitename="XXXXX")` for searching by name.
 
-PostgreSQL (and the API) uses the percent sign as a wildcard. So `"%Devil%"` would pick up "Devils Lake" for us (and would pick up "Devil's Canopy Cave").  Note that the search query is case insensitive, so `"%devil%"` will work.
+PostgreSQL (and the API) uses the percent sign as a wildcard. So `"%Devil%"` would pick up "Devils Lake" for us (and would pick up "Devil's Canopy Cave"). Note that the search is case-insensitive, so `"%devil%"` will work. Note also that Neotoma spells this particular site without an apostrophe, which is why the wildcard is useful.
 
-If we want an individual record we can use the siteid, which is a unique identifier for each site: `devils_lake <- neotoma2::get_sites(siteid = 666)`.
+If we want an individual record we can use the `siteid`, which is a unique identifier for each site: `devils_lake <- neotoma2::get_sites(siteid = 666)`.
 
 ::: {.callout-tip}
 # Good practice tip
@@ -217,9 +227,9 @@ Show your code and the answer.
 
 ![Neotoma R package Unified Modeling Language (UML) diagram.](./images/neotomaUML_as.svg){#fig-neotoma-uml}
 
-If we look at the [UML diagram](https://en.wikipedia.org/wiki/Unified_Modeling_Language) for the objects in the `neotoma2` R package, we can see that there are a set of functions that can operate on `sites`. As we add to `sites` objects, using `get_datasets()` or `get_downloads()`, we are able to use more of these helper functions. We can use functions like `summary()` to get a more complete sense of the types of data in this set of sites.
+If we look at the [UML diagram](https://en.wikipedia.org/wiki/Unified_Modeling_Language) for the objects in the `neotoma2` R package, we can see that there is a set of functions that can operate on `sites`. As we add to `sites` objects, using `get_datasets()` or `get_downloads()`, we are able to use more of these helper functions. We can use functions like `summary()` to get a more complete sense of the types of data in this set of sites.
 
-The following code gives the summary table. We do some R magic here to change the way the data is displayed (turning it into a `datatable()` object using the `DT` package), but the main function is the `summary()` call.
+The following code gives the summary table. We do some R magic here to change the way the data are displayed (turning it into a `datatable()` object using the `DT` package), but the main function is the `summary()` call.
 
 ::: {.panel-tabset}
 
@@ -244,11 +254,11 @@ mich_sites %>%
 :::
 
 
-We can see that there are no chronologies associated with the `site` objects. This is because, at present, we have not pulled in the `dataset` information we need. All we know from `get_sites()` are the kinds of datasets we have.
+We can see that there are no chronologies associated with the `sites` object. This is because, at present, we have not pulled in the `dataset` information we need. All we know from `get_sites()` are the kinds of datasets we have.
 
 ## Finding datasets
 
-Now that we know how to search for sites, we can start to search for datasets. As we've discussed before, in the Neotoma data model, each site can contain one or more collection units, each of which can contain one or more datasets. Similarly, a `sites` object contains `collectionunits` which contain `datasets`. From the table above, we can see that some of the sites we've looked at contain pollen data. However, so far we have only downloaded the `sites` data object and not any of the actual pollen data, it's just that (for convenience) the `sites` API returns some information about datasets, to make it easier to navigate the records.
+Now that we know how to search for sites, we can start to search for datasets. In the Neotoma data model, each site can contain one or more collection units, each of which can contain one or more datasets. A `sites` object mirrors that: it contains `collectionunits`, which contain `datasets`. From the table above we can see that some of the sites contain pollen data. So far, though, we have only downloaded the `sites` object and none of the actual pollen; for convenience the sites API returns a little information about the datasets, which makes the records easier to navigate.
 
 With a `sites` object we can directly call `get_datasets()`, to pull in more metadata about the datasets. At any time we can use `datasets()` to get more information about any datasets that a `sites` object may contain:
 
@@ -287,7 +297,7 @@ and the answer, and make sure your code retrieves datasets for that single site 
 
 ### Filtering records
 
-If we choose to pull in information about only a single dataset type, or if there is additional filtering we want to do before we download the data, we can use the `neotoma2::filter()` function. For example, if we only want pollen records, and want records with known chronologies, we can filter:
+If we choose to pull in information about only a single dataset type, or if there is additional filtering we want to do before we download the data, we can use the `neotoma2::filter()` function. For example, if we only want pollen records, and only those with known chronologies, we can filter:
 
 ::: {.panel-tabset}
 
@@ -312,7 +322,7 @@ neotoma2::summary(mich_pollen) %>%
 
 :::
 
-Note, that we are filtering on two conditions. (You may want to look up the operators being used in the above code: `==`, `&`, and `!` to understand what they accomplish in the code.) We can see now that the data table looks different, and there are fewer total sites.
+Note that we are filtering on two conditions. (You may want to look up the operators being used in the above code: `==`, `&`, and `!` to understand what they accomplish in the code.) We can see now that the data table looks different, and there are fewer total sites.
 
 ::: {#exr-michigan-count}
 How many pollen sites are there in Michigan?
@@ -331,7 +341,7 @@ other three?
 
 ## Retrieving samples
 
-The sample data are the actual data that scientists usually want - counts of pollen grains, lists of vertebrate fossil occurrences, etc. Because sample data can have fairly large data volumes (each dataset may contain many samples), which can strain server bandwidth and local computing memory, we try to call `get_downloads()` *after* we've done our preliminary filtering. After `get_datasets()`, you have enough information to filter based on location, time bounds, and dataset type. When we move to `get_downloads()` we can do more fine-tuned filtering at the analysis unit or taxon level.
+The sample data are what scientists usually want: counts of pollen grains, lists of vertebrate fossil occurrences, and so on. Sample data can be large, because each dataset may contain many samples, and that strains both server bandwidth and local memory. So we call `get_downloads()` *after* we have done our preliminary filtering. After `get_datasets()`, you have enough information to filter based on location, time bounds, and dataset type. When we move to `get_downloads()` we can do more fine-tuned filtering at the analysis unit or taxon level.
 
 The following command may take a few moments the first time it runs, because it downloads the
 sample data for every dataset that survived the filter. After that it reads the saved copy
@@ -352,14 +362,14 @@ Once we've downloaded the sample data, we now have information for each site abo
 allSamp <- neotoma2::samples(mich_dl)
 ```
 
-When we've done this, we get a `data.frame` that is `r nrow(allSamp)` rows long and `r ncol(allSamp)` columns wide. We are returning data in a **long** format. Each row contains all the information you should need to properly interpret it, `variablename` and `value` hold the measurement itself for a given taxon:
+When we've done this, we get a `data.frame` that is `r nrow(allSamp)` rows long and `r ncol(allSamp)` columns wide. We are returning data in a **long** format. Each row contains all the information you should need to interpret it; of those columns, `variablename` and `value` hold the measurement itself for a given taxon:
 
 ```{r colNamesAllSamp}
 #| echo: false
 colnames(allSamp)
 ```
 
-For some dataset types, or analyses some of these columns may not be needed, however, for other dataset types they may be critically important. To allow the `neotoma2` package to be as useful as possible for the community we've included as many as we can.
+For some dataset types, or some analyses, a number of these columns will not be needed; for others they are critically important. To allow the `neotoma2` package to be as useful as possible for the community we've included as many as we can.
 
 ### A first look at the samples
 
@@ -387,7 +397,7 @@ This is why the harmonisation code below keeps `units` among its grouping variab
 
 ### Extracting taxa
 
-If you want to know what taxa we have in a dataset, you can use the helper function `taxa()` on the sites object. The `taxa()` function gives us, not only the unique taxa, but two additional columns, `sites` and `samples`, that tell us how many sites the taxa appear in, and how many samples the taxa appear in, to help us better understand how common individual taxa are.
+If you want to know what taxa we have in a dataset, you can use the helper function `taxa()` on the sites object. The `taxa()` function gives us not only the unique taxa but two additional columns, `sites` and `samples`, counting how many sites and how many samples each taxon appears in. Together they give a sense of how common a taxon is.
 
 ::: {.panel-tabset}
 
@@ -412,17 +422,17 @@ head(neotomatx, n = 20) %>%
 :::
 
 
-The `taxonid` values can be linked to the `taxonid` column in the `samples()`. This allows us to build taxon harmonization tables if we choose to. Note also that the `taxonname` is in the field `variablename`. Individual sample counts are reported in Neotoma as [`variables`](https://open.neotomadb.org/manual/taxonomy-related-tables-1.html#Variables). A "variable" may be either a species for which we have presence or count data, a geochemical measurement, or any other proxy, such as charcoal counts. Each stored entry for a variable includes the units of measurement and the value.
+The `taxonid` values can be linked to the `taxonid` column in the output of `samples()`. This allows us to build taxon harmonisation tables if we choose to. Note also that the `taxonname` is in the field `variablename`. Individual sample counts are reported in Neotoma as [`variables`](https://open.neotomadb.org/manual/taxonomy-related-tables-1.html#Variables). A "variable" may be either a species for which we have presence or count data, a geochemical measurement, or any other proxy, such as charcoal counts. Each stored entry for a variable includes the units of measurement and the value.
 
 ### Taxonomic harmonisation
 
-A standard challenge in Neotoma (and in biodiversity research more generally) is that different scientists use different names for taxonomic entities such as species. Even if everyone agrees on a common taxonomy, it's quite possible that a given fossil might be only partially identifiable, perhaps just to genus or even family. Hence, when working with data from Neotoma, a common intermediary step is to 'harmonize' all the taxa names stored in Neotoma into some standard names of interest to you.
+A standard challenge in Neotoma (and in biodiversity research more generally) is that different scientists use different names for taxonomic entities such as species. Even if everyone agrees on a common taxonomy, it's quite possible that a given fossil might be only partially identifiable, perhaps just to genus or even family. Hence, when working with data from Neotoma, a common intermediate step is to harmonise all the taxon names stored in Neotoma into a set of standard names that suit your question.
 
-Let's say we want to know the past distribution of *Pinus*. We want all the various pollen morphotypes that are associated with *Pinus* (e.g. *Pinus strobus*, *Pinus strobus*-type, *Pinus undif.*, *Pinus banksiana/resinosa*) to be grouped together into one aggregated taxon names called *Pinus*. There are several ways of doing this, either directly by exporting the file and editing each individual cell, or by creating an external "harmonization" table.
+Let's say we want to know the past distribution of *Pinus*. We want all the various pollen morphotypes associated with *Pinus* (*Pinus strobus*, *Pinus strobus*-type, *Pinus undiff.*, *Pinus banksiana/resinosa* and so on) grouped into one aggregated taxon named *Pinus*. This can be done by hand, by exporting the taxon list and editing each entry, or programmatically.
 
-Programmatically, we can harmonize all the taxon names using matching and transformation. We're using `dplyr` type coding here to `mutate()` the column `variablename` so that any time we detect (`str_detect()`) a `variablename` that starts with `Pinus` (the `.*` represents a wildcard for any character [`.`], zero or more times [`*`]) we `replace()` it with the character string `"Pinus"`. Note that this changes *Pinus* in the `allSamp` object, but if we were to call `samples()` again, the taxonomy would return to its original form.
+Programmatically, we can harmonise all the taxon names by matching and replacing. We're using `dplyr` type coding here to `mutate()` the column `variablename` so that any time we detect (`str_detect()`) a `variablename` that starts with `Pinus` (the `.*` represents a wildcard for any character [`.`], zero or more times [`*`]) we `replace()` it with the character string `"Pinus"`. Note that this changes *Pinus* in the `allSamp` object, but if we were to call `samples()` again, the taxonomy would return to its original form.
 
-As a first step, we're going to filter the ecological groups to include only *UPHE* (upland herbs) and *TRSH* (trees and shrubs). (More information about ecological groups is available from the [Neotoma Online Manual](https://open.neotomadb.org/manual).) After converting all _Pinus.*_ records to *Pinus* we then sum the counts of the *Pinus* records.
+As a first step, we're going to filter the ecological groups to include only *UPHE* (upland herbs) and *TRSH* (trees and shrubs). (More information about ecological groups is available from the [Neotoma Online Manual](https://open.neotomadb.org/manual).) After converting all *Pinus.\** records to *Pinus*, we sum the counts of the resulting *Pinus* records. The same is done for *Ambrosia*.
 
 ```{r simpleTaxonChange}
 allSamp <- allSamp %>%
