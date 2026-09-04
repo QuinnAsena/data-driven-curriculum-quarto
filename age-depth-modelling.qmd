@@ -10,25 +10,25 @@ A foundational difference between geology and ecology is that, for geologists, t
 
 For the last 50,000 years, radiocarbon (^14^C), with its half-life of 5,730 years, is by far the most common form of radiometric dating. (Beyond 10 half-lives, so much of a radioactive substance has decayed away that it becomes immeasurable.) Radiocarbon is the mainstay of Quaternary dating and archaeology.
 
-In Quaternary paleoecology, radiocarbon dating is expensive – a single sample typically costs $300 to $500 – so usually a given lake-sediment record will have only a scattering (ca. 5 to 30) of radiocarbon dates and other age controls. Other kinds of age controls include volcanic ash layers (tephras), ^210^Pb (half-life: 22.6 yrs), optically stimulated luminescence (OSL) dates, historic events such as the rise in *Ambrosia* pollen abundances associated with EuroAmerican land clearance, etc. An age-depth model must be constructed to estimate the age of sediments not directly associated with an age control. In multi-site data syntheses, the number of age controls, their precision, and their likely accuracy are all fundamental indicators of data quality [e.g. @blois2011; @mottl2021].
+In Quaternary paleoecology, radiocarbon dating is expensive , a single sample typically costs \$300 to \$500 , so usually a given lake-sediment record will have only a scattering (ca. 5 to 30) of radiocarbon dates and other age controls. Other kinds of age controls include volcanic ash layers (tephras), ^210^Pb (half-life: 22.3 yrs), optically stimulated luminescence (OSL) dates, historic events such as the rise in *Ambrosia* pollen abundances associated with EuroAmerican land clearance, etc. An age-depth model must be constructed to estimate the age of sediments not directly associated with an age control. In multi-site data syntheses, the number of age controls, their precision, and their likely accuracy are all fundamental indicators of data quality [e.g. @blois2011; @mottl2021].
 
 To estimate ages for depths lacking radiocarbon date, an age-depth model is required. Age-depth models are fitted to the available age controls (age estimates with uncertainty for individual depths) and provide estimates of age as a function of depth, for all depths and ages within the temporal bounds of the model.
 
 ## Code
 
-Here we will gain practice in working with age-depth models of various kind, and assessing their age estimates and uncertainty. We’ll begin with a bit of practice in calibrating radiocarbon years to calendar years and comparing the resulting age estimates from different calibration curves. 
+Here we will gain practice in working with age-depth models of various kind, and assessing their age estimates and uncertainty. We’ll begin with a bit of practice in calibrating radiocarbon years to calendar years and comparing the resulting age estimates from different calibration curves.
 
 
 ::: {.callout-note}
 # Packages required for this section
 
-We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using BASE-R. Remember you must have packages both installed _and_ loaded, often loading a package is done via the `library(packagename)` function. The following code using the `pacman` package takes care of installation and loading in one go.
+We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using base R. Remember you must have packages both installed _and_ loaded, often loading a package is done via the `library(packagename)` function. The following code using the `pacman` package takes care of installation and loading in one go.
 
 ```{r ageDepthPackages}
 #| output: false
 # Load up the package
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(Bchron, splines) # splines comes with BASE-R
+pacman::p_load(Bchron, splines) # splines comes with base R
 ```
 :::
 
@@ -48,28 +48,28 @@ Here we’ll experiment with calibrating radiocarbon dates, using various calibr
 
 ## Code
 
-```{r BchronCalibrate}
+```{r bchronCalibrate}
 #| output: false
-ages = BchronCalibrate(ages=c(3445,11553,7456), 
-                        ageSds=c(50,230,110), 
-                        calCurves=c('intcal20','intcal20','intcal20'))
+ages <- BchronCalibrate(ages = c(3445, 11553, 7456),
+                        ageSds = c(50, 230, 110),
+                        calCurves = c('intcal20', 'intcal20', 'intcal20'))
 ```
 
 ## Summary
 
-```{r BchronCalibrateSummary}
+```{r bchronCalibrateSummary}
 summary(ages)
 ```
 
 ## Plots
 
-```{r BchronCalibratePlot}
+```{r bchronCalibratePlot}
 plot(ages)
 ```
 
 ## Calibration curve plots
 
-```{r BchronCalibrateCalPlot}
+```{r bchronCalibrateCalPlot}
 plot(ages, includeCal = TRUE, fillCol = 'red')
 ```
 
@@ -79,15 +79,27 @@ The output summary indicates the range of the highest density regions (i.e., the
 
 ### Types of age-depth model
 
-Different kinds of age-depth models exist, each with their own underlying assumptions and behavior. In the list below, #1-4 are classical or traditional forms of age-depth models, but Bayesian models are now the norm. The packages `rbacon` (usually referred to as 'bacon') and `Bchron` are the current standards for Bayesian age-depth modelling. Before going to bayesian models, we’ll begin with the classics.
+Different kinds of age-depth models exist, each with their own underlying assumptions and behaviour. In the list below, #1-4 are classical or traditional forms of age-depth models, but Bayesian models are now the norm. The packages `rbacon` (usually referred to as 'bacon') and `Bchron` are the current standards for Bayesian age-depth modelling. Before going to Bayesian models, we’ll begin with the classics.
 
 1. **Linear interpolation**, a.k.a. ‘connect the dots,’ in which straight lines are drawn between each depth-adjacent pair of age controls.
 
-2. **Linear regression** ($y=b0~ + b1x$; $y=$time and $x=$depth; $b0$ and $b1$ are constants), in which a single straight line is fitted through the entire set of age controls. In ordinary linear regression (OLS), the chosen line will minimize the y-dimension distances of individual points to the line. Standard OLS assumes that all observations are normally distributed, which is a poor assumption for calibrated radiocarbon dates.
+2. **Linear regression** ($y = b_0 + b_1 x$, where $y$ is age, $x$ is depth, and $b_0$ and $b_1$ are constants), in which a single straight line is fitted through the entire set of age controls. In ordinary least squares (OLS), the chosen line is the one that minimises the sum of the squared vertical distances between the points and the line. Standard OLS assumes that all observations are normally distributed, which is a poor assumption for calibrated radiocarbon dates.
 
-3. **Polynomials**, also fitted to the entire set of age controls ($y= b0 + b1x + b2x^2 + b3x^3 + …bnx^n$), are an extension of linear regression, with additional terms for $x^2$, $x^3$, etc. Some arbitrary maximum n is chosen, usually in the range of 3 to 5. These are called 'third-order polynomials,' 'fifth-order polynomials,' etc.
+3. **Polynomials**, also fitted to the entire set of age controls ($y = b_0 + b_1 x + b_2 x^2 + b_3 x^3 + \dots + b_n x^n$), are an extension of linear regression, with additional terms for $x^2$, $x^3$, etc. Some arbitrary maximum $n$ is chosen, usually in the range of 3 to 5. These are called 'third-order polynomials,' 'fifth-order polynomials,' etc.
 
-4. **Splines**, which are a special kind of polynomial function that are locally fitted to subsets of the age controls, and then smoothly interpolated between points. (Several different formulas can be used to generate splines; common forms include cubic, smooth, monotonic, and LOWESS).
+4. **Splines**, which are a special kind of polynomial function that are locally fitted to subsets of the age controls, and then smoothly interpolated between points. (Several different formulas can be used to generate splines; common forms include cubic, smoothing and monotonic splines. LOWESS is often used for the same purpose but is a local regression smoother rather than a spline.)
+
+::: {.callout-note}
+# Which variable goes on which axis
+
+Two conventions are at work here and they point in opposite directions, so it is worth being
+explicit. In the **models**, age is what we are estimating, so age is the response, $y$, and
+depth is the predictor, $x$. In the **figures**, age is drawn on the horizontal axis and depth
+on the vertical, increasing downwards, which is what `Bchron` does and what makes the plot
+resemble a core. The stratigraphic diagrams in @sec-wrangle-vis use a third arrangement again,
+with age on the vertical axis. None of these is wrong; just check the axis labels before
+reading a figure.
+:::
 
 5. **Bayesian age models** (e.g. `bacon`, `bchron`, `oxcal`, etc.). Bayesian models differ in detail, but all combine a statistical representation of prior knowledge with the new data (i.e. the age controls at a site) to build an age-depth model with posterior estimates of age for any given depth. Bayesian models are now widely used because
     i) they allow the incorporation of prior knowledge (e.g., from coring many lakes, we now have decent estimates of typical sediment accumulation rates, @goring2012);
@@ -97,64 +109,89 @@ Different kinds of age-depth models exist, each with their own underlying assump
 
 #### Classical age-depth models
 
-Classical models are now out-dated methods [@blaauw2018], but it is useful to understand how they work as literature before the relatively recent development of Bayesian methods has relied on them. Let's explore some classical methods of age-depth modelling using one of the datasets included with the `Bchron` package. The data are from a core in Northern Ireland; Sluggan Bog @smith1991, and can be called via:
+Classical models are now out-dated methods [@blaauw2018], but it is useful to understand how they work as literature before the relatively recent development of Bayesian methods has relied on them. Let's explore some classical methods of age-depth modelling using one of the datasets included with the `Bchron` package. The data are from a core at Sluggan Moss in County Antrim, Northern Ireland. The published record calls the site Sluggan Bog [@smith1991]; both names refer to the same place, and `Bchron` uses both in its own documentation. The dataset is called via:
 
-```{r Classical}
-#| output: false
+```{r slugganData}
 data(Sluggan) # Call the data from Bchron
-print(Sluggan) # Check out the data
+head(Sluggan) # Check out the data
 ```
+
+Notice that some depths appear more than once. Sluggan Moss was dated in replicate at several
+levels, with three separate radiocarbon determinations at 272.5 cm and at 367.5 cm, for
+instance. Replicate dating is good practice, because it shows how reproducible a determination
+is, but it does mean the classical methods below have to decide what to do when one depth
+carries several ages.
 
 ::: {.panel-tabset}
 
 ## Linear interpolation
 
-Linear interpolation predicts ages by simply, drawing a line between successive dated samples. This method assumes that there is a constant age-depth relationship between samples. An assumption that is unlikely to be true, especially of cores with fewer dated samples than Sluggan Moss.
+Linear interpolation predicts ages by simply, drawing a line between successive dated samples. This method assumes that there is a constant age-depth relationship between samples. An assumption that is unlikely to be true, especially for cores with fewer dated samples than Sluggan Moss.
 
-```{r LinearInterp}
-interp_ages <- approx(x = Sluggan$ages, y = Sluggan$position) # use the function approx() to interpolate between ages
-plot(x = interp_ages$x, y = interp_ages$y, type = 'l') # Plot the interpolated data
-points(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = 'red') # overlay the original age points
+```{r linearInterp}
+# Interpolate an age for every depth. ties = mean averages the replicate dates at
+# those depths that were dated more than once.
+interp_ages <- approx(x = Sluggan$position, y = Sluggan$ages, ties = mean)
+
+# Age on the horizontal axis, depth on the vertical and increasing downwards
+plot(x = interp_ages$y, y = interp_ages$x, type = "l",
+     xlab = "Age (14C years BP)", ylab = "Depth (cm)",
+     ylim = rev(range(Sluggan$position)))
+points(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = "red")
 ```
 
 ## Linear regression
 
 Linear regression provides a line of best fit through the dated samples. This method assumes a constant age-depth relationship across all samples, also unlikely to be true depending on processes affecting the core during its formation.
 
-```{r LinearReg}
-mod_ages <- lm(Sluggan$position ~ Sluggan$ages) # Create a linear regression model
-plot(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = 'red') # Plot the original ages
-abline(mod_ages) # add the regression line from the regression model
+```{r linearReg}
+mod_ages <- lm(ages ~ position, data = Sluggan) # age as a function of depth
 
+# A grid of depths to predict ages at, used by this model and the two below
+depth_grid <- seq(from = min(Sluggan$position), to = max(Sluggan$position),
+                  length.out = 250)
+
+plot(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = "red",
+     xlab = "Age (14C years BP)", ylab = "Depth (cm)",
+     ylim = rev(range(Sluggan$position)))
+lines(x = predict(mod_ages, data.frame(position = depth_grid)), y = depth_grid)
 ```
 
 ## Polynomial regression
 
 Polynomial regression allows a curve to be fit through the data. The amount the curve 'wiggles' depends on the order of the polynomial fit to the data. Polynomial regression has the risk of being over-fit.
 
-```{r PolyReg}
-x <- Sluggan$ages # Renaming the variables because the predict function below is fussy about the input name
-y <- Sluggan$position
-poly_ages <- lm(y ~ poly(x, 3))
+```{r polyReg}
+poly_ages <- lm(ages ~ poly(position, 3), data = Sluggan)
 
-plot(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = 'red')
-age_range <- seq(from = range(Sluggan$ages)[1], to = range(Sluggan$ages)[2], length.out = 250)
-lines(age_range, predict(poly_ages, data.frame(x = age_range)))
+plot(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = "red",
+     xlab = "Age (14C years BP)", ylab = "Depth (cm)",
+     ylim = rev(range(Sluggan$position)))
+lines(x = predict(poly_ages, data.frame(position = depth_grid)), y = depth_grid)
 ```
 
 ## Cubic splines
 
-Splines are a class of functions including, for example, smoothing splines or cubic splines.  Cubic splines are pieve-wise polynomials locally between 'knots'. That is the data are split into bins that are fit independently using. By default, the `bs()` function uses a third degree polynomial. Without providing knots the fit will look the same as a third degree polynomial regression.
+Splines are a class of functions including, for example, smoothing splines and cubic splines.
+Cubic splines are piece-wise polynomials fitted locally between 'knots'. That is, the data are
+split into bins, and a separate polynomial is fitted within each bin, with the pieces joined
+smoothly at the knots. By default the `bs()` function uses a third-degree polynomial, so
+without any knots the fit looks the same as the third-order polynomial above. Note that the
+knots are positions along the predictor, so here they are depths in centimetres.
 
-```{r CubicSpline}
-cubic_ages <- lm(y ~ bs(x, knots = c(1000, 6000, 12000)))
-plot(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = 'red')
-lines(age_range, predict(cubic_ages, data.frame(x = age_range)))
+```{r cubicSpline}
+cubic_ages <- lm(ages ~ splines::bs(position, knots = c(100, 250, 400)),
+                 data = Sluggan)
+
+plot(x = Sluggan$ages, y = Sluggan$position, cex = 1.5, col = "red",
+     xlab = "Age (14C years BP)", ylab = "Depth (cm)",
+     ylim = rev(range(Sluggan$position)))
+lines(x = predict(cubic_ages, data.frame(position = depth_grid)), y = depth_grid)
 ```
 
 :::
 
-Because classical age-depth modelling is rarely used now we are not going to delve further into the statistical details of the best way of fitting each model (e.g., the number of knots to use for fitting a cubic spline). 
+Because classical age-depth modelling is rarely used now we are not going to delve further into the statistical details of the best way of fitting each model (e.g., the number of knots to use for fitting a cubic spline).
 
 One of the issues with classical age-depth modelling is that uncertainty _decreases_ with fewer datapoints.
 
@@ -169,17 +206,21 @@ Now let's see what the latest methods show for the same dataset.
 
 Note that all the values provided to the arguments are contained in the Sluggan dataframe. When creating chronologies from your own (or accessed data), you may need to rename them to match your data.
 
-```{r Bayesian}
+```{r bayesianModel}
 #| output: false
 
-SlugganOut = with(Sluggan, 
-               Bchronology(ages=ages,
-                           ageSds=ageSds, 
-                           calCurves=calCurves,
-                           positions=position, 
-                           positionThicknesses=thickness,
-                           ids=id, 
-                           predictPositions=seq(0,518, by=10)))
+set.seed(1984) # the model is stochastic, so fix the seed for reproducibility
+
+SlugganOut <- with(Sluggan,
+                   Bchronology(ages = ages,
+                               ageSds = ageSds,
+                               calCurves = calCurves,
+                               positions = position,
+                               positionThicknesses = thickness,
+                               ids = id,
+                               predictPositions = seq(min(Sluggan$position),
+                                                      max(Sluggan$position),
+                                                      by = 10)))
 
 ```
 
@@ -187,20 +228,20 @@ SlugganOut = with(Sluggan,
 
 The summary shows for each position (depth) the median and quartiles of the predicted ages for that position.
 
-```{r BayesianSummary}
+```{r bayesianSummary}
 summary(SlugganOut)
 
 ```
 
 ## Plot
 
-```{r BayesianPlots}
+```{r bayesianPlots}
 plot(SlugganOut)
 ```
 
 :::
 
-A more complete version of the modelling process using Bchron can be found in the [vignette](https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html). 
+A more complete version of the modelling process using Bchron can be found in the [vignette](https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html).
 
 ::: {.callout-tip}
 # Resources
@@ -243,7 +284,7 @@ Commonly, only the median age is reported; however, it is good practice to repor
 1. `Bchron` has a second built-in dataset named Glendalough. Using the Glendalough dataset:
     i) Fit a linear interpolation, linear regression, three different order polynomials and a cubic spline
     ii) Plot the results
-    
+
 2. Did you run into any errors or warnings? If so, why?
 
 ### Bayesian age-depth modelling
