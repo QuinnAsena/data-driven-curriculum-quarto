@@ -384,7 +384,7 @@ allSamp %>%
   DT::datatable(rownames = FALSE, options = list(scrollX = "100%", dom = 't'))
 ```
 
-The samples table contains all the necessary information for plotting data over time and space, for rebuilding chronologies, and anything else you need to do. It is also the largest in terms of memory, and so, it is worth saving to disk to avoid repeated `get_downloads()` calls.
+The samples table contains all the necessary information for plotting data over time and space, for rebuilding chronologies (see @sec-rebuild-chronology), and anything else you need to do. It is also the largest in terms of memory, and so, it is worth saving to disk to avoid repeated `get_downloads()` calls.
 
 One column repays a closer look before you aggregate anything. Most rows are `NISP`, the
 number of identified specimens, which is a plain count of pollen grains, but the same `value`
