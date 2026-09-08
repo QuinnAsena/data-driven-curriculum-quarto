@@ -22,7 +22,7 @@ Here we will gain practice in working with age-depth models of various kind, and
 ::: {.callout-note}
 # Packages required for this section
 
-We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. We will also be fitting some interpolation and linear models using base R. Remember you must have packages both installed _and_ loaded, often loading a package is done via the `library(packagename)` function. The following code using the `pacman` package takes care of installation and loading in one go.
+We will be using `Bchron` for calibration and Bayesian age-depth modelling. Notably `rbacon` is another commonly used package, see @trachsel2017 for a discussion on age-depth models. Remember you must have packages both installed _and_ loaded, often loading a package is done via the `library(packagename)` function. The following code using the `pacman` package takes care of installation and loading in one go.
 
 ```{r ageDepthPackages}
 #| output: false
@@ -35,14 +35,10 @@ pacman::p_load(Bchron, splines, ggplot2) # splines comes with base R
 
 ### Calibration of radiocarbon dates
 
-A complication in radiocarbon dating is that the initial calculation of a radiocarbon age assumes, by convention, that the amount of radiocarbon in the atmosphere is constant over time. See @bronkramsey2008 for a good overview of ^14^C dating. This assumption is untrue, so all radiocarbon age estimates must be post-hoc calibrated using a calibration curve that is based on compiling radiocarbon dates of materials that have precise independent age estimates (e.g. tree rings, corals). The IntCal series (IntCal04, IntCal09, IntCal13, IntCal20) is the community standard for calibrating radiocarbon dates to age estimates in calendar years [e.g., @reimer2020]. The conversion from radiocarbon to calendar years usually further increases the uncertainty of age estimates.
-
-Yet another complication in radiocarbon dating is that different calibration curves need to be used for the Northern vs. Southern Hemisphere and for the atmosphere vs. oceans, due to different residence times of ^14^C in these different reservoirs. For example, atmospheric radiocarbon that diffuses into the surface oceans usually will reside for centuries before phytoplankton biologically fix it through photosynthesis, which will lead  marine ^14^C to be depleted (and ‘too old’) relative to atmospheric ^14^C. Use the wrong calibration curve and your age estimate will be inaccurate!
+A complication in radiocarbon dating is that the initial calculation of a radiocarbon age assumes, by convention, that the amount of radiocarbon in the atmosphere is constant over time (see @bronkramsey2008 for a good overview of how ^14^C dating works). This assumption is untrue, so all radiocarbon age estimates must be post-hoc calibrated using a calibration curve that is based on compiling radiocarbon dates of materials that have precise independent age estimates (e.g. tree rings, corals). Different calibration curves need to be used for the Northern vs. Southern Hemisphere and for the atmosphere vs. oceans, due to different residence times of ^14^C in these different reservoirs. For example, atmospheric radiocarbon that diffuses into the surface oceans usually will reside for centuries before phytoplankton biologically fix it through photosynthesis, which will lead  marine ^14^C to be depleted (and ‘too old’) relative to atmospheric ^14^C. Use the wrong calibration curve and your age estimate will be inaccurate! The IntCal series (IntCal04, IntCal09, IntCal13, IntCal20) is the community standard for calibrating radiocarbon dates to calendar years in the **northern** hemisphere [e.g., @reimer2020]. The SHCal series does the same job for the **southern** hemisphere [@hogg2020]. Choosing between them is not optional: use the wrong curve and every age will be biased. The conversion from radiocarbon to calendar years usually further increases the uncertainty of age estimates.
 
 
-Before calibrating several dates at once, it is worth looking at just one, together with the
-curve it was calibrated against. The shaded distribution on the left is the calibrated calendar
-age; the diagonal band is the calibration curve itself.
+We will start by calibrating a single date together with the curve it was calibrated against. In the figure below, the shaded distribution on the y-axis is the calibrated calendar age (i.e., the estimate returned by the lab); The shaded distribution on the x-axis is the probability of a givel calendar age; and the diagonal wiggly line is the calibration curve itself. Take a minute to get comfortable with interpreting this figure. The important concept to grasp is how the ^14^C distribution on the y-axis intersects with the calibration curve to produce the calibrated distribution on the x-axis. You can use the grid lines to visualise the intersection. See how high probability calendar age regions intersect with the peak of the ^14^C age distribution?
 
 ```{r fig-single-date}
 #| fig-cap: "One radiocarbon date of 11,553 +/- 50 14C BP, calibrated against IntCal20, shown with the calibration curve it was matched to."
@@ -56,7 +52,14 @@ Notice that the calibrated distribution is not symmetrical, and not necessarily 
 Its shape is inherited from the wiggles in the curve, which is why a calibrated age can rarely
 be summarised honestly by one number.
 
-#### Calibrating radiocarbon dates in R
+::: {#exr-singlecalibration}
+1. Using the code above, experiment with a few different ages and standard deviations. How does the shape of the calibrated distribution change with different ages and uncertainties?
+
+2. Using the package documentation, find all the other possible calCurves arguments that `Bchron` accepts.
+:::
+
+
+#### Calibrating multiple radiocarbon dates
 
 Here we’ll experiment with calibrating radiocarbon dates, using various calibration curves. Radiocarbon dated samples come back from the lab with a radiocarbon age and standard deviation, among other information. These two bits of information are used to calibrate the radiocarbon dates to estimated ages. R packages may have useful vignettes (package tutorials) and built-in datasets that provide handy test templates. The following code is modified from the `Bchron` [vignette](https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html).
 
@@ -97,23 +100,31 @@ The output summary indicates the range of the highest density regions (i.e., the
 The object you assigned the result of `BchronCalibrate()` to holds all of the calibration
 information, and it can be reached with `$`, for example `ages$Date1$ageGrid`.
 
-::: {#exr-cal-curves}
-Using the example code above, change the `calCurves` input to:
+::: {#exr-calibration}
+The three dates calibrated above were reported with standard deviations of 50, 230 and 110
+radiocarbon years. Those numbers matter more than they look.
 
-1. the Southern Hemisphere calibration curve,
-2. the marine sediments curve.
+1. Recalibrate the same three ages, but set every `ageSds` to 30, roughly what a modern
+   laboratory would report. Plot the result and compare it with the original. What happened to
+   the shape of each distribution, and in particular to the number of separate peaks?
 
-How much do the estimated ages move?
+2. Explain the change in terms of the calibration curve. It may help to plot a single date with
+   `includeCal = TRUE`, as in @fig-single-date.
+
+3. Now calibrate a date of 8050 radiocarbon years with a standard deviation of 30. Extract
+   `ageGrid` and `densities` from the result, find the median calendar age, and compare it
+   with the ages at which the distribution actually peaks. Would you be happy reporting that
+   median as the age of the sample?
+
+4. Finally, recalibrate one of your dates using the Southern Hemisphere curve (`shcal20`) and
+   the marine curve (`marine20`) instead of `intcal20`. How far does the estimated age move,
+   and what would the consequence be of choosing the wrong one?
+
+By the end of this exercise you should be able to look at a radiocarbon age, a standard
+deviation and a calibration curve, and say roughly what shape the calendar-age distribution
+will take and how confidently a single number could summarise it.
 :::
 
-::: {#exr-cal-different-ages}
-Calibrate a different set of three ages by modifying the inputs to `ages` and `ageSds`.
-:::
-
-::: {#exr-cal-median}
-Using one of your calibrated sets of three dates, calculate the median age from the `ageGrid`,
-and the difference between each calibrated age and the original uncalibrated age.
-:::
 
 ::: {.callout-note}
 # Median and mean ages
@@ -236,16 +247,6 @@ Because classical age-depth modelling is rarely used now we are not going to del
 
 One of the issues with classical age-depth modelling is that uncertainty _decreases_ with fewer datapoints.
 
-::: {#exr-glendalough-classical}
-`Bchron` has a second built-in dataset named Glendalough, which has far fewer radiocarbon
-dates than Sluggan Moss. Using the Glendalough data:
-
-1. fit a linear interpolation, a linear regression, three polynomials of different order, and
-   a cubic spline,
-2. plot the results.
-
-Did you run into any errors or warnings? If so, why?
-:::
 
 
 #### Bayesian age-depth models
@@ -305,18 +306,27 @@ plot(SlugganOut)
 
 A more complete version of the modelling process using Bchron can be found in the [vignette](https://cran.r-project.org/web/packages/Bchron/vignettes/Bchron.html).
 
-::: {#exr-glendalough-bayesian}
-Run the `Bchron` age-depth model on the Glendalough dataset, then consider:
+::: {#exr-downsampling}
+Sluggan Moss is particularly well dated, with 31 age controls. This exercise asks what you lose as dated intervals are removed. Eor example, a core may only have 5 or 10 dated samples - how would this change your confidence in the ag-depth model output, and importantly, your subsequent ecological inferences?
 
-1. how does the uncertainty shown in the plot compare between Glendalough, which has few
-   radiocarbon dates, and Sluggan Moss, which is data-rich?
-2. run `summary()` on the Glendalough model. Does the output reflect what the plot shows? Is
-   the uncertainty smaller close to a dated sample? Why does interpreting a result in the
-   context of its uncertainty matter?
+1. Build several down-sampled versions of the `Sluggan` data at different resolutions, for example
+   by keeping every second control, then every fourth, then only five or six spread through
+   the core. Always keep the first and last control, so that every version spans the same
+   depth range and none of the models has to extrapolate.
+
+2. Fit a `Bchronology()` model to each version, remembering `set.seed()` so your results are
+   reproducible, and plot them.
+
+3. Compare the shape of the age-depth relationship and the width of the uncertainty band. Where
+   in each core is the model most confident, and where is it least? What happens to the
+   uncertainty in the gaps as the gaps get longer?
+
+4. If you were planning a coring campaign with a fixed budget for radiocarbon dates, what would
+   these results tell you about where to place them?
 :::
 
 ::: {.callout-tip}
-# Resources
+# Useful resources
 
 Age-depth modelling is complicated, there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. Key papers for understanding age depth modelling include:
 
@@ -368,12 +378,9 @@ chronology that carries its uncertainty through to every predicted age. The chro
 foundation everything else in this book rests on: every rate, every ordination and every
 comparison between sites inherits the uncertainty established here.
 
-Along the way there were five exercises. They are worth returning to if you skipped any, because
-the habit they build, of asking how well an age is really known, is the one that matters most:
+The exercises are worth returning to if you skipped them, because the habit they build, of
+asking how well an age is really known, is the one that matters most:
 
-- @exr-cal-curves, choosing the right calibration curve
-- @exr-cal-different-ages, calibrating your own dates
-- @exr-cal-median, and why a median is a poor summary of a calibrated date
-- @exr-glendalough-classical, the classical models on a sparse record
-- @exr-glendalough-bayesian, and how uncertainty grows between dated levels
+- @exr-calibration, reading a calibrated date and its curve
+- @exr-downsampling, and what happens to a chronology as its dates thin out
 
