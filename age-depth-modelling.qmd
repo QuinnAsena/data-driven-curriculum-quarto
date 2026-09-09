@@ -334,7 +334,7 @@ Sluggan Moss is particularly well dated, with 31 age controls. This exercise ask
 :::
 
 ::: {.callout-tip}
-# Useful resources
+# Resources
 
 Age-depth modelling is complicated: there are many pitfalls, assumptions, and uncertainties that are often ignored. Recent developments have begun to focus on quantifying uncertainties to understand the reliability of inferences made from the data. Key papers for understanding age-depth modelling include:
 
