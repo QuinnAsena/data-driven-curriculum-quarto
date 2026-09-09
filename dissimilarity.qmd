@@ -6,7 +6,7 @@ author: Quinn Asena and Jack Williams
 
 ## Background
 
-There are multiple methods of describing palaeoecological data in terms of species communities. Older, but still valid, methods include CONISS [@grimm1987], more modern methods include machine learning methods such as boosted regression trees [@elith2008; @simpson2012], and latent dirichlet allocation [@blei2007; @blei2012]. Here, we are going to look at a measure of dissimilarity, the squared chord distance, of samples through time. That is, a measure of how similar/dissimilar a community at time $t$ is to the community at $t_{+1}$.
+There are multiple methods of describing palaeoecological data in terms of species communities. Older, but still valid, methods include CONISS [@grimm1987], more modern methods include machine learning methods such as boosted regression trees [@elith2008; @simpson2012], and latent Dirichlet allocation [@blei2007; @blei2012]. Here, we are going to look at a measure of dissimilarity, the squared chord distance, of samples through time. That is, a measure of how similar or dissimilar the community at one time is to the community at another. In this chapter, we are going to look at how to build a distance matrix of community dissimilarity between every pair of samples in a core. Although we will be using a fairly simple method, dissimilarity/similarity is a fundamental part of many of the more advanced methods, providing a basis for their calculations.
 
 
 ::: {.callout-note}
@@ -16,29 +16,31 @@ There are multiple methods of describing palaeoecological data in terms of speci
 #| output: false
 # Load up the package
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(tidyr, dplyr, ggplot2, neotoma2, analogue, vegan)
+pacman::p_load(tidyr, dplyr, ggplot2, scales, stringr, neotoma2, analogue)
 ```
 :::
 
+
+## Getting started
 
 We will be using the Devil's Lake dataset downloaded in @sec-neotoma2. We will read in the pre-formatted data from the data directory directly so that this section can be run independently of @sec-neotoma2. We've also included a catch-up block of code (below) that shows the process of downloading and formatting the data to maintain a reproducible record of the steps required to start this section.
 
 ::: {.callout-tip}
 # Respawn code
 
-The following code recreates the necessary formatted data from Devil's Lake using the `neotoma2` package. We have also provided the formatted dataset as an `.rds` file in the data directory, it is preferable to read the dataset rather than repeatedly download it to avoid unnecessary API calls. This code block is included so that you can manipulate the inputs (e.g., `sideid = `, and harmonising taxa) and object name to download and experiment with different datasets.
+The following code recreates the necessary formatted data from Devil's Lake using the `neotoma2` package. We have also provided the formatted dataset as an `.rds` file in the data directory, it is preferable to read the dataset rather than repeatedly download it to avoid unnecessary API calls. This code block is included so that you can manipulate the inputs (e.g., `siteid = `, and harmonising taxa) and object name to download and experiment with different datasets.
 
-```{r DevilsRespawn}
+```{r devilsRespawn}
 #| eval: false
 #| code-fold: true
-# The following code can be done in one pipeline but we have split it into chunks to help with readablity
+# The following code can be done in one pipeline but we have split it into chunks to help with readability
 devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
   get_downloads() %>%
   samples()
 
 devils_samples <- devils_samples %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland herbs and trees and shrubs
-         elementtype == "pollen", # filter bu pollen samples
+         elementtype == "pollen", # filter by pollen samples
          units == "NISP") %>% # Filter by sampling unit
   mutate(variablename = replace(variablename,
                                 stringr::str_detect(variablename, "Pinus.*"), # Harmonize Pinus into one group
@@ -62,41 +64,44 @@ saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
 
 :::
 
-We can skip the respawn code and reads-in the Devil's Lake data provided in the data directory. Sometimes minor mistakes along the way lead to errors, so you can always come back here and read in the formatted data again.
+We can skip the respawn code and read in the Devil's Lake data provided in the data directory. Sometimes minor mistakes along the way lead to errors, so you can always come back here and read in the formatted data again.
 
-```{r DevilsRespawnRDS}
+```{r devilsRespawnRds}
 #| output: false
 # Load up the data
 devils_samples <- readRDS("./data/devils_samples.rds")
 
 ```
 
+## From long to wide
 
-The data are in long format as a tibble, i.e., similar to a dataframe. This format can be great for data wrangling and plotting; however, many analyses require a specific input such as a wide (variables in columns) site-by-species matrix. It is important to be comfotable with pivoting data between long and wide formats and converting between dataframes/tibbles and matrices. Remember, that unlike dataframes and tibbles, matrices cannot be of mixed type (e.g., strings and numbers).
+The data are in long format as a tibble, i.e., similar to a dataframe. This format can be great for data wrangling and plotting; however, many analyses require a specific input such as a wide (variables in columns) site-by-species matrix. It is important to be comfortable with pivoting data between long and wide formats and converting between dataframes/tibbles and matrices. Remember, that unlike dataframes and tibbles, matrices cannot be of mixed type (e.g., strings and numbers).
 
 ::: {.callout-warning}
-# Oh no! Common sources of error (and anxiety...) :scream:
+# Oh no! :scream:
 
-If a numeric matrix is required as the input make sure the data have not been accidentally converted to strings. R will coerce numbers to characters if there is a character (like a nameing column) in the matrix. This coersion can go unnoticed when converting from a dataframe to a matrix.
+Many statistical functions in R want a matrix, not a tibble or a dataframe (or other class), and `analogue::distance()` is one of them. Always check the package or function documentation (using `?`) for the required input format, because reshaping the data or changing its class may be necessary.
 
-```{r StringMatrix}
-string_matrix <- matrix(c("1", 2:10), nrow = 2) # see the numbers are in quotes indicating a string? 
+Functions should error if given the wrong input type; however, sometimes they will silently produce the incorrect result. As an example, R will coerce numbers to characters if there is a single character column (like a naming column) in the matrix, and it does so without any error or warning. The coercion can go unnoticed when converting from a dataframe to a matrix, leaving you with a matrix that looks right and is the wrong type:
+
+```{r stringMatrix}
+string_matrix <- matrix(c("1", 2:10), nrow = 2) # see the numbers are in quotes indicating a string?
 str(string_matrix) # Check the structure
 ```
 
 Numeric matrix:
 
-```{r NumericMatrix}
+```{r numericMatrix}
 numeric_matrix <- matrix(1:10, nrow = 2) # now the structure is int, for integer.
 str(numeric_matrix) # Check the structure
 ```
 
-Matrices can have row and column names (e.g., species names) names and maintain a numeric structure, for example: `colnames(numeric_matrix) <- LETTERS[1:5]`. 
+Matrices can have row and column names (e.g., species names) and maintain a numeric structure, for example: `colnames(numeric_matrix) <- LETTERS[1:5]`. Check what you are about to pass in with `class()` and `str()`.
 :::
 
 The `analogue` package provides several distance measures that can be calculated for site-by-species matrices, we will use squared chord distance. So let's pivot our data to wide format and convert it to a numeric matrix. This can be done in several ways in R, for consistency's sake we'll use `tidyr`:
 
-```{r Pivot}
+```{r devilsPivot}
 #| output: false
 devils_samples_wide <- devils_samples %>%
     tidyr::pivot_wider(id_cols = c(age, depth),
@@ -112,71 +117,103 @@ devils_samples_wide <- devils_samples %>%
 devils_ad <- devils_samples_wide[ , c(1:2)] # store the ages and depths separately
 
 devils_samples_wide <- devils_samples_wide[ , -c(1:2)] # drop ages and depth as they are not included in the distance calculations
-devils_names <- colnames(devils_samples_wide)
 
 ```
 
-Now we have our data in the correct format to do the distance calculation. Note that time is _not_ included as part of the calculation. The age and depth columns have been stored in a separate matrix `devils_ad`, and the suqared chord distance will be calculated on the species community matix `devils_samples_wide`. 
+## Calculating dissimilarity
 
-::: {.panel-tabset}
+Now we have our data in the correct format to do the distance calculation. Note that time is _not_ included as part of the calculation. The age and depth columns have been stored in a separate matrix `devils_ad`, and the squared chord distance will be calculated on the species community matrix `devils_samples_wide`.
 
-## Code
-
-```{r SqDist}
+```{r sqDist}
 # Here we use method = "SQchord", see other available methods with ?distance
 devils_sqdist <- analogue::distance(devils_samples_wide, method = "SQchord")
 ```
 
-## Result
-
 Print the first 5 rows and columns to see the structure:
-```{r SqDistResult}
-#| echo: false
-# Let's check out the top 5 rows and columns of the result:
+
+```{r sqDistResult}
 devils_sqdist[1:5, 1:5]
 ```
 
-:::
+The `distance` function has returned a matrix of `r dim(devils_sqdist)[1]` x `r dim(devils_sqdist)[2]` dimensions. Note that the input dimensions were `r dim(devils_samples_wide)[1]` x `r dim(devils_samples_wide)[2]`. The function has calculated the distance between all pairwise samples, that is, every combination of 1 to $n$ samples. The diagonal of the matrix is each sample compared with itself and has values of zero. The upper and lower halves of the matrix mirror each other.
 
-The `distance` function has returned a maxtrix of `r dim(devils_sqdist)[1]` x `r dim(devils_sqdist)[2]` dimensions. Note that the input dimensions were `r dim(devils_samples_wide)[1]` x `r dim(devils_samples_wide)[2]`. The function has calculated the distance between all pairwise samples, that is, every combination of 1 to $n$ samples. The diagonal of the matrix is each sample compared with itself and has values of zero. The upper and lower halves of the matrix mirror each other.
+One way we can visualise these data is by picking an origin from which to compare change, and re-appending the time column (although, see the cautions below of this crude method). If we use the base of the core, the oldest sample, as our origin, we can look at how far the community moved away from that starting point as time runs forward to the present. The respawn code sorted the samples oldest first, so the oldest sample is the first row and column of `devils_sqdist`. Note that indexing by position like this only works if you know how your data are sorted. Let's bind that first column with our stored ages and depths, and plot distance over time.
 
-One way we can visualise these data is by picking an origin from which to compare change, and re-appending the time column (although, see the cautions below of this crude method). If we use the top of the core, the most recent section, as our origin and we can look at the distance of each following sample from the present. This will be the first column (or row) of the matrix `devils_sqdist`, so let's bind the first column with our stored ages and depths, and plot distance over time.
-
-::: {.panel-tabset}
-
-## Code
-
-```{r SqDistAge}
+```{r sqDistOrigin}
 # Bind the age and depths variables with the first column of the SQdistances
-origin_top <- cbind(devils_ad, sq_dist = devils_sqdist[ ,1])
+origin_base <- cbind(devils_ad, sq_dist = devils_sqdist[ ,1])
 ```
 
-## Plot
-
-```{r SqDistPlot}
-origin_top %>%
-  as_tibble() %>% 
-  ggplot(aes(x = age, y = sq_dist)) + 
+```{r fig-dissimilarity-origin}
+#| fig-cap: "Squared chord distance between each Devil's Lake sample and the oldest sample at the base of the core. The origin sits at zero on the left, and the rise towards the present shows the community moving progressively further from its initial composition."
+origin_base %>%
+  as_tibble() %>%
+  ggplot(aes(x = age, y = sq_dist)) +
   geom_point() +
   geom_line() +
   scale_x_reverse(breaks = scales::pretty_breaks(6)) +
+  labs(x = "Age (cal years BP)",
+       y = "Squared chord distance from the base of the core") +
   theme_minimal()
 ```
 
-:::
-
-We can see from this plot that the community changed substantially in Devil's Lake from the origin point of the community at the most recent core section. Check out the pattern shown by applying the Modern Analogue Technique in @sec-novelty and how it compares to this plot.
+We can see from @fig-dissimilarity-origin that the community at Devil's Lake changed substantially over the record, moving progressively further from the composition at the base of the core. Check out the pattern shown by applying the Modern Analogue Technique in @sec-novelty and how it compares to this plot.
 
 However, plotting the distances with the original time column is not a time series analysis and does not take into account structural processes or autocorrelation. As an exploratory method, it shows us patterns that may be of interest to investigate further.
 
-Some consiterations of this method are:
+::: {#exr-sample-to-sample}
+@fig-dissimilarity-origin measures every sample against one fixed origin (the oldest sample). A different question is how much the community changed between one sample and the *next*.
 
-- it does not take into account time intervals or chronological uncertainty. Palaeoecological data are typically unevenly spaced through time and we may not be calculating the squared chord distance across communities evenly through time. See the age column in the data, you can use `diff()` to see the first differences in the data (the timespan between sampels).
-- time averaging is not taken into consideration. Time averaging is the amount of time a sample (i.e., a 1-centemetre thick slice of sediment core) encompasses. Due to processes like variable sedimentation rates and core compression, the number of years inntegrated within each sample may vary. Thus, we may be calculating the dissimilarity between say 50-years worth of ecological productivity and turnover in one sample, with 10-years in the previous one.
+Those values are already in `devils_sqdist`. The diagonal holds each sample compared with itself, so the comparisons between neighbouring samples sit immediately above (or below) it.
 
-Squared chord distance is one of many measures of dissimilarity, and is not necessarily the best for a given dataset [see @simpson2007]. The documentation of the `distance` function (accessed by `?distance`). The `vegan` package also includes functions for calculating distance, and provides many useful references in the documentation of the function `vegdist`.
+1. Extract the values one step off the diagonal and plot them against age.
+
+2. Compare your plot with @fig-dissimilarity-origin. Which parts of the record look like periods of rapid change, and would you have picked out the same intervals from the origin plot alone?
+
+3. We might expect a longer gap between two samples to show a larger change, simply because more time has passed. Use `diff()` on the age column to get the gaps and check whether that is true here. Is the relationship what you expected, and what might explain it?
+
+Be careful with the lengths. If you bind 122 values onto the 123 rows of `devils_ad`, R will not stop you: it recycles the shorter vector and gives you a full table with only a warning. That is worse than an error, because the plot still appears and one value in it is wrong. Check the lengths yourself before you bind anything.
+:::
+
+## Limitations of this method
+
+Some considerations of this method are:
+
+- it does not take into account time intervals or chronological uncertainty. Palaeoecological data are typically unevenly spaced through time and we may not be calculating the squared chord distance across communities evenly through time. See the age column in the data, you can use `diff()` to see the first differences in the data (the timespan between samples).
+- time averaging is not taken into consideration. Time averaging is the amount of time a sample (i.e., a 1-centimetre thick slice of sediment core) encompasses. Due to processes like variable sedimentation rates and core compression, the number of years integrated within each sample may vary. Thus, we may be calculating the dissimilarity between say 50-years worth of ecological productivity and turnover in one sample, with 10-years in the previous one.
+- the calculations are based on species composition alone and are not conditioned on environmental covariates (e.g., climate variables or fire). Thus, this method can be considered descriptive rather than inferential.
+
+Squared chord distance is one of many measures of dissimilarity, and is not necessarily the best for a given dataset [see @simpson2007]. The documentation of the `distance` function (accessed by `?distance`) lists the alternatives. The `vegan` package also includes functions for calculating distance, and provides many useful references in the documentation of the function `vegdist`.
+
+::: {#exr-distance-metrics}
+The choice of metric is a decision, not a default, and it changes the answer.
+
+1. Use `?distance` to see the methods `analogue::distance()` accepts, then pick one other than `SQchord` and recalculate the distance matrix. Note that `chord` is closely related to squared chord distance, so choose something further afield, such as `euclidean`, if you want to see a real difference.
+
+2. Plot your new distance-from-origin curve alongside the squared chord version. Check the range of each before you put them on the same axes: different metrics are not on a common scale, so a shared axis will make one look uniformly larger than the other for reasons that have nothing to do with ecology. Decide how to handle that, and justify what you did.
+
+3. Do the two metrics agree about *when* the community changed, even where they disagree about how much? That is usually the more useful question of the two.
+:::
+
+::: {#exr-second-site}
+So far we have been using Devil's Lake as an example, try calculate the squared chord distance:
+
+1. Find another site with pollen data, either with `neotoma2` as in @sec-neotoma2 or through [Neotoma Explorer](https://apps.neotomadb.org/explorer/), and note its `siteid`.
+
+2. Run the respawn code with your site in place of `666`. Expect to change more than the `siteid`. The code filters on the ecological groups `UPHE` and `TRSH`, on `elementtype == "pollen"` and on `units == "NISP"`, and it harmonises everything matching `Pinus.*` into a single taxon. Your record may not have all of those, and it will almost certainly need different harmonisation. Look at what you actually have before you filter, and keep a note of every decision you make on the way.
+
+3. Build the distance matrix and the distance-from-origin plot for your site, and put it next to Devil's Lake.
+
+4. The harder question. The two records have different taxa, different numbers of samples, different sampling intervals and separately built chronologies. Given all that, what can you honestly conclude by comparing the two curves, and what would you have to do first before comparing the absolute values?
+:::
 
 
-## Exercises
+## Conclusion
 
-Plot diagonal elements offset by 1?
+Despite the limitations of this method, it is a useful exploratory tool to visualise how the community composition has changed through time. In the Devil's Lake example, quite a stark change can be seen over the record, and this can provide a basis for further investigation.
+
+The exercises take that further, and are worth returning to if you skipped them:
+
+- @exr-sample-to-sample, change between neighbouring samples rather than from a fixed origin
+- @exr-distance-metrics, and how much the choice of metric matters
+- @exr-second-site, applying the whole workflow to a record of your own
