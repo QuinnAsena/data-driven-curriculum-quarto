@@ -23,10 +23,11 @@ pkgs <- c(
   "vegan",        # ordination and distance measures
   "rioja",        # stratigraphic diagrams, CONISS
   # data wrangling and plotting
-  "dplyr", "tidyr", "ggplot2", "readr", "stringr", "scales",
-  "tidyverse",    # the no-analogue chapter loads the whole meta-package
-  "readxl",       # reads the Whitmore modern pollen spreadsheet
-  "fuzzyjoin",    # approximate string matching for taxon names
+  "dplyr", "tidyr", "ggplot2", "readr", "stringr", "scales", "tibble",
+  # tidyverse, readxl and fuzzyjoin were dropped on 2026-09-10:
+  #   tidyverse   no chapter loads the meta-package any more
+  #   readxl      the NAMPD workbook is now shipped as CSV
+  #   fuzzyjoin   the fuzzy taxon matching was replaced by a reviewed table
   # tables and widgets
   "DT", "htmlwidgets",
   # required by code-link: true in _quarto.yml, which turns function names in code blocks

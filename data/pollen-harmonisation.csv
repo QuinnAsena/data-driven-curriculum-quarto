@@ -1,0 +1,51 @@
+harmonised_taxon,devils_taxa,nampd_codes,nampd_taxa,decision,note
+Abies,Abies,ABIES,Abies,match,
+Acer,Acer,ACERX+ACNEGUNA+ACPENSYL+ACRUBRUM+ACSACNUM+ACSACRUM,Acer+Acer negundo+Acer pensylvanicum+Acer rubrum+Acer saccharinum+Acer saccharum,sum,
+Alnus,Alnus,ALCRISPA+ALNUSX+ALRUBRA+ALRUGOSA,Alnus crispa+Alnus+Alnus rubra+Alnus rugosa,sum,
+Ambrosia,Ambrosia,AMBROSIA,Ambrosia,match,
+Amorpha-type,Amorpha-type,AMORPHA,Amorpha,match,
+Apiaceae,Apiaceae,APIACEAE,Apiaceae,match,
+Artemisia,Artemisia,ARTEMISIA,Artemisia,match,
+Asteraceae undiff.,Asteraceae undiff.,ASTERCICHO+ASTERX,Asteraceae subf. Cichorioideae+Asteraceae,sum,
+Betula,Betula,BETULA,Betula,match,
+Caprifoliaceae sensu lato,Caprifoliaceae sensu lato,CAPRIFOLIA,Caprifoliaceae,match,sensu lato assumed equal to NAMPD Caprifoliaceae
+Carya,Carya,CARYA,Carya,match,
+Castanea,Castanea,CASTANEA,Castanea,match,
+Celtis,Celtis,CELTIS,Celtis,match,
+Chenopodiaceae/Amaranthaceae,Amaranthaceae undiff.+Chenopodium-type,CHENOAMX,Chenopodiaceae/Amaranthaceae,sum-both-sides,"Chenopodium in Chenopodiaceae/Amaranthaceae, which CHENOAMX combines"
+Cornus,Cornus,CORNUS,Cornus,match,
+Corylus,Corylus,CORYLUS,Corylus,match,
+Cupressaceae,Cupressaceae,CUPRESSA,Cupressaceae,match,
+Cyperaceae,Cyperaceae,CYPERACE,Cyperaceae,match,
+Ephedra,Ephedra,EPHEDRA,Ephedra,match,
+Ericaceae,Ericaceae,ERICACEX+ERILEDCH+ERIVACCI,Ericaceae+Ericaceae Chamaedaphne/Ledum+Ericaceae Vaccinium,sum,
+Fabaceae undiff.,Fabaceae undiff.,FABACEAE,Fabaceae,match,
+Fagus,Fagus,FAGUS,Fagus,match,
+Fraxinus,Fraxinus,FRAXINUX+FRAXNIGR+FRAXPNAM,Fraxinus+Fraxinus nigra+Fraxinus pennsylvanica/americana,sum,
+Ilex,Ilex,AQUIFOLI,Aquifoliaceae,match,"Ilex is the holly genus, family Aquifoliaceae"
+Iva,Iva,IVA,Iva,match,
+Juglans,Juglans,JUGCINER+JUGLANSX+JUGNIGRA,Juglans Cinerea+Juglans+Juglans Nigra,sum,
+Larix,Larix,LARIXPSEU,Larix/Pseudotsuga,match,
+Liquidambar,Liquidambar,LIQUIDAM,Liquidambar,match,
+Morus,Morus,MORACEAX,Moraceae,match,Morus is in Moraceae (mulberry family)
+Ostrya/Carpinus,Ostrya/Carpinus,OSTRYCAR,Ostrya/Carpinus,match,
+Picea,Picea,PICEAX+PICGLAUC+PICMARIA,Picea+Picea glauca+Picea mariana,sum,
+Pinus,Pinus,PINDIPLO+PINHAPLO+PINUSX,Pinus diploxylon+Pinus haploxylon+Pinus,sum,
+Plantago,Plantago,PLANTAGINX,Plantaginaceae,match,Plantago is in Plantaginaceae
+Platanus,Platanus,PLATANUS,Platanus,match,
+Poaceae,Poaceae,POACEAE,Poaceae,match,
+Populus,Populus,POPULUS,Populus,match,
+Quercus,Quercus,QUERCUS,Quercus,match,
+Rhamnaceae/Vitaceae,Rhamnaceae/Vitaceae,RHAMNACEAE,Rhamnaceae/Vitaceae,match,
+Rhus,Rhus,ANACARDI,Anacardiaceae,match,Rhus is in Anacardiaceae (sumac family)
+Rosaceae,Rosaceae,ROSACEAX,Rosaceae,match,
+Rumex,Rumex,RUMEOXYR+RUMEX,Rumex/Oxyria+Rumex,sum,
+Salix,Salix,SALIX,Salix,match,
+Sarcobatus vermiculatus,Sarcobatus vermiculatus,SARCOBATUS,Sarcobatus,coarsen,
+Thalictrum,Thalictrum,THALICTRUM,Thalictrum,match,
+Tilia,Tilia,TILIA,Tilia,match,
+Tsuga,Tsuga,TSUGAX+TSUGHETE+TSUGMERT,Tsuga+Tsuga heterophylla+Tsuga mertensiana,sum,
+Ulmus,Ulmus,ULMUS,Ulmus,match,
+Urticaceae,Urticaceae,URTICACX,Urticaceae,match,
+,Angiospermae undiff. (herbs),,,drop,"Quinn 2026-09-10: drop, no NAMPD counterpart"
+,Cannabaceae sensu stricto,,,drop,"Quinn 2026-09-10: drop, no NAMPD counterpart"
