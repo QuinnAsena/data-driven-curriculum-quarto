@@ -23,7 +23,7 @@ pacman::p_load(tidyr, dplyr, ggplot2, scales, stringr, neotoma2, analogue)
 
 ## Getting started
 
-We will be using the Devil's Lake dataset downloaded in @sec-neotoma2. We will read in the pre-formatted data from the data directory directly so that this section can be run independently of @sec-neotoma2. We've also included a catch-up block of code (below) that shows the process of downloading and formatting the data to maintain a reproducible record of the steps required to start this section.
+We will be using the Devil's Lake dataset downloaded in @sec-neotoma2, filtered for `datasettype == "pollen"`. We will read in the data from the data directory directly so that this section can be run independently of @sec-neotoma2. We've also included a catch-up block of code (below) that shows the process of downloading and filtering the data to maintain a reproducible record of the steps required to start this section.
 
 ::: {.callout-tip}
 # Respawn code
@@ -50,18 +50,20 @@ if (!file.exists("./data/devils_dl.rds")) {
 
 :::
 
-`samples()` extracts the counts from the download, and works offline because `get_downloads()` already fetched everything. We keep pollen counts from the ecological groups this analysis is about:
+Recall from @sec-neotoma2 that `samples()` extracts the pollen counts from the download (along with lots of other useful variables!), and works offline because `get_downloads()` already fetched the data and we downloaded them to the data directory. The following code uses the `samples()` function to convert the downloaded data to a long table of each species recorded per sample and filters for upland herbs and trees and shrubs.
+
 
 ```{r devilsSamples}
 devils_samples <- samples(devils_dl) %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # upland herbs, trees and shrubs
-                elementtype == "pollen",
+                elementtype == "pollen", # already done at the download stage, so not strictly necessary!
                 units == "NISP")                        # counts, not percentages
 ```
 
 ### Harmonising and calculating proportions
 
-Neotoma records *Pinus* at Devil's Lake under three names: `Pinus undiff.`, `Pinus subg. Pinus` and `Pinus subg. Strobus`. For a single-site analysis like this one we treat them as one taxon, using the same `str_detect()` and `replace()` approach as @sec-neotoma2, and **sum the counts**.
+Using the samples table, we can perform some simple programmatic harmonisation.
+Neotoma records *Pinus* at Devil's Lake under three names: `Pinus undiff.`, `Pinus subg. Pinus` and `Pinus subg. Strobus`. To keep things simple we are going to aggregate all the *Pinus* species to genus level (e.g., lumping/aggregating all pines together) using `str_detect()` and `replace()`. Because the units are still counts at this point we sum the counts.
 
 ```{r devilsHarmonise}
 devils_harm <- devils_samples %>%
@@ -76,9 +78,7 @@ dplyr::n_distinct(devils_samples$variablename)
 dplyr::n_distinct(devils_harm$variablename)
 ```
 
-Lumping pine is a choice, not an obligation. It is reasonable here because we are describing change within one core, so the only thing that matters is that a taxon means the same thing at every depth. It would be the wrong choice if we were comparing against another dataset that resolves pine further, which is exactly what happens in @sec-novelty.
-
-Only now do we convert to proportions, after the taxon list is settled:
+This is possibly over-simplified but good enough for this demonstration. Now that we have done some simple harmonisation, we can convert the pollen count data to relative proportions. Typically (not always) in palaeoecology, data are visualised in relative proportions not counts. Take care over what input the statistical analyses require. In this chapter we use proportions.
 
 ```{r devilsProportions}
 devils_harm_prop <- devils_harm %>%
@@ -92,7 +92,7 @@ devils_harm_prop <- devils_harm %>%
 range(tapply(devils_harm_prop$prop, devils_harm_prop$age, sum))
 ```
 
-We save the harmonised proportions, because later chapters start from this object rather than rebuilding it. Note that this save is unconditional, unlike the download above. Guarding a download with `if (!file.exists())` is worth it because the download is slow and hits an API. Guarding a derived file is a trap: change the harmonisation code and the file on disk would quietly keep the old values, while everything in the session used the new ones.
+We save the harmonised proportions, because later chapters start from this object rather than rebuilding it. It is often useful to keep data on your own backup system rather than relying on data persistence on a server.
 
 ```{r devilsSaveProp}
 #| output: false

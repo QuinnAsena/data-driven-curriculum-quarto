@@ -509,14 +509,13 @@ neotoma2::plotLeaflet(some_sites)
 Rebuild a chronology for a site of your own choosing, and get the calibration curve vector
 right.
 
-1. Pick a site, but not the Devil's Lake chronology used in the worked example above. Any
-   of the sites mapped above will do, or one from your own region.
+1. Pick a site (not the Devil's Lake, `ID = 666`) either from the ones given above, or any of your choosing!
 
 2. List the available chronologies and choose one, saying why.
 
 3. Work out what kind each chronological control is, and build a `calCurves` vector
-   accordingly. Remember that the hemisphere decides between `intcal20` and `shcal20`, and that anything already expressed as a calendar age
-   needs `normal`.
+   accordingly. Remember that the hemisphere decides between `intcal20` and `shcal20`,
+   and that anything already expressed as a calendar age needs `normal`.
 
 4. Fit the model and plot it. Compare the uncertainty with the published chronology if the
    original paper is available.
@@ -531,8 +530,8 @@ with no reported uncertainty is part of the work, not a distraction from it.
 We have calibrated radiocarbon dates and seen how much uncertainty that conversion adds, fitted
 the four classical age-depth models and seen where each of them misleads, and built a Bayesian
 chronology that carries its uncertainty through to every predicted age. Chronologies underpin
-inferences made from statistical analyses, and are thus a crutial part of the analytical process.
-Age-depth models are often used to determine the timing of biological events, and accmulation rates
+inferences made from statistical analyses, and are thus a crucial part of the analytical process.
+Age-depth models are often used to determine the timing of biological events, and accumulation rates
 affect how many years of ecological productivity are contained within a given sample (known as time averaging).
 
 The exercises are linked below if you need to revisit them:

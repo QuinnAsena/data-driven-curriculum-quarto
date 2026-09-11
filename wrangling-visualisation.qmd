@@ -1,11 +1,16 @@
-# Data wrangling and visualisation {#sec-wrangle-vis}
+# Visualising pollen {#sec-wrangle-vis}
 
+
+Note to indlue the issue of visualising relative proportions.
+
+
+
+
+## Getting started
 
 ::: {.callout-note}
 # Packages required for this section
 
-`rioja` provides the stratigraphic plotting and the CONISS constrained clustering used below.
-The rest are for wrangling and plotting.
 
 ```{r wranglePackages}
 #| output: false
@@ -14,9 +19,94 @@ pacman::p_load(dplyr, tidyr, ggplot2, stringr, rioja, neotoma2)
 ```
 :::
 
-## Simple Analytics
 
-### Stratigraphic Plotting: Building a Pollen Diagram
+
+::: {.callout-tip}
+# Respawn code
+
+```{r devilsDownload}
+#| output: false
+if (!file.exists("./data/devils_dl.rds")) {
+  devils_dl <- get_sites(siteid = 666) %>%
+    get_datasets(all_data = TRUE) %>%
+    neotoma2::filter(datasettype == "pollen") %>%
+    get_downloads()
+  saveRDS(devils_dl, "./data/devils_dl.rds")
+} else {
+  devils_dl <- readRDS("./data/devils_dl.rds")
+}
+```
+
+:::
+
+
+```{r devilsSamples}
+devils_samples <- samples(devils_dl) %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # upland herbs, trees and shrubs
+                elementtype == "pollen", # already done at the download stage, so not strictly necessary!
+                units == "NISP")                        # counts, not percentages
+```
+
+
+```{r devilsHarmonise}
+devils_harm <- devils_samples %>%
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus")) %>%
+  group_by(siteid, sitename, sampleid, variablename, units,
+           age, agetype, depth, datasetid, long, lat) %>%
+  summarise(value = sum(value), .groups = "drop")
+
+dplyr::n_distinct(devils_samples$variablename)
+dplyr::n_distinct(devils_harm$variablename)
+```
+
+```{r devilsProportions}
+devils_harm_prop <- devils_harm %>%
+  group_by(age) %>%
+  mutate(pollencount = sum(value, na.rm = TRUE),
+         prop        = value / pollencount) %>%
+  ungroup() %>%
+  arrange(desc(age))
+
+```
+
+
+
+## Stratigraphic Plotting: Building a Pollen Diagram
+
+### Using ggplot
+
+
+```{r StratiPlot}
+#| warning: false
+#| eval: false
+devils_pollen_plot <- ggplot(devils_harm, aes(x = age, y = value)) +
+  geom_area(colour = "grey90") +
+  geom_segment(data = devils_harm,
+               aes(x = age, xend = age,
+                   y = 0, yend = value), colour = "grey30", linewidth = 0.6) +
+  scale_x_reverse() +
+  coord_flip() +
+  labs(y = "Pollen", x = "Time (ybp)") +
+  facet_wrap(~name,
+             nrow = 1) +
+  theme_minimal()
+```
+
+#### Building names
+
+- Use the marquis package to create species names with correct italics for each facet.
+- keep building on the plot to make it better incrementally
+
+
+
+### Using `rioja`
+
+`rioja` provides the stratigraphic plotting and the CONISS constrained clustering used below.
+The rest are for wrangling and plotting.
+
+
 As you've seen already, stratigraphic diagrams are a very common way of viewing geological data, in which time is represented vertically and with older materials at bottom, just like in the sediment record. Palynologists use a particular form of a stratigraphic diagram called a pollen diagram.
 
 We can use packages like `rioja` to do stratigraphic plotting for a single dataset. Here, we'll take a few key species at a single site and plot them.
@@ -24,32 +114,9 @@ We can use packages like `rioja` to do stratigraphic plotting for a single datas
 ```{r stratiplot2}
 #| output: false
 #| eval: false
-# Get a particular site, select only taxa identified from pollen (and only trees/shrubs)
-# Transform to proportion values.
-devils_samples <- get_sites(siteid = 666) %>%
-  get_downloads() %>%
-  samples()
-
-devils_samples <- devils_samples %>%
-  mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"),
-                                "Pinus")) %>%
-  group_by(siteid, sitename,
-           sampleid, variablename, units, age,
-           agetype, depth, datasetid,
-           long, lat) %>%
-  summarise(value = sum(value), .groups='keep')
-
-
-onesite <- devils_samples %>%
-  group_by(age) %>%
-  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
-  group_by(variablename) %>%
-  mutate(prop = value / pollencount) %>%
-  arrange(desc(age))
 
 # Spread the data to a "wide" table, with taxa as column headings.
-widetable <- onesite %>%
+widetable <- devils_harm_prop %>%
   dplyr::select(age, variablename, prop) %>%
   mutate(prop = as.numeric(prop))  %>%
   dplyr::filter(variablename %in% c("Pinus", "Betula", "Quercus",
@@ -83,9 +150,12 @@ rioja::addClustZone(plot, clust, 4, col = "red")
 
 
 
-### Change Taxon Distributions Across Space and Time
+### Taxon Distributions Across Space and Time
 
-The true power of Neotoma is its ability to support large-scale analyses across many sites, many s time periods within sites, many proxies, and many taxa. As a first dipping of our toes in the water, lets look at temporal trends in abundance when averaged across ites. We now have site information across Michigan, with samples, and with taxon names. Let's say we are interested in looking at the distributions of the selected taxa across time, their presence/absence:
+
+This is old code, but we can use the saved mich_sites to demonstrate spatial plots. maybe from the taxa table? What else would be good exploratory plots
+
+The true power of Neotoma is its ability to support large-scale analyses across many sites, many time periods within sites, many proxies, and many taxa. As a first dipping of our toes in the water, lets look at temporal trends in abundance when averaged across ites. We now have site information across Michigan, with samples, and with taxon names. Let's say we are interested in looking at the distributions of the selected taxa across time, their presence/absence:
 
 ```{r summarizeByTime}
 #| warning: false
@@ -125,26 +195,14 @@ Note that for some taxa, they always have a few pollen grains in all pollen samp
 
 
 
-```{r}
-#| warning: false
-#| eval: false
-pol_count_plot <- ggplot(all_composite_plot, aes(x = age, y = value)) +
-  geom_area(colour = "grey90") +
-  geom_segment(data = all_composite_plot,
-               aes(x = age, xend = age,
-                   y = 0, yend = value), colour = "grey30", linewidth = 0.6) +
-  scale_x_reverse() +
-  coord_flip() +
-  ylim(0, 400) +
-  labs(y = "Pollen counts", x = "Time (ybp)") +
-  facet_wrap(~name,
-             nrow = 1) +
-  theme_minimal() +
-  theme(
-    text = element_text(size = 10),
-    strip.text = element_markdown()
-  )
-```
+
+
+
+
+
+
+
+
 
 ## Exercises
 

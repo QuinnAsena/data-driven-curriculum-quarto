@@ -33,7 +33,7 @@ The primary purpose of `neotoma2` is to pass data from the Neotoma Paleoecology 
 3. downloads
 4. samples
 
-There are many more functions for manipulating data and conducting other operations that we will encounter along the way while we take you through these four data layers. For this chapter we use several packages, including `leaflet` and `sf`. We load them with the `pacman` package, which installs anything you do not already have.
+There are many more functions for manipulating data and conducting other operations that we will encounter along the way while we take you through these four data layers. For this chapter we use several packages, and we can load them all at once with the `pacman` package, which installs anything you do not already have.
 
 ::: {.callout-note}
 # Packages required for this section
@@ -48,12 +48,11 @@ pacman::p_load(dplyr, neotoma2, geojsonsf, leaflet, DT, stringr)
 
 ### What the package is actually doing {#sec-apis}
 
-`neotoma2` is a thin wrapper around an [application programming interface](https://en.wikipedia.org/wiki/API),
+`neotoma2` is a thin wrapper around an application programming interface,
 or API. Every function that fetches something builds a web address, sends it to Neotoma's
-servers, and parses the reply. Nothing more mysterious than that.
-
-You can see the whole mechanism by looking at the address. When you call
-`get_sites(sitename = "Devils Lake")`, the package assembles this and requests it:
+servers, and parses the reply. Nothing more mysterious than that. 
+You can see the whole mechanism by looking at the address. When you call a function in R like
+`get_sites(sitename = "Devils Lake")`, the package assembles the following address and requests it:
 
 <https://api.neotomadb.org/v2.0/data/sites?sitename=Devils%20Lake>
 
@@ -471,10 +470,7 @@ Now the replacement. We use `dplyr` to `mutate()` the column `variablename`, so 
 we detect (`str_detect()`) a `variablename` starting with `Pinus` (the `.*` is a wildcard for
 any character [`.`], zero or more times [`*`]) we `replace()` it with the string `"Pinus"`.
 Note this changes *Pinus* in the `allSamp` object; calling `samples()` again would return the
-original taxonomy.
-
-We also filter the ecological groups to *UPHE* (upland herbs) and *TRSH* (trees and shrubs).
-More on ecological groups in the [Neotoma Online Manual](https://open.neotomadb.org/manual).
+original taxonomy. We also filter the ecological groups to *UPHE* (upland herbs) and *TRSH* (trees and shrubs). More on ecological groups in the [Neotoma Online Manual](https://open.neotomadb.org/manual).
 
 ```{r simpleTaxonChange}
 allSamp <- allSamp %>%
@@ -499,19 +495,12 @@ everywhere.
 ::: {.callout-note}
 # This is a basic demonstration
 
-Collapsing every *Pinus* morphotype into one taxon is the simplest thing that works, and it is
-not what you would do in a real analysis of `r length(unique(allSamp$siteid))` Michigan sites.
-The right level to harmonise to depends on the question, on what each analyst recorded, and on
-what any dataset you plan to compare against can support.
+Collapsing every *Pinus* morphotype into one taxon is the simplest demonstration of programmatically harmonising taxa, and is not necessarily what you want to do in a given dataset, or across all `r length(unique(allSamp$siteid))` Michigan sites. The right level to harmonise to depends on the question, on what each analyst recorded, and often on several ecologically relevant decisions. This kind of harmonisation is also **within one database**, which is the easy case. Matching names across two datasets is a different and much harder problem.
 
-That last point matters more than it sounds. @sec-harmonisation builds a harmonisation table
-for Devil's Lake against a modern pollen database, and finds that the database resolves pine
-into hard and soft pines exactly as Neotoma does. Lumping there would have thrown away a
-distinction both datasets could see.
+@sec-harmonisation covers decisions we made to build a harmonisation table for Devil's Lake
+cross-referenced against the North American Modern Pollen Database (NAMPD).
 
-This kind of harmonisation is also **within one dataset**, which is the easy case: you only
-have to be consistent with yourself. Matching names across two datasets is a different and
-much harder problem.
+
 :::
 
 ::: {#exr-picea}
@@ -524,40 +513,13 @@ Now do the same for Devil's Lake, Wisconsin, the site used throughout the rest o
 Download it with `get_sites(siteid = 666)`, and find how many *Pinus* morphotypes it holds.
 
 Then think about what the harmonisation costs you. Two of the names you will have lumped
-together are `Pinus subg. Pinus` and `Pinus subg. Strobus`, the hard and the soft pines. In
-the upper Midwest those correspond to different species with different habitats, fire
-responses and successional roles. Describe a research question for which lumping them would
-be reasonable, and one for which it would throw away the signal you were looking for.
+together are `Pinus subg. Pinus` and `Pinus subg. Strobus`. These species/subgenera in
+the upper Midwest might have different habitats, fire responses and successional roles.
+Look into the ecological roles and functional traits of these species/subgenera and
+describe a justifiably approach to aggregating/harmonising taxa.
+
 :::
 
-### What we finished with
-
-The harmonisation reshaped `allSamp` into the table the rest of the book works from:
-`r nrow(allSamp)` observations across `r dplyr::n_distinct(allSamp$sampleid)` samples from
-`r dplyr::n_distinct(allSamp$siteid)` sites, covering `r dplyr::n_distinct(allSamp$variablename)`
-harmonised taxa, and now entirely in `NISP` counts because filtering to the upland-herb and
-tree-and-shrub ecological groups removed the concentration and volume measurements along the
-way.
-
-Two simple questions can be asked of every sample: how many taxa were identified in it, and
-how many grains were counted. The first is a measure of richness, the second of counting
-effort, and they are not independent, because rare taxa cannot turn up in a small count.
-
-::: {.panel-tabset}
-
-## Code
-
-```{r sampleSummary}
-#| eval: false
-sample_summary <- allSamp %>%
-  dplyr::ungroup() %>%
-  dplyr::group_by(siteid, sitename, sampleid, age) %>%
-  dplyr::summarise(richness = dplyr::n_distinct(variablename),
-                   count = sum(value),
-                   .groups = "drop")
-
-summary(sample_summary[, c("richness", "count")])
-```
 
 ## Result
 
