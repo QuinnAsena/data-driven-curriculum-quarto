@@ -1,0 +1,443 @@
+# Visualising pollen {#sec-visualisation}
+
+## Background
+
+<!-- NOTE (Quinn's, kept): include the issue of visualising relative proportions. -->
+<!-- NOTE (Quinn's, kept): I use segment in ggplot to indicate where observations lie. Many
+     publications do not do this but it is important to see where the sampling intervals lie,
+     otherwise you have an automatic linear interpolation! This is now the point that
+     @fig-strat-devils makes, and the first plot below deliberately omits the segments so the
+     difference is visible. -->
+<!-- NOTE (Claude): this section still needs the real Background prose. The shape it wants is
+     probably: what a pollen diagram is and why it is drawn the way it is (time vertical, oldest
+     at the bottom, one panel per taxon), then the two honesty problems the chapter deals with,
+     which are (a) proportions hide the count they came from and (b) an area or line between two
+     samples is an interpolation the data do not support. -->
+
+A pollen diagram plots each taxon in its own panel against depth or age, with the oldest
+material at the bottom, mirroring the sediment core it came from. This chapter builds one twice,
+once by hand with `ggplot2` so that every choice is visible, and once with `rioja`, which is the
+package most palynologists reach for.
+
+
+## Getting started
+
+::: {.callout-note}
+# Packages required for this section
+
+```{r visPackages}
+#| output: false
+if (!require("pacman")) install.packages("pacman", repos = "https://cran.r-project.org")
+pacman::p_load(dplyr, tidyr, tibble, ggplot2, scales, stringr, mgcv, rioja, neotoma2, marquee)
+```
+:::
+
+::: {.callout-tip}
+# Respawn code
+
+This is the same Devil's Lake download used in @sec-age-depth and @sec-dissimilarity, filtered
+to `datasettype == "pollen"`, harmonised the same way, and converted to proportions.
+
+```{r visDevilsDownload}
+#| output: false
+if (!file.exists("./data/devils_dl.rds")) {
+  devils_dl <- get_sites(siteid = 666) %>%
+    get_datasets(all_data = TRUE) %>%
+    neotoma2::filter(datasettype == "pollen") %>%
+    get_downloads()
+  saveRDS(devils_dl, "./data/devils_dl.rds")
+} else {
+  devils_dl <- readRDS("./data/devils_dl.rds")
+}
+
+```
+:::
+
+
+Most stratigraphic plots you will see have taxa converted to relative abundances. The following code converts observations from counts (NISP) to proportions. In this section we will not go into detail on the `samples()` function or the conversion to proportions as this is covered in @sec-neotoma2 and @sec-dissimilarity.
+
+```{r ConvertToProp}
+devils_samples <- samples(devils_dl) %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"),
+                elementtype == "pollen",
+                units == "NISP")
+
+devils_harm_prop <- devils_samples %>%
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus")) %>%
+  group_by(siteid, sitename, sampleid, variablename, units,
+           age, agetype, depth, datasetid, long, lat) %>%
+  summarise(value = sum(value), .groups = "drop") %>%
+  group_by(age) %>%
+  mutate(pollencount = sum(value, na.rm = TRUE),
+         prop        = value / pollencount) %>%
+  ungroup() %>%
+  arrange(desc(age))
+```
+
+
+
+## Stratigraphic diagrams
+
+Here, we will take the Devil's Lake data and make some statigaphic diagrams comparable to those seen in publications.
+
+Six taxa are enough to show the method. They are chosen because they span the record between
+them rather than because they are the six most abundant.
+
+```{r visFocalTaxa}
+focal <- c("Pinus", "Picea", "Quercus", "Betula", "Tsuga", "Ulmus")
+
+devils_focal <- devils_harm_prop %>%
+  dplyr::filter(variablename %in% focal)
+
+```
+
+### Building one with `ggplot2`
+
+Start with the simplest thing that works: proportion against age, one panel per taxon.
+`coord_flip()` puts age on the vertical axis and `scale_x_reverse()` makes it run downwards, so
+the oldest sample sits at the bottom.
+
+```{r fig-strat-first}
+#| fig-cap: "A first pollen diagram for Devil's Lake. Readable, and misleading in two ways that the next version fixes."
+#| fig-height: 5
+ggplot(devils_focal, aes(x = age, y = prop)) +
+  geom_area(fill = "grey85") +
+  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
+  scale_y_continuous(name = "Proportion of the pollen sum", labels = label_percent()) +
+  coord_flip() +
+  facet_wrap(~variablename, nrow = 1) +
+  theme_minimal()
+```
+
+Two things are wrong with @fig-strat-first, and neither is cosmetic.
+
+The filled area implies a continuous record. It is not: the core was sampled at intervals, and
+everything between two samples is drawn by the plotting function, not measured. Adding a segment
+at each sampled age shows where the data actually are.
+
+The panels are also in alphabetical order, which carries no information. Ordering them by the
+weighted average of the ages at which each taxon occurs puts the taxa in the order they
+dominated the record, which is what `rioja::strat.plot()` does with `wa.order`.
+
+```{r visWaOrder}
+wa_order <- devils_focal %>%
+  group_by(variablename) %>%
+  summarise(wa_age = sum(age * prop) / sum(prop), .groups = "drop") %>%
+  arrange(desc(wa_age))
+
+wa_order
+```
+
+```{r visFactorOrder}
+devils_focal <- devils_focal %>%
+  mutate(variablename = factor(variablename, levels = wa_order$variablename))
+```
+
+#### Formatting taxon names
+
+Genus and species names are italic; families, orders and qualifiers such as `undiff.` are not.
+Doing that inside a facet strip means handing `ggplot2` a plotmath expression rather than a
+plain string, which `label_parsed` then renders.
+
+<!-- NOTE (Claude): you asked about the marquee package. Neither marquee nor ggtext is installed
+     here, and both would be a new dependency in install.R. plotmath needs nothing extra and is
+     what is used below. the element_markdown() function in ggtext is the usual alternative and reads more
+     easily (`*Pinus* undiff.`), so if you would rather have that, say and I will swap it and add
+     ggtext to install.R. -->
+
+```{r visTaxonLabel}
+# Turn a Neotoma taxon name into a plotmath expression.
+# Genus and species italic; family and above, and every qualifier, roman.
+taxon_label <- function(x) {
+  vapply(x, function(nm) {
+    qual <- ""
+    if (grepl(" undiff\\.$", nm)) {
+      qual <- "undiff."; nm <- sub(" undiff\\.$", "", nm)
+    } else if (grepl("-type$", nm)) {
+      qual <- "-type";   nm <- sub("-type$", "", nm)
+    } else if (grepl(" sensu (lato|stricto)$", nm)) {
+      qual <- sub("^.* (sensu (?:lato|stricto))$", "\\1", nm)
+      nm   <- sub(" sensu (lato|stricto)$", "", nm)
+    }
+
+    body <- if (grepl(" subg\\. ", nm)) {                  # Pinus subg. Strobus
+      p <- strsplit(nm, " subg\\. ")[[1]]
+      sprintf('italic("%s")~plain("subg.")~italic("%s")', p[1], p[2])
+    } else if (grepl("aceae$|ales$|phyta$|opsida$|ae$", nm)) {   # family and above
+      sprintf('plain("%s")', nm)
+    } else {                                               # genus or species
+      sprintf('italic("%s")', nm)
+    }
+
+    if (qual == "")           body
+    else if (qual == "-type") paste0(body, '*plain("-type")')
+    else                      paste0(body, '~plain("', qual, '")')
+  }, character(1), USE.NAMES = FALSE)
+}
+```
+
+Worth checking against the awkward cases before trusting it, because a malformed expression is a
+render error rather than a wrong-looking label:
+
+```{r visTaxonLabelCheck}
+check <- c("Pinus", "Asteraceae", "Pinus subg. Strobus",
+           "Ambrosia-type", "Asteraceae undiff.", "Caprifoliaceae sensu lato")
+
+tibble::tibble(name = check, plotmath = taxon_label(check))
+```
+
+`as_labeller()` takes a named vector of those expressions, and `default = label_parsed` tells
+`ggplot2` to parse rather than print them.
+
+```{r visLabelMap}
+strip_labels <- setNames(taxon_label(levels(devils_focal$variablename)),
+                         levels(devils_focal$variablename))
+```
+
+Now the same plot with the segments, the ordering and the names.
+
+```{r fig-strat-devils}
+#| fig-cap: "Devil's Lake pollen diagram. Each horizontal segment is a sampled level, so the width of the shaded area between segments is interpolation rather than data. Panels are ordered by the weighted average age at which each taxon occurs, oldest on the left."
+#| fig-height: 5
+ggplot(devils_focal, aes(x = age, y = prop)) +
+  geom_area(fill = "grey85") +
+  geom_segment(aes(x = age, xend = age, y = 0, yend = prop),
+               colour = "grey30", linewidth = 0.3) +
+  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
+  scale_y_continuous(name = "Proportion of the pollen sum",
+                     labels = label_percent(), n.breaks = 3) +
+  coord_flip() +
+  facet_wrap(~variablename, nrow = 1, scales = "free_x",
+             labeller = as_labeller(strip_labels, default = label_parsed)) +
+  theme_minimal() +
+  theme(panel.spacing.x   = unit(0.9, "lines"),
+        panel.grid.minor  = element_blank(),
+        axis.text.x       = element_text(size = 7))
+```
+
+<!-- NOTE (Claude): `scales = "free_x"` gives every taxon its own proportion axis, which is the
+     only way Tsuga at about 1% and Quercus at about 60% are both visible. The cost is that panel
+     widths are no longer comparable by eye, which is exactly what a reader is tempted to do.
+     rioja solves this differently, with a common scale plus an exaggeration factor. Worth a
+     sentence deciding which convention the book teaches. -->
+
+### The same diagram with `rioja`
+
+`rioja` is built for this and does in one call what the section above does in several, including
+the CONISS constrained cluster analysis that splits the record into zones. It wants a wide
+matrix, samples in rows and taxa in columns.
+
+```{r visWideTable}
+#| output: false
+devils_wide <- devils_harm_prop %>%
+  dplyr::select(age, variablename, prop) %>%
+  dplyr::filter(variablename %in% focal) %>%
+  tidyr::pivot_wider(id_cols = age,
+                     names_from  = variablename,
+                     values_from = prop,
+                     values_fill = 0)
+
+dim(devils_wide)
+```
+
+```{r fig-strat-rioja}
+#| fig-cap: "The same six taxa drawn by `rioja::strat.plot()`, with a CONISS dendrogram on the right and four zones marked in red. Taxa are ordered by weighted average, as in the previous figure."
+#| fig-height: 6
+#| warning: false
+devils_clust <- rioja::chclust(dist(sqrt(devils_wide[, -1])), method = "coniss")
+
+strat <- rioja::strat.plot(as.data.frame(devils_wide[, -1] * 100),
+                           yvar   = devils_wide$age,
+                           title  = devils_samples$sitename[1],
+                           ylabel = "Age (cal years BP)",
+                           y.rev  = TRUE,
+                           clust  = devils_clust,
+                           wa.order = "topleft",
+                           scale.percent = TRUE)
+
+rioja::addClustZone(strat, devils_clust, 4, col = "red")
+```
+
+<!-- NOTE (Claude): the object is called `strat` rather than `plot`, which is what the old draft
+     used. Assigning to `plot` masks base R's plot() for the rest of the session. -->
+
+<!-- NOTE (Claude): CONISS and the distance measure behind it are @sec-dissimilarity's subject,
+     and this chapter currently comes first. Either a forward reference here, or move this
+     chapter after dissimilarity. Flagging rather than deciding. -->
+
+## Taxa across space and time
+
+One site gives a history. Many sites give a geography as well. The Michigan download from @sec-neotoma2 holds many sites, and the same harmonisation
+applies to all of them.
+
+```{r visMichSamples}
+mich_dl <- readRDS("./data/mich_dl.rds")
+
+allSamp <- samples(mich_dl) %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"),
+                elementtype == "pollen",
+                units == "NISP") %>%      # the units filter matters, see @sec-neotoma2
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus"))
+
+dplyr::n_distinct(allSamp$siteid)
+```
+
+### Where a taxon is present
+
+The obvious first question is what fraction of sites record a taxon at a given time. Ages are
+binned to the nearest 500 years, which is what `round(age * 2, -3) / 2` does.
+
+```{r visPresence}
+#| output: false
+taxa_by_age <- allSamp %>%
+  dplyr::filter(variablename %in% focal, age < 11000) %>%
+  group_by(variablename, age_bin = round(age * 2, -3) / 2) %>%
+  summarise(n_sites_with_taxon = dplyr::n_distinct(siteid), .groups = "drop")
+
+sites_by_age <- allSamp %>%
+  dplyr::filter(age < 11000) %>%
+  group_by(age_bin = round(age * 2, -3) / 2) %>%
+  summarise(n_sites_total = dplyr::n_distinct(siteid), .groups = "drop")
+
+presence <- taxa_by_age %>%
+  inner_join(sites_by_age, by = "age_bin") %>%
+  mutate(proportion   = n_sites_with_taxon / n_sites_total,
+         variablename = factor(variablename, levels = wa_order$variablename))
+```
+
+Before plotting it, look at what the numbers do:
+
+```{r visPresenceCheck}
+presence %>%
+  group_by(variablename) %>%
+  summarise(bins = n(),
+            min_prop = min(proportion),
+            max_prop = max(proportion),
+            bins_at_100pct = sum(proportion == 1),
+            .groups = "drop")
+```
+
+```{r fig-mich-presence}
+#| fig-cap: "Proportion of Michigan sites recording each taxon through time, with a binomial GAM smooth weighted by the number of sites in each bin. Four of the six taxa are at or near 100% throughout, which is the problem described below."
+#| fig-height: 4.5
+#| warning: false
+# warning: false suppresses two "iteration limit reached" messages from mgcv. They are a
+# real symptom, not noise: a taxon present at 100% of sites in every bin is completely
+# separated, so the fit cannot converge. The table above shows the same thing in numbers.
+ggplot(presence, aes(x = age_bin, y = proportion, weight = n_sites_total)) +
+  geom_point(size = 1) +
+  geom_smooth(method = "gam", formula = y ~ s(x),
+              method.args = list(family = "binomial")) +
+  facet_wrap(~variablename,
+             labeller = as_labeller(strip_labels, default = label_parsed)) +
+  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
+  scale_y_continuous(name = "Proportion of sites recording the taxon",
+                     labels = label_percent()) +
+  theme_bw()
+```
+
+*Quercus* is present at every site in every one of the 23 bins, and *Pinus* and *Ulmus* in 22 of
+them. For those taxa the measure cannot go up or down, so the smooth is flat and tells you
+nothing. Presence is only informative for a taxon that is sometimes absent, which here is
+*Picea* and *Tsuga*.
+
+<!-- NOTE (Claude): two things worth saying in prose here, both of which the code above already
+     demonstrates. First, `weight = n_sites_total` is not optional. Without it the binomial GAM
+     is fitted to bare proportions and mgcv warns "non-integer #successes" once per panel; the
+     old draft hid that with `warning: false`. Second, a taxon at 100% in every bin is complete
+     separation, which is why the fit struggles. This is the honest lead-in to the abundance
+     version below, which was your note in the old draft. -->
+
+### How abundant it is
+
+Mean proportional abundance moves even when presence does not, so it is the more useful
+measure for common taxa. Proportions have to be calculated within each sample first, so that
+sites counted to different totals contribute equally.
+
+```{r visAbundance}
+#| output: false
+mich_abund <- allSamp %>%
+  group_by(siteid, sampleid, age) %>%
+  mutate(prop = value / sum(value, na.rm = TRUE)) %>%   # within-sample proportions first
+  ungroup() %>%
+  dplyr::filter(variablename %in% focal, age < 11000) %>%
+  group_by(variablename, age_bin = round(age * 2, -3) / 2) %>%
+  summarise(mean_prop = mean(prop),
+            n_sites   = dplyr::n_distinct(siteid), .groups = "drop") %>%
+  mutate(variablename = factor(variablename, levels = wa_order$variablename))
+```
+
+```{r fig-mich-abundance}
+#| fig-cap: "Mean proportion of the pollen sum for each taxon across Michigan sites, binned to 500 years. Point size is the number of sites contributing to each bin. Unlike @fig-mich-presence, every taxon varies."
+#| fig-height: 4.5
+ggplot(mich_abund, aes(x = age_bin, y = mean_prop)) +
+  geom_line(colour = "grey40") +
+  geom_point(aes(size = n_sites), alpha = 0.6) +
+  scale_size_continuous(name = "Sites", range = c(0.4, 2.4)) +
+  facet_wrap(~variablename,
+             labeller = as_labeller(strip_labels, default = label_parsed)) +
+  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
+  scale_y_continuous(name = "Mean proportion of the pollen sum",
+                     labels = label_percent(accuracy = 1)) +
+  theme_bw()
+```
+
+<!-- NOTE (Claude): @fig-mich-abundance is where the ecology is, and the prose could point at the
+     Picea decline, the mid-Holocene Tsuga rise and the Quercus maximum. The Tsuga trough at
+     around 4,500 years is the well-known hemlock decline and is worth a citation. -->
+
+<!-- NOTE (Claude): a further step, if you want one, is that binning to 500 years and taking an
+     unweighted mean treats a bin holding two sites the same as one holding twenty. Point size
+     shows the imbalance but does not correct it. That is a natural lead-in to @sec-gams. -->
+
+## Exercises
+
+::: {#exr-taxon-names}
+`taxon_label()` handles the qualifiers that appear at Devil's Lake. Run it over the full taxon
+list from a different site and find a name it formats wrongly.
+
+1. Get the taxon list with `unique(samples(...)$variablename)` for a site of your choice.
+2. Pass the whole list through `taxon_label()`, and check every result parses with
+   `parse(text = ...)` inside `tryCatch()`.
+3. Any name that parses can still be wrong. Find one that is formatted incorrectly rather than
+   one that errors, say what the rule should be, and add it to the function.
+:::
+
+::: {#exr-stratplot}
+Draw a stratigraphic diagram for a site other than Devil's Lake, with taxa of your choosing,
+using either `ggplot2` or `rioja`.
+
+1. Pick a site using the search methods in @sec-neotoma2 and download it with the gated pattern
+   in the respawn code above.
+2. Choose between five and eight taxa. Say why you chose those, given that the diagram is meant
+   to show how the site changed.
+3. Order the panels by weighted average age. Does the order match what you expected from the
+   ecology?
+:::
+
+::: {#exr-taxon-region}
+Repeat @fig-mich-abundance for a different state or region.
+
+1. Download the sites for your region, following @sec-neotoma2.
+2. Produce both the presence and the abundance version.
+3. Report how many of your taxa are present at 100% of sites in every bin. If the answer is most
+   of them, what does that tell you about the taxa you picked rather than about the region?
+:::
+
+## Conclusion
+
+<!-- NOTE (Claude): placeholder, yours to write. The three things the chapter actually
+     establishes are: a pollen diagram is a set of per-taxon panels against age with the oldest
+     at the bottom; anything drawn between two sampled levels is interpolation and should be
+     shown as such; and a measure that cannot vary, such as presence for a taxon found
+     everywhere, will produce a flat line that looks like a result. -->
+
+The exercises are worth returning to if you skipped them:
+
+- @exr-taxon-names, formatting taxon names correctly
+- @exr-stratplot, a stratigraphic diagram of your own
+- @exr-taxon-region, presence against abundance in another region

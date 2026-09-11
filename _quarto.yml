@@ -14,7 +14,7 @@ book:
     - index.qmd
     - neotoma2.qmd
     - age-depth-modelling.qmd
-    - wrangling-visualisation.qmd
+    - visualisation.qmd
     - dissimilarity.qmd
     - no-analogue.qmd
     - rate-of-change.qmd

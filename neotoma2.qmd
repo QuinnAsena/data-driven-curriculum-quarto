@@ -485,12 +485,7 @@ allSamp <- allSamp %>%
   dplyr::summarise(value = sum(value), .groups = 'keep')
 ```
 
-Two things about that `summarise()` are worth stating plainly, because both are easy to get
-wrong. We are summing **counts**, the raw number of grains identified, and summing is the only
-correct operation for counts. Had we already converted to proportions, averaging them would be
-wrong: a sample counted to 300 grains and one counted to 800 would carry equal weight. Get the
-taxonomy settled first, then calculate proportions. That order matters and the book follows it
-everywhere.
+Note that in the `summarise()` code, we are *summing* the raw count data (number of individual grains identified). It is important to take care when converting between counts and proportions that maniplulations are done in the correct order and proportions are not accidentally summed, or taxa dropped after converting to proportions resulting in taxa not summing to 1.
 
 ::: {.callout-note}
 # This is a basic demonstration
@@ -524,7 +519,7 @@ varies several-fold between samples. Both facts matter later: dissimilarity meas
 ordinations are sensitive to how many taxa you have and to how unevenly they were counted,
 which is why most of them are run on proportions rather than raw counts.
 
-We will explore these data visually, and turn them into pollen diagrams, in @sec-wrangle-vis.
+We will explore these data visually, and turn them into pollen diagrams, in @sec-visualisation.
 
 ## Conclusion
 
