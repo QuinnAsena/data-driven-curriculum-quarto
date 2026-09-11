@@ -63,7 +63,7 @@ pacman::p_load(dplyr, tidyr, readr, tibble, stringr, neotoma2, analogue)
 
 ## Data wrangling {#sec-datawrangle}
 
-In this case, data are coming from two separate sources, NeotomaDB for the historic pollen data, and the North American Modern Pollen Dataset (NAMPD; @whitmore2005) for both the modern pollen and modern climate variables. These three datasets (Historic pollen data, modern pollen data, and modern climate data) are required for the MAT. To implement the MAT, the two pollen datasets must contain the same taxa and have identical names for each taxon. Some of the data wrangling required to get two matrices containing the same taxa with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats.
+In this case, data are coming from two separate sources, NeotomaDB for the historic pollen data, and the North American Modern Pollen Dataset (NAMPD; @whitmore2005) for both the modern pollen and modern climate variables. These three datasets (Historic pollen, modern pollen, and modern climate data) are required for the MAT. To implement the MAT, the two pollen datasets must contain the same taxa and have identical names for each taxon. Some of the data wrangling required to get two matrices containing the same taxa with identical names for the correct region (as required by the MAT function) is fairly advanced. This type of wrangling is quite common in palaeoecological data-science as you may be dealing with, for example, raw data collected by individuals, or from different databases that are stored in inconsistent formats.
 
 Ready to wrangle? Let’s get the data ready:
 
@@ -133,13 +133,13 @@ Great! Now we have our three datasets:
 2. Our modern pollen data.
 3. Our modern climate measurements.
 
-The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data East of 105°W, see @krause2019 and @williams2001.
+The modern datasets includes the whole of North America and need to be filtered for the Eastern US so that the taxa are relevant to the those in Devil's Lake. We're first going to filter by longitude, then select by taxa so that we have a matching matrix of species between Devil's Lake palaeo-data and the modern surface samples from the NAMPD. We are going to keep all data East of 105°W, see @krause2019 and @williams2001 for details.
 
 
 ```{r wrangle}
 
-# Several columns hold information the MAT does not use, so keep the site
-# identifier and the taxon counts only.
+# Several columns hold information the MAT does not use
+# Keep the site identifier and the taxon counts only.
 mod_pol_east <- mod_pol %>%
   filter(LONDD >= -105) %>% # keep sites east of 105 degrees west
   select(ID2, 14:147)       # ID2 plus the 134 taxon columns
@@ -327,59 +327,152 @@ Whenever filtering or joining data it is good to check the dimensions before and
 :::
 
 
-## Cross-validation {#sec-crossvalid}
+## The Modern Analogue Technique
 
-The Modern Analogue Technique needs the same set of taxa in the modern dataset and in the core data, which is what @sec-harmonisation produced: two matrices, `mod_pol_harm` and `devils_harm`, with identical columns and rows that sum to one.
+Now that we have the data we need, and in the format that we need it, we can apply the MAT. If you portaled here and skipped the Data Wrangling in @sec-datawrangle, make sure you load in the pre-formatted data from @sec-background.
 
-Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
+### Cross-validation {#sec-crossvalid}
 
-In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and, possibly, independent. To cross-validate MAT, we usually use a technique called $k$-fold cross-validation. In $k$-fold cross-validation the modern data set is split into $k$ mutually exclusive subsets. For each $k^{th}$ subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The `analogue` package uses leave-one-out cross-validation.
+The Modern Analogue Technique needs the same set of taxa in the modern dataset and in the core data, which is what @sec-harmonisation produced: two matrices, `mod_pol_harm` and `devils_harm`, with identical columns and rows that sum to one. Before reconstructing environmental variables from fossil pollen assemblages, we usually assess how MAT performs in the modern species assemblage. This step is usually referred to as calibration or cross-validation.
 
-Standard metrics include root mean square error (RMSE) and $R^2$. Here, we’ll use the cross-validation tools built into the analogue package.
+In cross-validation, a calibration function is trained on one portion of the modern species assemblages (calibration set) and applied to another portion of the modern species assemblages (validation set). These two datasets are thus mutually exclusive and, possibly, independent. To cross-validate MAT, we usually use a technique called $k$-fold cross-validation. In $k$-fold cross-validation the modern data set is split into $k$ mutually exclusive subsets. For each $k^{th}$ subset, the calibration dataset comprises all the samples not in $k$, while the samples in $k$ comprise the validation dataset. The simplest form of $k$-fold cross-validation is the leave-one-out (LOO) technique, in which just a single sample is removed and then all other samples are used to build a prediction for that sample. This procedure is then repeated for all samples. The `analogue` package uses leave-one-out cross-validation. To assess the model, we can use standard metrics including root mean square error (RMSE) and $R^2$. Here, we’ll use the cross-validation tools built into the analogue package.
 
 Note that the `palaeoSig` package, developed by Richard Telford, has additional functions that can test for significance relative to randomly generated variables with the same spatial structure as the environmental variable of interest. We won’t use this package in this chapter, but it’s useful for testing whether apparently strong cross-validation results are merely an artefact of spatial autocorrelation [@telford2005].
 
-Now let's do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. If you portaled here and skipped the Data Wrangling in @sec-datawrangle, make sure you load in the pre-formatted data from @sec-background.
+Now let's do the analysis! First is the cross validation of the modern datasets. Using the modern data, we’ll build a calibration dataset and run cross-validation analyses of the calibration dataset. For simplicity, we are going to use Janurary temperatures `tjan` as our climate variable:
+
 
 ::: {.panel-tabset}
 
 ## Code
 ```{r crossValidation}
 
+# Select Jan temps
 mod_jant <- data.matrix(mod_clim_filter$tjan)
-
-modpoll_jant <- analogue::mat(mod_pol_harm, mod_jant, method = "SQchord")
+# Fit the MAT using only the modern pollen. Named `modpoll_all` because it uses
+# every modern sample; we are about to find a problem with one of them.
+modpoll_all <- analogue::mat(mod_pol_harm, mod_jant, method = "SQchord")
 
 ```
 
 ## Summary
 ```{r matSummary}
 
+print(modpoll_all)
+
+```
+
+## Plot
+```{r fig-mat-diagnostics}
+#| fig-cap: "Cross-validation diagnostics for the modern analogue technique applied to mean January temperature, using all 2,594 modern samples. Observed against predicted, the residuals, and the effect of the number of analogues $k$."
+
+par(mfrow = c(2, 2))
+plot(modpoll_all)
+
+```
+
+:::
+
+Notice anything off in the summary output?
+
+::: {.callout-warning}
+# Oh no! :scream:
+
+The first table, the plain mean of the $k$ closest analogues, looks fine. The second table, the
+**weighted** mean, is entirely `NaN`:
+
+```r
+Inferences based on the weighted mean of k-closest analogues:
+
+  k RMSEP   R2 Avg Bias Max Bias
+  1   NaN   NA      NaN     2.88
+  2   NaN   NA      NaN     3.74
+```
+
+No error or warning... This is the most dangerous class of error in the book: no error message, and a plausible-looking answer sitting right next to a broken one. Always read the whole output. The cause is that weighting by *inverse* dissimilarity requires every dissimilarity to be
+greater than zero.
+
+:::
+
+Two of the 2,594 modern samples have **identical** pollen assemblages, so
+the dissimilarity between them is exactly zero, and one divided by zero is undefined. That
+single pair poisons the whole weighted-mean column.
+
+So find the duplicate rather than working around it:
+
+```{r findDuplicates}
+# duplicated() works row-wise on a matrix. Round first, because two assemblages
+# can be identical in every practical sense and still differ in the last bit of
+# floating-point representation.
+duplicate_rows <- duplicated(round(mod_pol_harm, 8))
+sum(duplicate_rows)
+
+# which sites are they? mod_pol still holds the site names and coordinates
+tibble(ID2 = mod_ids[duplicate_rows | duplicated(round(mod_pol_harm, 8),
+                                                 fromLast = TRUE)]) %>%
+  left_join(select(mod_pol, ID2, SITENAME, LATDD, LONDD), by = "ID2")
+```
+
+Two surface samples about 5.5 km apart, recorded under different site names, with pollen
+assemblages identical to eight decimal places. Whether that is two genuinely indistinguishable
+sites or the same sample entered twice by different contributors is a question for whoever
+curates the database. Either way we cannot use both.
+
+
+```{r dropDuplicate}
+keep <- !duplicated(round(mod_pol_harm, 8))
+
+# New objects rather than overwriting the old ones. The full matrices stay
+# available, which makes the two models comparable and means re-running this
+# chunk cannot quietly drop a second row.
+mod_pol_unique  <- mod_pol_harm[keep, , drop = FALSE]
+mod_clim_unique <- mod_clim_filter[keep, ]
+
+dim(mod_pol_harm)
+dim(mod_pol_unique)
+```
+
+Dropping one sample of 2,594 leaves the mean-based results untouched, so nothing is lost by
+being careful here: RMSEP at $k = 1$ moves from 3.379 to 3.380. Now, let's refit the model and check the output again:
+
+::: {.panel-tabset}
+
+## Code
+```{r crossValidationAgain}
+
+# Select Jan temps for the samples we kept
+mod_jant_unique <- data.matrix(mod_clim_unique$tjan)
+# Refit. This is the model the rest of the chapter uses.
+modpoll_jant <- analogue::mat(mod_pol_unique, mod_jant_unique, method = "SQchord")
+
+```
+
+## Summary
+```{r matSummaryAgain}
+
 print(modpoll_jant)
 
 ```
 
 ## Plot
-```{r plotMAT}
+```{r fig-mat-diagnostics-refit}
+#| fig-cap: "The same diagnostics after removing the duplicated modern sample. Compare with @fig-mat-diagnostics: the mean-based results are unchanged, but the weighted mean is now defined."
 
-par(mfrow = c(2,2))
+par(mfrow = c(2, 2))
 plot(modpoll_jant)
 
 ```
 
 :::
 
+
+
 Much of the information in this chapter comes from @simpson2007, and we recommend @simpson2007 for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (@sec-dissimilarity). With some additional considerations regarding transfer functions:
 
-- Time intervals and chronological uncertainties are not accounted for. The difference in time between successive samples often varies in palaeo-data.
-- Time averaging is not taken into account, and each sample may contain a different time-span of ecological productivity.
-- Squared chord distance is one of many distance measures available in `analogue`, and may not always be the most appropriate.
-
-For deeper considerations of reconstructing temperatures using transfer functions see @telford2005.
 
 ## Novelty and palaeoclimatic reconstruction
 
-For this part of the chapter, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT. Here’s some demonstration code showing the kinds of analyses that can be done and plotted time series.
+For this part of the chapter, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT.
 
 ::: {.panel-tabset}
 
@@ -387,13 +480,20 @@ For this part of the chapter, we’ll first assess the novelty of the fossil pol
 
 Construct a time series of the minimum SCDs (novelty) for Devil’s Lake.
 
-```{r predictJanT}
-# Predict temperatures from the fossil data and their modern analogue
-devil_jant <- predict(modpoll_jant, devils_harm, k = 10)
-
-par(mfrow = c(1,1))
+```{r predictDevils}
+# Predict temperatures from the fossil data and their modern analogues.
+# Kept separate from the plot below so that the objects survive even if a
+# figure chunk is switched off.
+devil_jant   <- predict(modpoll_jant, devils_harm, k = 10)
 devil_mindis <- minDC(devil_jant)
-plot(devil_mindis, depths = devils_ages, quantiles = FALSE, xlab = "Age (yr BP)", ylab = "minSCD")
+```
+
+```{r fig-devils-novelty}
+#| fig-cap: "Novelty at Devil's Lake through time, measured as the minimum squared chord distance between each fossil sample and its closest modern analogue. Higher values mean the assemblage is less like anything growing in eastern North America today."
+
+par(mfrow = c(1, 1))
+plot(devil_mindis, depths = devils_ages, quantiles = FALSE,
+     xlab = "Age (yr BP)", ylab = "minSCD")
 ```
 
 
@@ -401,21 +501,40 @@ plot(devil_mindis, depths = devils_ages, quantiles = FALSE, xlab = "Age (yr BP)"
 
 Construct a time series of the number of modern analogues found per fossil sample, using 0.25 as our no-analogue/analogue threshold. 
 
-```{r countAnalogues}
-devil_cma <- analogue::cma(devil_jant, cutoff=0.25)
+```{r fig-devils-analogues}
+#| fig-cap: "The number of modern analogues found for each Devil's Lake sample, using a squared chord distance of 0.25 as the threshold. Samples with none are the no-analogue assemblages."
+devil_cma <- analogue::cma(devil_jant, cutoff = 0.25)
 
-plot(x = devils_ages, y = devil_cma$n.analogs, type = "l", xlim= rev(range(devils_ages)), xlab = "Age (yr BP)", ylab = "Number of modern analogues")
+# how many fossil samples have no modern analogue at all?
+sum(devil_cma$n.analogs == 0)
+
+plot(x = devils_ages, y = devil_cma$n.analogs, type = "l",
+     xlim = rev(range(devils_ages)),
+     xlab = "Age (yr BP)", ylab = "Number of modern analogues")
 ```
 
 ## Reconstruction
 
 Plot the reconstructed January temperatures at Devil's Lake:
 
-```{r plotReconstruction}
-reconPlot(devil_jant, depth = devils_ages, display.error="bars", xlab = "Age (yr BP)", ylab = "Mean Jan temperature")
+```{r fig-devils-reconstruction}
+#| fig-cap: "Mean January temperature at Devil's Lake reconstructed with the modern analogue technique, with error bars. Compare the high-novelty intervals in @fig-devils-novelty before trusting any part of this curve."
+reconPlot(devil_jant, depth = devils_ages, display.error = "bars",
+          xlab = "Age (yr BP)", ylab = "Mean Jan temperature")
 ```
 
 :::
+
+
+## Limitations:
+
+- Time intervals and chronological uncertainties are not accounted for. The difference in time between successive samples often varies in palaeo-data.
+- Time averaging is not taken into account, and each sample may contain a different time-span of ecological productivity.
+- Squared chord distance is one of many distance measures available in `analogue`, and may not always be the most appropriate.
+
+For deeper considerations of reconstructing temperatures using transfer functions see @telford2005.
+
+Remember that a limitation of dissimilary measures was the lack of covariate data?
 
 ## Exercises
 
