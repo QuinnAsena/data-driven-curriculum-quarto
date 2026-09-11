@@ -520,21 +520,6 @@ describe a justifiably approach to aggregating/harmonising taxa.
 
 :::
 
-
-## Result
-
-```{r sampleSummaryOut}
-#| ref.label: sampleSummary
-#| echo: false
-```
-
-:::
-
-The `ungroup()` there is not decoration. The harmonisation finished with `.groups = "keep"`,
-so `allSamp` arrives carrying eleven grouping variables, and anything you pipe it into will
-either inherit those groups or quietly add them back to your selection. Dropping them first
-saves a good deal of confusion.
-
 A typical sample yields around twenty taxa from a few hundred grains, and counting effort
 varies several-fold between samples. Both facts matter later: dissimilarity measures and
 ordinations are sensitive to how many taxa you have and to how unevenly they were counted,

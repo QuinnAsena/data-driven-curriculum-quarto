@@ -1,7 +1,10 @@
 # Visualising pollen {#sec-wrangle-vis}
 
 
-Note to indlue the issue of visualising relative proportions.
+Note to:
+
+- indlue the issue of visualising relative proportions.
+- I use segment in ggplot to indicate where observations lie. Many publications do not do this but it is important to see where the sampling intervals lie, otherwise you have an automatic linear interpolation!
 
 
 
@@ -97,11 +100,16 @@ devils_pollen_plot <- ggplot(devils_harm, aes(x = age, y = value)) +
 #### Building names
 
 - Use the marquis package to create species names with correct italics for each facet.
+- maybe labelr will be necessary
 - keep building on the plot to make it better incrementally
 
 
 
 ### Using `rioja`
+
+
+I never use `rioja` but a simple example like the following will do:
+
 
 `rioja` provides the stratigraphic plotting and the CONISS constrained clustering used below.
 The rest are for wrangling and plotting.
