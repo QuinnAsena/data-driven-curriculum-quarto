@@ -13,7 +13,11 @@ pkgs <- c(
   # Neotoma
   "neotoma2",     # the Neotoma API client, used throughout
   # spatial
-  "sf",           # simple features, for spatial objects
+  "sf",           # simple features, for spatial objects. No chapter attaches this any
+                  #   more (checked 2026-09-11): neotoma2 Imports it, so the namespace
+                  #   loads on its own and plotLeaflet works without library(sf). It must
+                  #   still be INSTALLED. Do not drop it just because check-deps.R lists
+                  #   it under "no chapter uses it".
   "geojsonsf",    # converts GeoJSON to sf
   "leaflet",      # interactive maps
   # age-depth modelling
@@ -29,7 +33,9 @@ pkgs <- c(
   #   readxl      the NAMPD workbook is now shipped as CSV
   #   fuzzyjoin   the fuzzy taxon matching was replaced by a reviewed table
   # tables and widgets
-  "DT", "htmlwidgets",
+  "DT",
+  "htmlwidgets",  # renders the leaflet and DT widgets. Also not attached by any chapter,
+                  #   and also still required. Same caveat as sf above.
   # required by code-link: true in _quarto.yml, which turns function names in code blocks
   # into links to their documentation. Without these, Quarto warns once per chapter and
   # silently renders the code unlinked.

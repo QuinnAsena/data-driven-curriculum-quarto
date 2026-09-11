@@ -28,49 +28,75 @@ We will be using the Devil's Lake dataset downloaded in @sec-neotoma2. We will r
 ::: {.callout-tip}
 # Respawn code
 
-The following code recreates the necessary formatted data from Devil's Lake using the `neotoma2` package. We have also provided the formatted dataset as an `.rds` file in the data directory, it is preferable to read the dataset rather than repeatedly download it to avoid unnecessary API calls. This code block is included so that you can manipulate the inputs (e.g., `siteid = `, and harmonising taxa) and object name to download and experiment with different datasets.
+This is the same Devil's Lake download used in @sec-age-depth, so if you have run that chapter the file is already on disk. The `datasettype` filter matters more than it looks: site 666 carries five datasets, one of which is a modern **pollen surface sample**. Downloading without the filter appends that modern sample to the top of the core and it then behaves like the youngest level in the record, which it is not.
 
-```{r devilsRespawn}
-#| eval: false
-#| code-fold: true
-# The following code can be done in one pipeline but we have split it into chunks to help with readability
-devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
-  get_downloads() %>%
-  samples()
-
-devils_samples <- devils_samples %>%
-  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland herbs and trees and shrubs
-         elementtype == "pollen", # filter by pollen samples
-         units == "NISP") %>% # Filter by sampling unit
-  mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"), # Harmonize Pinus into one group
-                                "Pinus")) %>%
-  group_by(siteid, sitename,
-           sampleid, variablename, units, age,
-           agetype, depth, datasetid,
-           long, lat) %>%
-  summarise(value = sum(value), .groups='keep') # The group_by function will drop columns not used as grouping variables
-
-devils_samples <- devils_samples %>% # Calculate proportions of each species by year group
-  group_by(age) %>%
-  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
-  group_by(variablename) %>%
-  mutate(prop = value / pollencount) %>%
-  arrange(desc(age)) %>%
-  ungroup()
-
-saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
+```{r devilsDownload}
+#| output: false
+# Gated so the API is only contacted if the file is missing. Note the
+# datasettype filter: site 666 carries five datasets, and one of them
+# (3802) is a modern POLLEN SURFACE SAMPLE rather than part of the core.
+# Downloading without this filter silently appends a modern sample to the
+# top of a 14,000 year record.
+if (!file.exists("./data/devils_dl.rds")) {
+  devils_dl <- get_sites(siteid = 666) %>%
+    get_datasets(all_data = TRUE) %>%
+    neotoma2::filter(datasettype == "pollen") %>%
+    get_downloads()
+  saveRDS(devils_dl, "./data/devils_dl.rds")
+} else {
+  devils_dl <- readRDS("./data/devils_dl.rds")
+}
 ```
 
 :::
 
-We can skip the respawn code and read in the Devil's Lake data provided in the data directory. Sometimes minor mistakes along the way lead to errors, so you can always come back here and read in the formatted data again.
+`samples()` extracts the counts from the download, and works offline because `get_downloads()` already fetched everything. We keep pollen counts from the ecological groups this analysis is about:
 
-```{r devilsRespawnRds}
+```{r devilsSamples}
+devils_samples <- samples(devils_dl) %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # upland herbs, trees and shrubs
+                elementtype == "pollen",
+                units == "NISP")                        # counts, not percentages
+```
+
+### Harmonising and calculating proportions
+
+Neotoma records *Pinus* at Devil's Lake under three names: `Pinus undiff.`, `Pinus subg. Pinus` and `Pinus subg. Strobus`. For a single-site analysis like this one we treat them as one taxon, using the same `str_detect()` and `replace()` approach as @sec-neotoma2, and **sum the counts**.
+
+```{r devilsHarmonise}
+devils_harm <- devils_samples %>%
+  mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus")) %>%
+  group_by(siteid, sitename, sampleid, variablename, units,
+           age, agetype, depth, datasetid, long, lat) %>%
+  summarise(value = sum(value), .groups = "drop")
+
+dplyr::n_distinct(devils_samples$variablename)
+dplyr::n_distinct(devils_harm$variablename)
+```
+
+Lumping pine is a choice, not an obligation. It is reasonable here because we are describing change within one core, so the only thing that matters is that a taxon means the same thing at every depth. It would be the wrong choice if we were comparing against another dataset that resolves pine further, which is exactly what happens in @sec-novelty.
+
+Only now do we convert to proportions, after the taxon list is settled:
+
+```{r devilsProportions}
+devils_harm_prop <- devils_harm %>%
+  group_by(age) %>%
+  mutate(pollencount = sum(value, na.rm = TRUE),
+         prop        = value / pollencount) %>%
+  ungroup() %>%
+  arrange(desc(age))
+
+# data check: every sample should sum to 1
+range(tapply(devils_harm_prop$prop, devils_harm_prop$age, sum))
+```
+
+We save the harmonised proportions, because later chapters start from this object rather than rebuilding it. Note that this save is unconditional, unlike the download above. Guarding a download with `if (!file.exists())` is worth it because the download is slow and hits an API. Guarding a derived file is a trap: change the harmonisation code and the file on disk would quietly keep the old values, while everything in the session used the new ones.
+
+```{r devilsSaveProp}
 #| output: false
-# Load up the data
-devils_samples <- readRDS("./data/devils_samples.rds")
-
+saveRDS(devils_harm_prop, "./data/devils_harm_prop.rds")
 ```
 
 ## From long to wide
@@ -103,7 +129,7 @@ The `analogue` package provides several distance measures that can be calculated
 
 ```{r devilsPivot}
 #| output: false
-devils_samples_wide <- devils_samples %>%
+devils_samples_wide <- devils_harm_prop %>%
     tidyr::pivot_wider(id_cols = c(age, depth),
                        names_from = variablename,
                        values_from = prop,

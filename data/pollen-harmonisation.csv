@@ -2,7 +2,8 @@ harmonised_taxon,devils_taxa,nampd_codes,nampd_taxa,decision,note
 Abies,Abies,ABIES,Abies,match,
 Acer,Acer,ACERX+ACNEGUNA+ACPENSYL+ACRUBRUM+ACSACNUM+ACSACRUM,Acer+Acer negundo+Acer pensylvanicum+Acer rubrum+Acer saccharinum+Acer saccharum,sum,
 Alnus,Alnus,ALCRISPA+ALNUSX+ALRUBRA+ALRUGOSA,Alnus crispa+Alnus+Alnus rubra+Alnus rugosa,sum,
-Ambrosia,Ambrosia,AMBROSIA,Ambrosia,match,
+Amaranthaceae undiff.,Amaranthaceae undiff.,CHENOAMX,Chenopodiaceae/Amaranthaceae,match,
+Ambrosia-type,Ambrosia-type,AMBROSIA,Ambrosia,match,-type accepted as a match to the genus
 Amorpha-type,Amorpha-type,AMORPHA,Amorpha,match,
 Apiaceae,Apiaceae,APIACEAE,Apiaceae,match,
 Artemisia,Artemisia,ARTEMISIA,Artemisia,match,
@@ -12,7 +13,6 @@ Caprifoliaceae sensu lato,Caprifoliaceae sensu lato,CAPRIFOLIA,Caprifoliaceae,ma
 Carya,Carya,CARYA,Carya,match,
 Castanea,Castanea,CASTANEA,Castanea,match,
 Celtis,Celtis,CELTIS,Celtis,match,
-Chenopodiaceae/Amaranthaceae,Amaranthaceae undiff.+Chenopodium-type,CHENOAMX,Chenopodiaceae/Amaranthaceae,sum-both-sides,"Chenopodium in Chenopodiaceae/Amaranthaceae, which CHENOAMX combines"
 Cornus,Cornus,CORNUS,Cornus,match,
 Corylus,Corylus,CORYLUS,Corylus,match,
 Cupressaceae,Cupressaceae,CUPRESSA,Cupressaceae,match,
@@ -30,7 +30,9 @@ Liquidambar,Liquidambar,LIQUIDAM,Liquidambar,match,
 Morus,Morus,MORACEAX,Moraceae,match,Morus is in Moraceae (mulberry family)
 Ostrya/Carpinus,Ostrya/Carpinus,OSTRYCAR,Ostrya/Carpinus,match,
 Picea,Picea,PICEAX+PICGLAUC+PICMARIA,Picea+Picea glauca+Picea mariana,sum,
-Pinus,Pinus,PINDIPLO+PINHAPLO+PINUSX,Pinus diploxylon+Pinus haploxylon+Pinus,sum,
+Pinus subg. Pinus,Pinus subg. Pinus,PINDIPLO,Pinus diploxylon,match,hard pines; subg. Pinus is the diploxylon pollen type
+Pinus subg. Strobus,Pinus subg. Strobus,PINHAPLO,Pinus haploxylon,match,soft pines; subg. Strobus is the haploxylon pollen type
+Pinus undiff.,Pinus undiff.,PINUSX,Pinus,match,undifferentiated on both sides
 Plantago,Plantago,PLANTAGINX,Plantaginaceae,match,Plantago is in Plantaginaceae
 Platanus,Platanus,PLATANUS,Platanus,match,
 Poaceae,Poaceae,POACEAE,Poaceae,match,

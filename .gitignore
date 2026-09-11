@@ -5,7 +5,12 @@
 /*_files/
 *.rmarkdown
 *.knit.md
-/*.html          # stranded when a render collides with a running quarto preview
+# Stranded at the repo root when a single file is rendered, or when a render
+# collides with a running quarto preview. gitignore has no inline comments, so
+# this comment must stay on its own line or the pattern below silently matches
+# nothing.
+/*.html
+/site_libs/
 
 # NOTE: /_freeze/ is deliberately NOT ignored. Frozen computation results are
 # committed so the GitHub Action can render the book without an R toolchain,

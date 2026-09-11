@@ -31,17 +31,22 @@ The following section, @sec-datawrangle, takes you through some pretty advanced 
 
 ::: {.callout-tip}
 # Jump point
-Run this code (unfold the code chunk below) to load in the pre-wrangled data and portal to @sec-crossvalid 
+Load the packages in the next section first, then unfold and run this code to restore the wrangled data and portal to @sec-crossvalid.
 
 ```{r readdata}
 #| code-fold: true
 #| eval: false
 
-file_names <- c("./data/mod_pol_east_match_prop.rds", "./data/mod_clim_filter.rds", "./data/devils_prop.rds", "./data/devils_ages.rds")
-obj_names <- c("mod_pol_east_match_prop", "mod_clim_filter", "devils_prop", "devils_ages")
-rds_list <- lapply(file_names, readRDS)
-names(rds_list) <- obj_names
-list2env(rds_list, globalenv())
+# One file holding everything the analysis sections use. It is written at the
+# end of the data wrangling section, so it cannot go stale relative to it.
+wrangled <- readRDS("./data/no-analogue-wrangled.rds")
+
+mod_pol_harm    <- wrangled$mod_pol_harm     # modern pollen, harmonised, proportions
+devils_harm     <- wrangled$devils_harm      # Devil's Lake, harmonised, proportions
+devils_ages     <- wrangled$devils_ages      # one age per Devil's Lake sample
+mod_clim_filter <- wrangled$mod_clim_filter  # modern climate, aligned row for row
+mod_ids         <- wrangled$mod_ids          # NAMPD sample identifiers
+mod_sites       <- wrangled$mod_sites        # NAMPD site names and coordinates
 
 ```
 :::
@@ -70,53 +75,40 @@ Ready to wrangle? Let’s get the data ready:
 ::: {.callout-tip}
 # Respawn code
 
-The following code (unfold by clicking the dropdown) downloads the data from the neotoma API and formats it with basic harmonisation and pollen proportions calculated. This part of the data wrangling is covered in detail in @sec-neotoma2 so, more easily, you can read in the pre-wrangled .rds file from the data directory. Note that this is the long format data _not_ the species only matrix from the jump point above.
+This is the same Devil's Lake download used in @sec-age-depth, so if you have run that chapter the file is already on disk.
 
-```{r devilsRespawnNa}
-#| eval: false
-#| code-fold: true
-# The following code can be done in one pipeline but we have split it into chunks to help with readability
-devils_samples <- get_sites(siteid = 666) %>% # Download the site samples data
-  get_downloads() %>%
-  samples()
-
-devils_samples <- devils_samples %>%
-  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # Filter ecological groups by upland heath and trees and shrubs
-                elementtype == "pollen", # filter bu pollen samples
-                units == "NISP") %>% # Filter by sampling unit
-         mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"), # Harmonize Pinus into one group
-                                "Pinus"),
-                variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Ambrosia.*"),
-                                "Ambrosia")) %>%
-  group_by(siteid, sitename,
-           sampleid, variablename, units, age,
-           agetype, depth, datasetid,
-           long, lat) %>%
-  summarise(value = sum(value), .groups='keep') # The group_by function will drop columns not used as grouping variables
-
-devils_samples <- devils_samples %>% # Calculate proportions of each species by year group
-  group_by(age) %>%
-  mutate(pollencount = sum(value, na.rm = TRUE)) %>%
-  group_by(variablename) %>%
-  mutate(prop = value / pollencount) %>%
-  arrange(desc(age)) %>%
-  ungroup()
-
-# saveRDS(devils_samples, "./data/devils_samples.rds") # Save the data for later
+```{r devilsDownloadNa}
+#| output: false
+# Gated so the API is only contacted when the file is missing. Note the
+# datasettype filter: site 666 carries five datasets and one of them (3802)
+# is a modern POLLEN SURFACE SAMPLE rather than part of the core. Downloading
+# without the filter silently appends a modern sample to the top of a
+# 14,000 year record.
+if (!file.exists("./data/devils_dl.rds")) {
+  devils_dl <- get_sites(siteid = 666) %>%
+    get_datasets(all_data = TRUE) %>%
+    neotoma2::filter(datasettype == "pollen") %>%
+    get_downloads()
+  saveRDS(devils_dl, "./data/devils_dl.rds")
+} else {
+  devils_dl <- readRDS("./data/devils_dl.rds")
+}
 ```
 
 :::
 
-To read in the pre-wrangled long data for Devil's Lake use:
+The download holds everything Neotoma has for the site. `samples()` pulls the counts out of it, and does that **locally**: the API was contacted by `get_downloads()` above, not here. We keep pollen counted as numbers of grains, from the ecological groups this analysis is about.
 
-```{r devilsRespawnRdsNa}
-#| output: false
-# Load up the data
-devils_samples <- readRDS("./data/devils_samples.rds")
+```{r devilsSamplesNa}
+devils_samples <- samples(devils_dl) %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # upland herbs, trees and shrubs
+                elementtype == "pollen",
+                units == "NISP")                        # counts, not percentages
 
+dplyr::n_distinct(devils_samples$variablename)
 ```
+
+Note what we have **not** done. No taxon names have been merged, and no proportions calculated. Both happen later, and for a reason. The harmonisation table below expects Neotoma's own names, so lumping *Pinus* here, as @sec-dissimilarity does for its single-site analysis, would leave the table unable to match any of the three pine taxa Devil's Lake actually records. And proportions are only meaningful once we know which taxa are staying.
 
 We will use the North American Modern Pollen Database (NAMPD) to create modern analogues [@whitmore2005]. The NAMPD includes both modern surface pollen samples and climate measurements. It is not (yet) accessible through Neotoma, but a copy is saved in the data directory of this book, so we can read it from there. It is always good to keep your own copy of data you depend on: servers are not maintained forever, and datasets are sometimes revised or withdrawn.
 
@@ -142,7 +134,12 @@ The modern datasets includes the whole of North America and need to be filtered 
 # Keep the site identifier and the taxon counts only.
 mod_pol_east <- mod_pol %>%
   filter(LONDD >= -105) %>% # keep sites east of 105 degrees west
-  select(ID2, 14:147)       # ID2 plus the 134 taxon columns
+  select(ID2, ABIES:XANTHIUM)   # ID2 plus the 134 taxon columns
+
+# The site names and coordinates are dropped by that select(), so keep a small
+# lookup table. We need it later to identify particular samples by name.
+mod_sites <- mod_pol %>%
+  select(ID2, SITENAME, LATDD, LONDD)
 
 ```
 
@@ -203,8 +200,7 @@ harmonisation %>%
 
 The `decision` column records what was done to each taxon: `match` for a straight
 one-to-one, `sum` where several NAMPD columns roll up into one taxon, `coarsen` where Devil's
-Lake was the finer of the two, `sum-both-sides` where taxa on both sides were combined, and
-`drop` for the two taxa with no counterpart. Let's take the harmonisation table and transform it into one row per taxon for each dataset:
+Lake was the finer of the two, and `drop` for the two taxa with no counterpart. Let's take the harmonisation table and transform it into one row per taxon for each dataset:
 
 ```{r expandHarmonisation}
 harm_nampd <- harmonisation %>%
@@ -290,18 +286,44 @@ tibble(
   mutate(pct_kept = round(100 * grains_after / grains_before, 2))
 ```
 
-This is pretty good! We kept almost all of the taxa present in Devil's Lake, only two of itsntaxa had no counterpart. The reduction of species in the NAMPD is no surprise given that the data cover the entire eastern U.S.
+This is pretty good! We kept almost all of the taxa present in Devil's Lake, only two of its taxa had no counterpart. The reduction of species in the NAMPD is no surprise given that the data cover the entire eastern U.S.
 
 It is also worth seeing which taxa the aggregation changed most, since that is where the
 harmonisation had the largest effect on the modern data:
 
 ```{r rollupEffect}
 harmonisation %>%
-  filter(decision %in% c("sum", "sum-both-sides")) %>%
+  filter(decision == "sum") %>%
   select(harmonised_taxon, nampd_codes) %>%
   mutate(n_columns = str_count(nampd_codes, fixed("+")) + 1) %>%
   arrange(desc(n_columns))
 ```
+
+::: {#exr-pollen-or-spore}
+The cost table says the NAMPD kept 92.8% of its pollen, so harmonisation discarded 7.2%. That sounds like a lot to lose to a join on taxon names. Find out what it actually was.
+
+The `inner_join` in `harmoniseDatasets` dropped every NAMPD column with no row in the harmonisation table, silently and without a message. Those columns are the difference between the two sets of names. The NAMPD also documents what every one of its codes means, and the book ships that sheet, so here are both tools:
+
+```{r exrUnmapped}
+# the columns the join threw away
+unmapped <- setdiff(names(mod_pol_east)[-1], harm_nampd$nampd_codes)
+length(unmapped)
+
+# what each NAMPD code actually is
+nampd_meta <- read_csv("./data/nampd-metadata.csv", skip = 41,
+                       col_names = FALSE, show_col_types = FALSE) %>%
+  select(code = 1, description = 3) %>%
+  filter(!is.na(code))
+```
+
+1. Work out how many grains each of those columns holds and turn that into a percentage of the modern pollen sum. The denominator the cost table used is `sum(mod_pol_east[-1], na.rm = TRUE)`. Sort your answer so the largest losses come first.
+
+2. Take the eight largest and look each one up in `nampd_meta`. Search for any whose description you do not recognise, and for each decide whether the plant produces **pollen** or **spores**.
+
+3. The eight are not all the same kind of thing. Add up the share held by the spore and bryophyte producers. How much of the 7.2% do they account for, and how much is left over as a genuine loss of pollen taxa?
+
+4. Now the judgement. Devil's Lake was filtered with `elementtype == "pollen"` and to the ecological groups `UPHE` and `TRSH` at the start of this section. Run `table(samples(devils_dl)$elementtype)` to see what that filter removed, and `unique(samples(devils_dl)$variablename[samples(devils_dl)$elementtype == "spore"])` to see how those spores were recorded. Given what you find, is dropping the spore columns from the modern data a loss at all? What would have gone wrong if we had kept them?
+:::
 
 #### Converting to proportions
 
@@ -314,9 +336,25 @@ sample. Dividing before dropping columns is a common and quiet way to get this w
 mod_pol_harm <- mod_pol_harm / rowSums(mod_pol_harm)
 devils_harm  <- devils_harm  / rowSums(devils_harm)
 
-# the data check from @sec-dissimilarity: both should be exactly 1
+# the same data check used in the dissimilarity chapter: both should be exactly 1
 range(rowSums(mod_pol_harm))
 range(rowSums(devils_harm))
+```
+
+That is the end of the wrangling. Everything the analysis needs is now in memory, so we save it in one object for the jump point at the top of the chapter to read back.
+
+```{r saveWrangled}
+#| output: false
+# Written every time this chapter runs, not guarded with file.exists(). These
+# objects are derived from the code above, so a guard would let the saved file
+# drift out of step with the chapter while still looking fine.
+saveRDS(list(mod_pol_harm    = mod_pol_harm,
+             devils_harm     = devils_harm,
+             devils_ages     = devils_ages,
+             mod_clim_filter = mod_clim_filter,
+             mod_ids         = mod_ids,
+             mod_sites       = mod_sites),
+        "./data/no-analogue-wrangled.rds")
 ```
 
 
@@ -407,10 +445,10 @@ So find the duplicate rather than working around it:
 duplicate_rows <- duplicated(round(mod_pol_harm, 8))
 sum(duplicate_rows)
 
-# which sites are they? mod_pol still holds the site names and coordinates
+# which sites are they? mod_sites holds the names and coordinates
 tibble(ID2 = mod_ids[duplicate_rows | duplicated(round(mod_pol_harm, 8),
                                                  fromLast = TRUE)]) %>%
-  left_join(select(mod_pol, ID2, SITENAME, LATDD, LONDD), by = "ID2")
+  left_join(mod_sites, by = "ID2")
 ```
 
 Two surface samples about 5.5 km apart, recorded under different site names, with pollen
@@ -467,10 +505,28 @@ plot(modpoll_jant)
 
 
 
+::: {#exr-choosing-k}
+The summary for `modpoll_jant` reports RMSEP, $R^2$ and bias for every $k$ from 1 to 10, and the reconstruction later in this chapter is built with `k = 10`.
+
+1. Read off the $k$ that minimises RMSEP, once for the mean and once for the weighted mean. Does the same $k$ win in both cases?
+
+2. Rebuild the reconstruction with the $k$ you chose, using `predict(modpoll_jant, devils_harm, k = ...)`, and plot it against the `k = 10` version. How much does the choice actually change the reconstructed temperatures?
+
+3. RMSEP falls as $k$ increases and then rises again. Explain both halves of that curve: what goes wrong when too few analogues are averaged, and what goes wrong when too many are?
+:::
+
+::: {#exr-climate-variables}
+January temperature is only one of the 69 climate variables in `mod_clim_filter`. Four others worth trying are `tjul` (July temperature), `pjul` (July precipitation), `gdd5` (growing degree days above 5°C, a measure of the length and warmth of the growing season) and `mipt` (an index of soil moisture availability). Note that the column names are lower case.
+
+1. Refit the MAT for each one, by swapping the variable in `data.matrix(mod_clim_filter$tjan)` and rerunning `analogue::mat()`. Record RMSEP and $R^2$ each time.
+
+2. Rank the four by predictive skill. Given what you know about which aspects of climate actually control where plants grow, and about how precisely each of these variables can be measured in the first place, is that ranking surprising? Say why.
+:::
+
 Much of the information in this chapter comes from @simpson2007, and we recommend @simpson2007 for the interpretation of the outputs. The MAT method shares similar considerations as calculating dissimilarity (@sec-dissimilarity). With some additional considerations regarding transfer functions:
 
 
-## Novelty and palaeoclimatic reconstruction
+### Novelty and palaeoclimatic reconstruction
 
 For this part of the chapter, we’ll first assess the novelty of the fossil pollen assemblages at Devil’s Lake. We’ll then reconstruct past climates at Devil’s Lake, using the MAT.
 
@@ -526,37 +582,34 @@ reconPlot(devil_jant, depth = devils_ages, display.error = "bars",
 :::
 
 
-## Limitations:
+::: {#exr-nearby-site}
+Devil's Lake is a single record. A reconstruction is far more convincing if a nearby site tells the same story.
 
-- Time intervals and chronological uncertainties are not accounted for. The difference in time between successive samples often varies in palaeo-data.
+1. Find another pollen site within a few hundred kilometres of Devil's Lake using the search methods in @sec-neotoma2, and download it with the same gated pattern as the respawn code above. Remember the `datasettype` filter.
+
+2. Put it through the harmonisation table and the MAT, then plot its reconstruction against the Devil's Lake one.
+
+3. The harmonisation table was built for Devil's Lake, so its `devils_taxa` column lists that site's taxa and no others. Find what your site records that the table has no row for. How much pollen does that cost you, and does it change how much you trust the comparison?
+:::
+
+### Limitations
+
+Similar to @sec-dissimilarity:
+
+- Chronological uncertainties are not accounted for. See @sec-age-depth for how the timing of ecological events may change based on the age-depth model.
 - Time averaging is not taken into account, and each sample may contain a different time-span of ecological productivity.
 - Squared chord distance is one of many distance measures available in `analogue`, and may not always be the most appropriate.
 
-For deeper considerations of reconstructing temperatures using transfer functions see @telford2005.
-
-Remember that a limitation of dissimilary measures was the lack of covariate data?
-
-## Exercises
+Additionally, transfer functions can themselves be problematic with circular reasoning using vegetation assemblaged to infer climate and also inferring how climate affects vegetation! For deeper considerations of reconstructing temperatures using transfer functions see @telford2005.
 
 
-1. In the summary output for JanT, which choice of k (number of analogues) produces the highest R2 and lowest RMSEP?
-   1. Which samples at Devil’s Lake lack modern analogues?
+## Conclusion
 
-2. Repeat the above analysis for TJul, PJul, GDD5, and MIPT. (GDD5 is growing degree days and is a measure of growing season length and strength; MIPT is an index of soil moisture availability).
+Remember that a limitation of dissimilarity measures was the lack of covariate data? The MAT includes modern climate combined with modern pollen to predict historic climate. We are now introducing environmental covariates into our analyses!
 
-3. Which variable has the best cross-validation statistics?
-   1.  Which has the worst?
+The exercises take that further, and are worth returning to if you skipped them:
 
-4. Given what you know about the climatic controls on plant distributions (and/or our ability to precisely quantify these variables), is the relative predictive skill for these different climatic variables surprising or unsurprising? Why?
-
-
-5. Check the Devil’s Lake novelty curve against the pollen diagram for Devil’s Lake. What combinations of pollen taxa produce these no-analogue assemblages?
-
-6. According to Webb(1986), what are two general hypotheses for why we might have these past mixtures of species with no modern analogue?
-
-7. Why should one be dubious about the temperature reconstructions at Devil’s Lake for the high-novelty assemblages?
-
-8. Even for the low-novelty assemblages, name two potentially important sources of uncertainty in MAT-based reconstructions of past climate from fossil pollen data.
-   1. Conversely, based on our knowledge about the geographic climatic distributions of these taxa, why might one argue that these January temperature reconstructions are plausible?
-
-9.  To get practice, make reconstructions of GDD5 and mean July precipitation. Show plots of your work.
+- @exr-pollen-or-spore, what the harmonisation actually discarded
+- @exr-choosing-k, how many analogues to average over
+- @exr-climate-variables, and which aspects of climate pollen can actually predict
+- @exr-nearby-site, applying the whole workflow to a second record

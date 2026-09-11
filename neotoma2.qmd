@@ -42,7 +42,7 @@ There are many more functions for manipulating data and conducting other operati
 #| output: false
 # Load up the package
 if (!require("pacman")) install.packages("pacman", repos="http://cran.r-project.org")
-pacman::p_load(dplyr, ggplot2, neotoma2, sf, geojsonsf, leaflet, DT, htmlwidgets, readr, stringr)
+pacman::p_load(dplyr, neotoma2, geojsonsf, leaflet, DT, stringr)
 ```
 :::
 
@@ -430,27 +430,9 @@ A standard challenge in Neotoma (and in biodiversity research more generally) is
 
 Let's say we want to know the past distribution of *Pinus*. We want all the various pollen morphotypes associated with *Pinus* (*Pinus strobus*, *Pinus strobus*-type, *Pinus undiff.*, *Pinus banksiana/resinosa* and so on) grouped into one aggregated taxon named *Pinus*. This can be done by hand, by exporting the taxon list and editing each entry, or programmatically.
 
-Programmatically, we can harmonise all the taxon names by matching and replacing. We're using `dplyr` type coding here to `mutate()` the column `variablename` so that any time we detect (`str_detect()`) a `variablename` that starts with `Pinus` (the `.*` represents a wildcard for any character [`.`], zero or more times [`*`]) we `replace()` it with the character string `"Pinus"`. Note that this changes *Pinus* in the `allSamp` object, but if we were to call `samples()` again, the taxonomy would return to its original form.
-
-As a first step, we're going to filter the ecological groups to include only *UPHE* (upland herbs) and *TRSH* (trees and shrubs). (More information about ecological groups is available from the [Neotoma Online Manual](https://open.neotomadb.org/manual).) After converting all *Pinus.\** records to *Pinus*, we sum the counts of the resulting *Pinus* records. The same is done for *Ambrosia*.
-
-```{r simpleTaxonChange}
-allSamp <- allSamp %>%
-  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH")) %>%
-  dplyr::mutate(variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Pinus.*"),
-                                "Pinus"),
-         variablename = replace(variablename,
-                                stringr::str_detect(variablename, "Ambrosia.*"),
-                                "Ambrosia")) %>%
-  dplyr::group_by(siteid, sitename,
-                  sampleid, variablename, units, age,
-                  agetype, depth, datasetid,
-                  long, lat) %>%
-  dplyr::summarise(value = sum(value), .groups = 'keep')
-```
-
-There were originally `r sum(stringr::str_detect(neotomatx$variablename, 'Pinus.*'))` different taxa identified as being within the genus *Pinus* (including *Pinus*, *Pinus subg. Pinus*, and *Pinus undiff.*). The above code reduces them all to a single taxonomic group *Pinus*. We can check out the unique names by using:
+Before changing anything, look at what is actually there. Devil's Lake and the Michigan sites
+both record pine under several names, and it is worth seeing the list before deciding to
+collapse it:
 
 ::: {.panel-tabset}
 
@@ -478,6 +460,59 @@ neotomatx %>%
 
 :::
 
+There are `r sum(stringr::str_detect(neotomatx$variablename, 'Pinus.*'))` of them, and they sit
+at different levels: some are species, some are the subgenera *Pinus* and *Strobus*, and some
+are simply `Pinus undiff.` where the analyst could not identify further. They also **nest**:
+*Pinus strobus* is a species within subg. *Strobus*. That is the problem harmonisation solves.
+Across many sites, different analysts identified to different levels, so unless you collapse
+them you are comparing a taxon that means something different at each site.
+
+Now the replacement. We use `dplyr` to `mutate()` the column `variablename`, so that any time
+we detect (`str_detect()`) a `variablename` starting with `Pinus` (the `.*` is a wildcard for
+any character [`.`], zero or more times [`*`]) we `replace()` it with the string `"Pinus"`.
+Note this changes *Pinus* in the `allSamp` object; calling `samples()` again would return the
+original taxonomy.
+
+We also filter the ecological groups to *UPHE* (upland herbs) and *TRSH* (trees and shrubs).
+More on ecological groups in the [Neotoma Online Manual](https://open.neotomadb.org/manual).
+
+```{r simpleTaxonChange}
+allSamp <- allSamp %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH")) %>%
+  dplyr::mutate(variablename = replace(variablename,
+                                stringr::str_detect(variablename, "Pinus.*"),
+                                "Pinus")) %>%
+  dplyr::group_by(siteid, sitename,
+                  sampleid, variablename, units, age,
+                  agetype, depth, datasetid,
+                  long, lat) %>%
+  dplyr::summarise(value = sum(value), .groups = 'keep')
+```
+
+Two things about that `summarise()` are worth stating plainly, because both are easy to get
+wrong. We are summing **counts**, the raw number of grains identified, and summing is the only
+correct operation for counts. Had we already converted to proportions, averaging them would be
+wrong: a sample counted to 300 grains and one counted to 800 would carry equal weight. Get the
+taxonomy settled first, then calculate proportions. That order matters and the book follows it
+everywhere.
+
+::: {.callout-note}
+# This is a basic demonstration
+
+Collapsing every *Pinus* morphotype into one taxon is the simplest thing that works, and it is
+not what you would do in a real analysis of `r length(unique(allSamp$siteid))` Michigan sites.
+The right level to harmonise to depends on the question, on what each analyst recorded, and on
+what any dataset you plan to compare against can support.
+
+That last point matters more than it sounds. @sec-harmonisation builds a harmonisation table
+for Devil's Lake against a modern pollen database, and finds that the database resolves pine
+into hard and soft pines exactly as Neotoma does. Lumping there would have thrown away a
+distinction both datasets could see.
+
+This kind of harmonisation is also **within one dataset**, which is the easy case: you only
+have to be consistent with yourself. Matching names across two datasets is a different and
+much harder problem.
+:::
 
 ::: {#exr-picea}
 Follow the *Pinus* example above, but for *Picea*. How many taxon names were aggregated into
