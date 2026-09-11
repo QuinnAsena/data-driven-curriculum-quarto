@@ -499,9 +499,8 @@ Collapsing every *Pinus* morphotype into one taxon is the simplest demonstration
 
 @sec-harmonisation covers decisions we made to build a harmonisation table for Devil's Lake
 cross-referenced against the North American Modern Pollen Database (NAMPD).
-
-
 :::
+
 
 ::: {#exr-picea}
 Follow the *Pinus* example above, but for *Picea*. How many taxon names were aggregated into

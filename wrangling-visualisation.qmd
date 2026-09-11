@@ -17,6 +17,7 @@ Note to:
 
 ```{r wranglePackages}
 #| output: false
+#| eval: false
 if (!require("pacman")) install.packages("pacman", repos = "https://cran.r-project.org")
 pacman::p_load(dplyr, tidyr, ggplot2, stringr, rioja, neotoma2)
 ```
@@ -29,6 +30,7 @@ pacman::p_load(dplyr, tidyr, ggplot2, stringr, rioja, neotoma2)
 
 ```{r devilsDownload}
 #| output: false
+#| eval: false
 if (!file.exists("./data/devils_dl.rds")) {
   devils_dl <- get_sites(siteid = 666) %>%
     get_datasets(all_data = TRUE) %>%
@@ -44,6 +46,7 @@ if (!file.exists("./data/devils_dl.rds")) {
 
 
 ```{r devilsSamples}
+#| eval: false
 devils_samples <- samples(devils_dl) %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), # upland herbs, trees and shrubs
                 elementtype == "pollen", # already done at the download stage, so not strictly necessary!
@@ -52,6 +55,7 @@ devils_samples <- samples(devils_dl) %>%
 
 
 ```{r devilsHarmonise}
+#| eval: false
 devils_harm <- devils_samples %>%
   mutate(variablename = replace(variablename,
                                 stringr::str_detect(variablename, "Pinus.*"),
@@ -65,6 +69,7 @@ dplyr::n_distinct(devils_harm$variablename)
 ```
 
 ```{r devilsProportions}
+#| eval: false
 devils_harm_prop <- devils_harm %>%
   group_by(age) %>%
   mutate(pollencount = sum(value, na.rm = TRUE),
