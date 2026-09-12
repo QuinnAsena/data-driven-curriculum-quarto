@@ -28,6 +28,8 @@ pkgs <- c(
   "rioja",        # stratigraphic diagrams, CONISS
   # data wrangling and plotting
   "dplyr", "tidyr", "ggplot2", "readr", "stringr", "scales", "tibble",
+  "marquee",      # markdown inside ggplot2 theme elements, used for italic taxon names
+                  #   in the facet strips of the visualisation chapter
   # tidyverse, readxl and fuzzyjoin were dropped on 2026-09-10:
   #   tidyverse   no chapter loads the meta-package any more
   #   readxl      the NAMPD workbook is now shipped as CSV
