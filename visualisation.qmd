@@ -6,12 +6,6 @@ author: Quinn Asena
 
 ## Background {#sec-visualisationbackground}
 
-<!-- NOTE (Claude): this section still needs the real Background prose. The shape it wants is
-     probably: what a pollen diagram is and why it is drawn the way it is (time vertical, oldest
-     at the bottom, one panel per taxon), then the two honesty problems the chapter deals with,
-     which are (a) proportions hide the count they came from and (b) an area or line between two
-     samples is an interpolation the data do not support. -->
-
 One of the most common methods of plotting palaeoecological data (such as pollen, but often including diatoms, isotopes, and other palaeoecological data) is to create stratigraphic plots. Palaeodata are regularly visualised with age (usually the output of an age-depth model) on the y-axis, with the youngest age at the top, to mirror a core-type sample. Each taxon is plotted in sequence horizontally, in order of abundance. Taxonomic data, such as pollen or diatoms, are also usually converted to relative abundances before plotting. While the relative abundances do help visualise the proportion of each taxon through time (and absolute abundances are unavailable), it also means that the plots can be misleading. For example, if all taxa were to decline equally, then the figure would not change at all! Or the rise of a taxon could be due to the decline of others. Of course, this is not the only method of visualising palaeoecological data, and other layouts can be equally good; however, we will demonstrate the most common convention in this chapter. We will do so using the `ggplot2` package and the `rioja` package.
 
 
@@ -23,7 +17,7 @@ One of the most common methods of plotting palaeoecological data (such as pollen
 ```{r visPackages}
 #| output: false
 if (!require("pacman")) install.packages("pacman", repos = "https://cran.r-project.org")
-pacman::p_load(dplyr, tidyr, ggplot2, scales, stringr, mgcv, rioja, neotoma2, marquee)
+pacman::p_load(dplyr, tidyr, tibble, ggplot2, scales, stringr, mgcv, rioja, neotoma2, marquee)
 ```
 :::
 
@@ -114,7 +108,7 @@ ggplot(devils_focal, aes(x = age, y = prop)) +
 ```
 
 Now let's start improving on this base plot @fig-strat-first! Using a filled area is common; however,  the fill implies a continuous record and the core was sampled at discrete intervals. Everything between two samples is drawn by the plotting function, not measured. Adding a segment
-at each sampled age shows where the observations actually are. The density of observations through time is very important, and it is a common mistake not to include them in stratigraphic plots! Currently, the panels are also in alphabetical order by default. Ordering by abundance is tidier and conveys relative abundance along the horizontal alignment of panels. To do this `ggplot` likes to have the taxa as factor data, so let's convert the taxa names to factor data:
+at each sampled age shows where the observations actually are. The density of observations through time is very important, and it is a common mistake not to include them in stratigraphic plots! Currently, the panels are also in alphabetical order by default. Ordering by abundance is tidier and conveys relative abundance along the horizontal alignment of panels. To do this `ggplot2` likes to have the taxa as factor data, so let's convert the taxa names to factor data:
 
 ```{r visFactorOrder}
 # convert taxa to factor, see <fct> now appears in the
@@ -146,9 +140,9 @@ Now we're getting somewhere!
 
 #### Formatting taxon names
 
-By convention genus and species names are italic, the genus is capitalised and the species is not (e.g., *Quercus alba*). The `marquee` package renders markdown inside `ggplot2` theme elements, so a label is written the way it would be written using [markdown syntax](https://www.markdownguide.org/basic-syntax/#emphasis). Markdown is a featherweight plain text format that is super easy to use and commonplace in programming. There are many many ways of achieving the same aim in `ggplot`, I find markdown elements the simplest.
+By convention genus and species names are italic, the genus is capitalised and the species is not (e.g., *Quercus alba*). The `marquee` package renders markdown inside `ggplot2` theme elements, so a label is written the way it would be written using [markdown syntax](https://www.markdownguide.org/basic-syntax/#emphasis). Markdown is a featherweight plain text format that is super easy to use and commonplace in programming. There are many many ways of achieving the same aim in `ggplot2`, I find markdown elements the simplest.
 
-Let's create some labels for `ggplot`. Since there are only 6 taxa, we can easily enough create matching pairs manually:
+Let's create some labels for `ggplot2`. Since there are only 6 taxa, we can easily enough create matching pairs manually:
 
 ```{r visTaxonNames}
 taxon_names <- c(
@@ -198,7 +192,7 @@ ggplot(devils_focal, aes(x = age, y = prop)) +
 ```
 
 
-Notice that we also included some optional cosmetic changes like percent on the x-axis using `label_percent()` and `label_comma()` to the ages on the y-axis.
+Notice that we also included some optional cosmetic changes like percent on the x-axis using `label_percent()` and `label_comma()` to the ages on the y-axis. If you need to place multiple ggplot objects in the same figure, the [`patchwork`](https://patchwork.data-imaginist.com) package works very well with `ggplot2`.
 
 ::: {#exr-freeaxis}
 1. `facet_wrap` includes optional arguments `"fixed"`, `"free"`, `"free_x"`, and `"free_y"`. Experiment with the alternative arguments to `facet_wrap` and discuss the consequences of how proportions are visualised.
@@ -217,12 +211,24 @@ Notice that we also included some optional cosmetic changes like percent on the 
 
 :::
 
+::: {#exr-downsample}
+
+Take Devil's Lake, or another site of your choosing.
+
+1. Rebuild the chronology with `Bchron`, following @sec-age-depth, three times: once with the complete chronological control data, which is your reference point, and twice more with the control data artificially downsampled by removing rows. Keep the first and last control in each downsampled version.
+
+2. Artificially downsample the pollen data twice, again by removing rows. The complete dataset is your reference point here too.
+
+3. You now have three chronologies and three pollen datasets. Plot combinations of the two to see the effect of reduced temporal resolution in the chronological controls and in the pollen separately.
+:::
+
 
 ### Stratigraphic diagram with `rioja`
 
-`rioja` is built for this and does in one call what the section above does in several, including
-the CONISS constrained cluster analysis that splits the record into zones. It wants a wide
-matrix, samples in rows and taxa in columns.
+The `rioja` package is built for visualising palaeoecological data and has some handy features like including CONISS [@grimm1987] constrained cluster analysis that splits the record into zones (we will talk more about calculating dissimilarity/similarity in @sec-dissimilarity). While `rioja` has useful features, it is an older package, in this section we will demonstrate how it works, but the chapter will primarily focus on using `ggplot2` which is the most frequently used graphics package in R and is actively maintained.
+
+Two things are worth knowing before reading the code. Firstly `rioja` draws in base graphics rather than `ggplot2`, so the syntax is not transferable. For example italics come from a plotmath expression rather than the markdown `marquee` understands, and the two are not interchangeable. Secondly, `rioja` places the plot using figure coordinates running from 0 to 1, rather than the margins base graphics normally uses, so `xLeft`, `xRight` and `yTop` are what you adjust when something is cut off at an edge. Unlike `ggplot2` which usually likes to work with long data, `rioja` takes wide format. So, let's pivot our data to wide format:
+
 
 ```{r visWideTable}
 #| output: false
@@ -234,42 +240,114 @@ devils_wide <- devils_harm_prop %>%
                      values_from = prop,
                      values_fill = 0)
 
-dim(devils_wide)
+head(devils_wide)
 ```
 
 ```{r fig-strat-rioja}
 #| fig-cap: "The same six taxa drawn by `rioja::strat.plot()`, with a CONISS dendrogram on the right and four zones marked in red. `wa.order` sorts the taxa by weighted average age, so the panel order differs from the previous figure."
 #| fig-height: 6
 #| warning: false
+
+# calculate clusters using CONISS. This is over-simplified to 6 species for this demonstration!
 devils_clust <- rioja::chclust(dist(sqrt(devils_wide[, -1])), method = "coniss")
 
-strat <- rioja::strat.plot(as.data.frame(devils_wide[, -1] * 100),
-                           yvar   = devils_wide$age,
-                           title  = devils_samples$sitename[1],
-                           ylabel = "Age (cal years BP)",
-                           y.rev  = TRUE,
-                           clust  = devils_clust,
-                           wa.order = "topleft",
-                           scale.percent = TRUE)
+devils_matrix <- as.data.frame(devils_wide[, -1] * 100)
 
+# rioja draws in base graphics, so the labels are plotmath expressions rather than
+# the markdown marquee used above. Supply them in the ORIGINAL column order:
+# wa.order reorders the panels and carries the labels along with them.
+taxon_expr <- parse(text = paste0("italic('", names(devils_matrix), "')~'spp.'"))
+
+strat <- rioja::strat.plot(devils_matrix,
+                           yvar     = devils_wide$age,
+                           ylabel   = "Age (cal years BP)",
+                           x.names  = taxon_expr,
+                           y.rev    = TRUE,
+                           clust    = devils_clust,
+                           wa.order = "topleft",
+                           scale.percent = TRUE,
+                           # everything below is layout. rioja positions the plot in
+                           # figure coordinates, 0 to 1, rather than using margins.
+                           xLeft       = 0.12,  # left edge, room for the y label (default 0.07)
+                           xRight      = 0.94,  # right edge, room for the dendrogram (default 1)
+                           yTop        = 0.75,  # top edge, room for the rotated names (default 0.8)
+                           xSpace      = 0.025, # gap between panels (default 0.01)
+                           ylabPos     = 3.2,   # y label distance from the axis (default 2)
+                           clust.width = 0.12,  # width of the dendrogram (default 0.1)
+                           cex.ylabel  = 0.9,
+                           cex.xlabel  = 0.85,
+                           cex.yaxis   = 0.7,
+                           cex.axis    = 0.65)
+
+# identify zones from CONISS clustering
 rioja::addClustZone(strat, devils_clust, 4, col = "red")
 ```
 
-<!-- NOTE (Claude): the object is called `strat` rather than `plot`, which is what the old draft
-     used. Assigning to `plot` masks base R's plot() for the rest of the session. -->
+It can be a bit fiddly to correct the layout in `rioja`, but this is also true of `ggplot2` when figures get complicated. Drawing plots entirely from data can be time consuming but has the benefit of reproducibility.
 
-<!-- NOTE (Claude): CONISS and the distance measure behind it are @sec-dissimilarity's subject,
-     and this chapter currently comes first. Either a forward reference here, or move this
-     chapter after dissimilarity. Flagging rather than deciding. -->
+::: {.callout-tip}
+# Good practice tip
+
+You will want to save your figures to disk after they have been created. The graphics viewer in your IDE (e.g., RStudio or VS Code) does not display figures on-screen the same as they will appear when saved to disk. If you screenshot or copy from the graphics console, you will not be able to create the same figure dimensions twice and will have lots of problems downstream! Here are some tips for creating good, publication-ready, graphics:
+
+- Define overall figure dimensions: this is easily done with [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html) by defining the `width` and `height` arguments. Defining the correct figure size for a page or a slide will mean that you don't need to resize it (shrinking or blowing up fonts and other elements) when you place them in a document or presentation.
+- Define all font sizes. These are easily fixed in `ggplot2` [`theme` section](https://ggplot2.tidyverse.org/reference/theme.html). That way, on the printed page you can make sure labels are visible and consistent at a chosen font size (e.g., axis labels will be font size 10 across all your figures). You can make many other cosmetic adjustments in the `theme` too.
+- Save plot as a vector graphic format like `svg` or `pdf`, not as a raster format like `jpeg` or `png` unless absolutely necessary. Vector formats are much sharper and clearer. And if you need to adjust the figure in another software like Inkscape, each element will be a selectable/editable layer (a raster graphic will appear as like a photograph in the editor).
+- It is worth using a colour palette designed for contrast and colourblind friendliness. [`RColorBrewer`](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html) and [`viridis`](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) can be aesthetic as well as functional.
+
+:::
+
 
 ## Taxa across space and time
 
-One site gives a history. Many sites give a geography as well. The Michigan download from @sec-neotoma2 holds many sites, and the same harmonisation
-applies to all of them.
+The above sections cover creating a stratigraphic diagram for a single site. Don't forget that the data downloaded from `neotoma2` contain many, many (many!) variables that can be used for data exploration. Let's have a look at a couple of other exploratory figures we could make from the multi-site object covering all of the state of Michigan downloaded in @sec-neotoma2. One site gives a history. Many sites give a geography as well. For demonstration purposes, we will load the data, filter for only records containing pollen data, and do a quick-and-dirty harmonisation for pine species:
 
 ```{r visMichSamples}
 mich_dl <- readRDS("./data/mich_dl.rds")
+```
 
+
+### Taxa distribution and rarity
+
+The `taxa()` summarises taxa the sites in one table, including every taxon, how many sites and how many samples it turns up in. Let's explore how we can use the taxa table to produce exploratory plots of the multisite data. First, we need to apply the same filters to the taxa table as to the samples table:
+
+```{r visMichTaxa}
+mich_taxa <- neotoma2::taxa(mich_dl) %>%
+  dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"), elementtype == "pollen")
+
+cat("Total taxa: ", nrow(mich_taxa), "\n",
+    "Number of taxa that occur only in one site: ", sum(mich_taxa$sites == 1), "\n",
+    "Number of taxa that occur in every site: ", sum(mich_taxa$sites == max(mich_taxa$sites)), "\n")
+
+```
+
+```{r fig-mich-rarity}
+#| fig-cap: "Every pollen taxon in the `r dplyr::n_distinct(allSamp$siteid)` Michigan sites, by the number of sites and the number of samples it occurs in. Most taxa are rare. Note that the y-axis is logarithmic."
+#| fig-height: 4
+ggplot(mich_taxa, aes(x = sites, y = samples)) +
+  geom_point(alpha = 0.5, size = 1.6) +
+  scale_y_log10(labels = label_comma()) +
+  labs(x = "Number of sites the taxon occurs in",
+       y = "Number of samples the taxon occurs in") +
+  theme_minimal()
+```
+
+Most taxa are rare: nearly half of the taxa (`r sum(mich_taxa$sites == 1)`) occur at a single site, and only a handful (`r sum(mich_taxa$sites == max(mich_taxa$sites))`) occur at all sites. This demonstrates core ecological concept that common taxa are rare! 
+
+
+In the stratigraphic plot demonstration we picked the top 6 species by count (purely for demonstration). @fig-mich-rarity demonstrates why, Ecologically, we would not want to throw out rare species! Such simplicity does not take into account important considerations such as functional importance, that total abundance by count may be skewed by taxa that produce a lot of pollen, and total abundance does not reflect compositional change over time
+
+<!-- NOTE (Claude): the shape of @fig-mich-rarity is the standard occupancy-abundance
+     relationship, and the tail at sites = 1 is where identification effort and analyst
+     differences live as much as ecology. Worth a sentence if you want it. -->
+
+### How much data does each site have?
+
+Palaeoecological datasets differ enormously in how many samples were taken and what period they cover.
+For any multi-site comparison is is important to know the sampling intensity and temporal coverage.
+The following code loads up the samples data from the Michigan sites, deals with the duplicate name ("Green lake"), and creates a summary object `site_cover` that checks how many samples a site has, and whether the dataset covers the whole of the Holocene period.
+
+```{r visMichCoverage}
 allSamp <- samples(mich_dl) %>%
   dplyr::filter(ecologicalgroup %in% c("UPHE", "TRSH"),
                 elementtype == "pollen",
@@ -279,23 +357,153 @@ allSamp <- samples(mich_dl) %>%
                                 "Pinus"))
 
 dplyr::n_distinct(allSamp$siteid)
+
+# two Michigan sites are both called "Green Lake", so the name alone is not a key
+# For analyses, use siteid (not sitename), which is unique per site
+# Below we do a little tidying so that the figure displays the site name
+# alongside the ID for the common case where two sites have the same name!
+mich_samp <- allSamp %>%
+  distinct(siteid, sitename, sampleid, age, age_range_young, age_range_old) %>%
+  group_by(sitename) %>%
+  mutate(site_label = if (dplyr::n_distinct(siteid) > 1)
+                        paste0(sitename, " (", siteid, ")") else sitename) %>%
+  ungroup()
+
+site_cover <- mich_samp %>%
+  group_by(siteid, site_label) %>%
+  summarise(n_samples       = n(),
+            age_range_young = min(age_range_young),
+            age_range_old   = max(age_range_old), .groups = "drop") %>%
+  mutate(spans = age_range_young <= 0 & age_range_old >= 11700)
+
+head(site_cover$n_samples, n = 20)
 ```
+
+We can `left_join` the summary table (`site_cover`) to the original samples table so that we can use the summary information in combination with the samples data and make a new plot. We are also going to convert the `site_label` to a `factor` ordered by the number of samples, so that the plot will display the sites in order of the number of samples, rather than alphabetically.
+
+
+```{r mitch-join}
+mich_samp_join <- mich_samp %>%
+  left_join(dplyr::select(site_cover, siteid, spans), by = "siteid") %>%
+  mutate(site_label = factor(site_label,
+                             levels = site_cover$site_label[order(site_cover$n_samples)]),
+         ypos       = as.numeric(site_label))
+head(mich_samp_join)
+```
+
+
+This type of data wrangling (filtering, pivoting, splitting, summarising, re-joining...) is very common in data analyses and creating visualisations. It is worth getting to grips with conceptually to help understanding what can be done with data. Now that we have done some data wrangling, lets make a figure!
+
+
+```{r fig-mich-coverage}
+#| fig-cap: "Every Michigan site, ordered by how many samples it holds. Each tick is one sample. Dashed red line marks the approximate start of the Holocene at 11,700 cal years BP."
+#| fig-height: 5.5
+
+ggplot(mich_samp_join, aes(x = age, y = site_label)) +
+  geom_line(aes(group = site_label), colour = "grey80", linewidth = 0.4) +
+  geom_segment(aes(x = age, xend = age, y = ypos - 0.32, yend = ypos + 0.32),
+                   linewidth = 0.35) +
+  geom_vline(xintercept = c(11700), linetype = "dashed", colour = "red") +
+  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
+  labs(y = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top", panel.grid.minor = element_blank(),
+        axis.text.y = element_text(size = 7))
+```
+
+@fig-mich-coverage provides a great visual summary of the Michigan data, each row mirrors the core itself! We can see from the vertical dashed red line, which datasets cover the whole Holocene period (or more) and we can see the sampling intensity per site. Irwin Smith Bog was intensively sampled but does not extend over the Holocene, O'Brien Lake covers the Holocene but consists of few samples, and Bondi Section (appropriately named) holds 15 samples spanning barely a century, all of them pre-Holocene.
+
+### Curating a comparable subset of sites
+
+If we want to only include sites that have Holocene coverage we can use `age_range_young` and `age_range_old`, to filter the metadata. We already created the `site_cover` table that has a `TRUE`/`FALSE` column that identifies which sites cover the Holocene period, so it is easy to use that to filter `siteid`s.
+
+```{r visMichFilter}
+spanning <- site_cover %>%
+  dplyr::filter(age_range_young <= 0, age_range_old >= 11700)
+
+mich_holo <- allSamp %>% dplyr::filter(siteid %in% spanning$siteid)
+
+cat("All Michigan sites: ", dplyr::n_distinct(allSamp$siteid), "\n",
+    "All Michigan samples ", dplyr::n_distinct(allSamp$sampleid), "\n",
+    "Sites filtered to span the Holocene ", dplyr::n_distinct(mich_holo$siteid), "\n",
+    "Total Holocene samples ", dplyr::n_distinct(mich_holo$sampleid), "\n")
+```
+
+This demonstrates a common challenge in palaeoecology: curation is expensive! Filtering by temporal extent alone removes more than half the data. If we were to go on to filter by additional criteria such as available covariates, chronological controls (i.e., a minimum number of radio carbon dates), and sampling intensity, we will lose many more sites. 
+
+::: {.callout-warning}
+# Oh no! :scream:
+
+`age_range_young` and `age_range_old` describe the **dataset as uploaded**, not the samples left
+after filtering, and the two can differ by a great deal. Restricting to upland herbs, trees and
+shrubs counted as `NISP` throws away whatever else the core held, so the age range you are left
+with is usually narrower than the range the metadata advertises. Check the samples you kept
+rather than trusting the metadata:
+
+```{r visMichCheck}
+mich_holo %>%
+  group_by(sitename) %>%
+  summarise(metadata_oldest = max(age_range_old),
+            oldest_kept     = round(max(age)), .groups = "drop") %>%
+  mutate(difference = metadata_oldest - oldest_kept) %>%
+  arrange(desc(difference))
+```
+
+Pinhook Bog advertises a record reaching past 38,000 years, while the pollen we kept stops at
+about 22,000. Note also that the difference runs both ways: Wintergreen Lake's samples reach
+*older* than its metadata claims.
+:::
+
+
+### Comparing multisite data
+
+Because each core has its own sampling intensity and age-depth model, observations from two or more sites will not align in time. A common approach to get around this issue is to bin data at a given resolution so that samples across datasets occur within the same bin. This is quite a dangerous approach given chronological uncertainties and the effects of different bin widths. Narrow bins respect the sampling resolution but leave gaps; wide bins fill the gaps
+by averaging over more time than a sample represents. Neither respects chronological uncertainty.
+Two hundred years is near the fine end for this dataset. Sometimes the chronological uncertainty around a sample is larger than the bin itself! Let's explore visualising the number of samples in binned data, we won't attempt to tackle chronological uncertainties here. The following code creates 200-year bins and summarises the data by the number of samples in each bin:
+
+```{r visMichBins}
+per_site_bin <- mich_holo %>%
+  dplyr::filter(age >= 0, age < 11700) %>%
+  distinct(siteid, sitename, sampleid, age) %>%
+  mutate(age_bin = round(age / 200) * 200) %>%
+  count(age_bin, siteid, sitename, name = "n_samples")
+
+```
+
+Now we can make a figure that shows how many bins have how many samples aggregated, and how many bins are empty.
+
+```{r fig-mich-bins}
+#| fig-cap: "Samples per 200 year bin for each site that spans the window. White cells are bins where that site has no sample at all, and they are a third of the grid."
+#| fig-height: 4
+per_site_bin %>%
+  mutate(sitename = factor(sitename,
+           levels = names(sort(tapply(n_samples, sitename, sum))))) %>%
+  ggplot(aes(x = age_bin, y = sitename, fill = n_samples)) +
+  geom_tile() +
+  scale_fill_viridis_c(name = "Samples in bin", option = "mako", direction = -1) +
+  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
+  labs(y = NULL) +
+  theme_minimal() +
+  theme(panel.grid = element_blank(), legend.position = "top",
+        axis.text.y = element_text(size = 7))
+```
+
+
 
 ### Where a taxon is present
 
-The obvious first question is what fraction of sites record a taxon at a given time. Ages are
-binned to the nearest 500 years, which is what `round(age * 2, -3) / 2` does.
+Baring in mind that we have glossed over the quality of each sites chronology, it is still worth checking out another exploratory plot. The following code once again filters for the records that cover the Holocene, follows the same binning procedure shown above and creates a table of the number of presence of each taxon per bin across sites.
 
 ```{r visPresence}
 #| output: false
-taxa_by_age <- allSamp %>%
-  dplyr::filter(variablename %in% focal, age < 11000) %>%
-  group_by(variablename, age_bin = round(age * 2, -3) / 2) %>%
+taxa_by_age <- mich_holo %>%
+  dplyr::filter(variablename %in% focal, age >= 0, age < 11700) %>%
+  group_by(variablename, age_bin = round(age / 200) * 200) %>%
   summarise(n_sites_with_taxon = dplyr::n_distinct(siteid), .groups = "drop")
 
-sites_by_age <- allSamp %>%
-  dplyr::filter(age < 11000) %>%
-  group_by(age_bin = round(age * 2, -3) / 2) %>%
+sites_by_age <- mich_holo %>%
+  dplyr::filter(age >= 0, age < 11700) %>%
+  group_by(age_bin = round(age / 200) * 200) %>%
   summarise(n_sites_total = dplyr::n_distinct(siteid), .groups = "drop")
 
 presence <- taxa_by_age %>%
@@ -317,12 +525,10 @@ presence %>%
 ```
 
 ```{r fig-mich-presence}
-#| fig-cap: "Proportion of Michigan sites recording each taxon through time, with a binomial GAM smooth weighted by the number of sites in each bin. Four of the six taxa are at or near 100% throughout, which is the problem described below."
+#| fig-cap: "Proportion of the 13 curated Michigan sites recording each taxon through time, in 200 year bins, with a binomial GAM smooth weighted by the number of sites contributing to each bin. Four of the six taxa sit at or near 100% throughout, which is the problem described below."
 #| fig-height: 4.5
 #| warning: false
-# warning: false suppresses two "iteration limit reached" messages from mgcv. They are a
-# real symptom, not noise: a taxon present at 100% of sites in every bin is completely
-# separated, so the fit cannot converge. The table above shows the same thing in numbers.
+
 ggplot(presence, aes(x = age_bin, y = proportion, weight = n_sites_total)) +
   geom_point(size = 1) +
   geom_smooth(method = "gam", formula = y ~ s(x),
@@ -336,10 +542,11 @@ ggplot(presence, aes(x = age_bin, y = proportion, weight = n_sites_total)) +
   theme(strip.text = element_marquee())
 ```
 
-*Quercus* is present at every site in every one of the 23 bins, and *Pinus* and *Ulmus* in 22 of
+*Quercus* and *Ulmus* are present at every site in every one of the 56 bins, and *Pinus* in 48 of
 them. For those taxa the measure cannot go up or down, so the smooth is flat and tells you
-nothing. Presence is only informative for a taxon that is sometimes absent, which here is
-*Picea* and *Fraxinus*.
+nothing at all. Presence is only informative for a taxon that is sometimes absent, which here is
+*Picea*, which ranges from 9% to 100% of sites, and *Fraxinus*, which never exceeds half of
+them.
 
 <!-- NOTE (Claude): two things worth saying in prose here, both of which the code above already
      demonstrates. First, `weight = n_sites_total` is not optional. Without it the binomial GAM
@@ -348,45 +555,6 @@ nothing. Presence is only informative for a taxon that is sometimes absent, whic
      separation, which is why the fit struggles. This is the honest lead-in to the abundance
      version below, which was your note in the old draft. -->
 
-### How abundant it is
-
-Mean proportional abundance moves even when presence does not, so it is the more useful
-measure for common taxa. Proportions have to be calculated within each sample first, so that
-sites counted to different totals contribute equally.
-
-```{r visAbundance}
-#| output: false
-mich_abund <- allSamp %>%
-  group_by(siteid, sampleid, age) %>%
-  mutate(prop = value / sum(value, na.rm = TRUE)) %>%   # within-sample proportions first
-  ungroup() %>%
-  dplyr::filter(variablename %in% focal, age < 11000) %>%
-  group_by(variablename, age_bin = round(age * 2, -3) / 2) %>%
-  summarise(mean_prop = mean(prop),
-            n_sites   = dplyr::n_distinct(siteid), .groups = "drop") %>%
-  mutate(variablename = factor(variablename, levels = focal))
-```
-
-```{r fig-mich-abundance}
-#| fig-cap: "Mean proportion of the pollen sum for each taxon across Michigan sites, binned to 500 years. Point size is the number of sites contributing to each bin. Unlike @fig-mich-presence, every taxon varies."
-#| fig-height: 4.5
-ggplot(mich_abund, aes(x = age_bin, y = mean_prop)) +
-  geom_line(colour = "grey40") +
-  geom_point(aes(size = n_sites), alpha = 0.6) +
-  scale_size_continuous(name = "Sites", range = c(0.4, 2.4)) +
-  facet_wrap(~variablename,
-             labeller = as_labeller(taxon_names)) +
-  scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
-  scale_y_continuous(name = "Mean proportion of the pollen sum",
-                     labels = label_percent(accuracy = 1)) +
-  theme_bw() +
-  theme(strip.text = element_marquee())
-```
-
-<!-- NOTE (Claude): @fig-mich-abundance is where the ecology is, and the prose could point at the
-     Picea decline and the Quercus maximum. Note that the top-six-by-abundance selection drops
-     Tsuga, so the hemlock decline is no longer on the figure; add Tsuga to focal by hand if you
-     want to discuss it. -->
 
 <!-- NOTE (Claude): a further step, if you want one, is that binning to 500 years and taking an
      unweighted mean treats a bin holding two sites the same as one holding twenty. Point size
@@ -420,27 +588,15 @@ using either `ggplot2` or `rioja`.
 :::
 
 ::: {#exr-taxon-region}
-Repeat @fig-mich-abundance for a different state or region.
+Repeat @fig-mich-presence for a different state or region.
 
 1. Download the sites for your region, following @sec-neotoma2.
-2. Produce both the presence and the abundance version.
+2. Curate it the same way, and report what the filter costs you before plotting anything.
 3. Report how many of your taxa are present at 100% of sites in every bin. If the answer is most
    of them, what does that tell you about the taxa you picked rather than about the region?
 :::
 
 
-::: {#exr-downsample}
-
-<!-- NOTE (Quinn): This may be quite a complex task... -->
-
-Take Devil's Lake, or another site of your choosing.
-
-1. Rebuild the chronology with `Bchron`, following @sec-age-depth, three times: once with the complete chronological control data, which is your reference point, and twice more with the control data artificially downsampled by removing rows. Keep the first and last control in each downsampled version.
-
-2. Artificially downsample the pollen data twice, again by removing rows. The complete dataset is your reference point here too.
-
-3. You now have three chronologies and three pollen datasets. Plot combinations of the two to see the effect of reduced temporal resolution in the chronological controls and in the pollen separately.
-:::
 
 ## Conclusion
 
