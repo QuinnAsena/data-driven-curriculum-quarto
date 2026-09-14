@@ -27,11 +27,11 @@ The MAT follows four basic steps:
 
 Note that we are taking a detour into palaeoclimatology for two reasons. First, because palaeoclimatic reconstructions are still a primary use for fossil pollen and other micropalaeontological data. Second, because the MAT and the `analogue` package, as a dissimilarity-based approach, also lets us explore the novelty of past communities, perhaps of more interest to palaeoecologists than inferred palaeoclimates!
 
-The following section, @sec-datawrangle, takes you through some pretty advanced data wrangling required to match species names between the datasets we will use. However, if you prefer to skip all the wrangling and jump directly to the analyses in @sec-crossvalid, the data have been saved post-wrangling and can be loaded into R directly. Run the 'Jump point' code below and portal to @sec-crossvalid.
+The following section, @sec-datawrangle, takes you through some pretty advanced data wrangling required to match species names between the datasets we will use. However, if you prefer to skip all the wrangling and jump directly to the analyses in @sec-modernanalogue, the data have been saved post-wrangling and can be loaded into R directly. Run the 'Jump point' code below and portal to @sec-modernanalogue.
 
 ::: {.callout-tip}
 # Jump point
-Load the packages in the next section first, then unfold and run this code to restore the wrangled data and portal to @sec-crossvalid.
+Load the packages in the next section first, then unfold and run this code to restore the wrangled data and portal to @sec-modernanalogue.
 
 ```{r readdata}
 #| code-fold: true
@@ -363,7 +363,7 @@ saveRDS(list(mod_pol_harm    = mod_pol_harm,
 ```
 
 
-## The Modern Analogue Technique
+## The Modern Analogue Technique {#sec-modernanalogue}
 
 Now that we have the data we need, and in the format that we need it, we can apply the MAT. If you portaled here and skipped the Data Wrangling in @sec-datawrangle, make sure you load in the pre-formatted data from the jump point in @sec-background.
 

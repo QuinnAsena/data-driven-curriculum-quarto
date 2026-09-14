@@ -1,20 +1,18 @@
+---
+author: Quinn Asena
+---
+
 # Visualising pollen data {#sec-visualisation}
 
-## Background
+## Background {#sec-visualisationbackground}
 
-<!-- NOTE (Quinn's, kept): include the issue of visualising relative proportions. -->
-<!-- NOTE (Quinn's, kept): I use segment in ggplot to indicate where observations lie. Many
-     publications do not do this but it is important to see where the sampling intervals lie,
-     otherwise you have an automatic linear interpolation! This is now the point that
-     @fig-strat-devils makes, and the first plot below deliberately omits the segments so the
-     difference is visible. -->
 <!-- NOTE (Claude): this section still needs the real Background prose. The shape it wants is
      probably: what a pollen diagram is and why it is drawn the way it is (time vertical, oldest
      at the bottom, one panel per taxon), then the two honesty problems the chapter deals with,
      which are (a) proportions hide the count they came from and (b) an area or line between two
      samples is an interpolation the data do not support. -->
 
-One of the most common methods of plotting palaeoecological data (such as pollen, but often including diatoms, isotopes, and other palaeoecological data) is to create stratigraphic plots. Palaeodata are regularly visualised with age (usually the output of an age-depth model) on the y-axis, with the youngest age at the top, to mirror a core-type sample. Each taxon is plot in sequence horizontally, in order of abundance. Taxonomic data, such as pollen or diatoms, are also usually converted to relative abundances before plotting. While the relative abundances do help visualise the proportion of each taxa through time (and absolute abundances are unavailable), it also means that the plots can be misleading. For example is all taxa were to decline equally, then the figure would not change at all! Or the rise of a taxa could be due to the decline of others. Of course, this is not the only method of visualising palaeoecological data, and other layouts can be equally good; however, we will demonstrate the most common convention in this chapter. We will do so using the  `ggplot2` package and the `rioja package. 
+One of the most common methods of plotting palaeoecological data (such as pollen, but often including diatoms, isotopes, and other palaeoecological data) is to create stratigraphic plots. Palaeodata are regularly visualised with age (usually the output of an age-depth model) on the y-axis, with the youngest age at the top, to mirror a core-type sample. Each taxon is plotted in sequence horizontally, in order of abundance. Taxonomic data, such as pollen or diatoms, are also usually converted to relative abundances before plotting. While the relative abundances do help visualise the proportion of each taxon through time (and absolute abundances are unavailable), it also means that the plots can be misleading. For example, if all taxa were to decline equally, then the figure would not change at all! Or the rise of a taxon could be due to the decline of others. Of course, this is not the only method of visualising palaeoecological data, and other layouts can be equally good; however, we will demonstrate the most common convention in this chapter. We will do so using the `ggplot2` package and the `rioja` package.
 
 
 ## Getting started
@@ -82,7 +80,7 @@ In most publication-ready figures, you would plot as many taxa and functional gr
 ```{r TopTaxa}
 devils_top_taxa <- devils_harm_prop %>%
   group_by(siteid, sitename, variablename) %>%
-  summarise(total = sum(value)) %>%
+  summarise(total = sum(value), .groups = "drop") %>%
   arrange(desc(total))
 ```
 
@@ -96,14 +94,14 @@ devils_focal <- devils_harm_prop %>%
 
 ```
 
-### Building one with `ggplot2`
+### Building a stratigraphic plot with `ggplot2`
 
-Start with the simplest thing that works: proportion against age, one panel per taxon.
-`coord_flip()` puts age on the vertical axis and `scale_x_reverse()` makes it run downwards, so
-the oldest sample sits at the bottom. We will incrementally build up from a basic plot to a fleshed-out example with correct details.
+Let's start with the simplest thing that works: proportion against age, one panel per taxon.
+`coord_flip()` puts age on the vertical axis and `scale_x_reverse()` makes age run downwards, so
+the oldest sample sits at the bottom. `facet_wrap()` splits each taxon (`variablename`) into one panel per taxon. We will incrementally build up from a basic plot to a fleshed-out example with correct details. If you are unfamiliar with ggplot, try commenting out or removing lines systematically, rerunning the code each time to see the difference.
 
 ```{r fig-strat-first}
-#| fig-cap: "A first pollen diagram for Devil's Lake. Readable, and misleading in two ways that the next version fixes."
+#| fig-cap: "A first pollen diagram for Devil's Lake. Incomplete, but something to build on."
 #| fig-height: 5
 ggplot(devils_focal, aes(x = age, y = prop)) +
   geom_area(fill = "grey25") +
@@ -115,11 +113,8 @@ ggplot(devils_focal, aes(x = age, y = prop)) +
   theme_minimal()
 ```
 
-If you are unfamiliar with ggplot, try comment-out or remove lines systematically from the code and run it to see the difference. Now let's start improving on this base plot @fig-strat-first.
-
-The filled area implies a continuous record. It is not: the core was sampled at intervals, and
-everything between two samples is drawn by the plotting function, not measured. Adding a segment
-at each sampled age shows where the data actually are. This is a common mistake in palaeoecological plots as the density of observations through time is very important! The panels are also in alphabetical order by default, ordering by abundance is tidier and conveys relative abundance along the horizontal alignment of panels. To to this `ggplot` likes to have the taxa as factor data.
+Now let's start improving on this base plot @fig-strat-first! Using a filled area is common; however,  the fill implies a continuous record and the core was sampled at discrete intervals. Everything between two samples is drawn by the plotting function, not measured. Adding a segment
+at each sampled age shows where the observations actually are. The density of observations through time is very important, and it is a common mistake not to include them in stratigraphic plots! Currently, the panels are also in alphabetical order by default. Ordering by abundance is tidier and conveys relative abundance along the horizontal alignment of panels. To do this `ggplot` likes to have the taxa as factor data, so let's convert the taxa names to factor data:
 
 ```{r visFactorOrder}
 # convert taxa to factor, see <fct> now appears in the
@@ -132,7 +127,7 @@ devils_focal <- devils_focal %>%
 Now rebuild the plot with `geom_segment()` to add the sampling locations, and rebuild with the `variablename` as a factor:
 
 ```{r fig-strat-second}
-#| fig-cap: "A first pollen diagram for Devil's Lake. Readable, and misleading in two ways that the next version fixes."
+#| fig-cap: "The same diagram with a segment marking every sampled level, and the panels ordered by total abundance rather than alphabetically."
 #| fig-height: 5
 ggplot(devils_focal, aes(x = age, y = prop)) +
   geom_area(fill = "grey25") +
@@ -151,48 +146,49 @@ Now we're getting somewhere!
 
 #### Formatting taxon names
 
-By convension genus and species names are italic, the genus is capitalised and the species is not (e.g., *Quercus alba*). `marquee` renders markdown
-inside `ggplot2` theme elements, so a label is written the way it would be written in prose,
-`*Pinus*`, rather than as a plotmath expression.
+By convention genus and species names are italic, the genus is capitalised and the species is not (e.g., *Quercus alba*). The `marquee` package renders markdown inside `ggplot2` theme elements, so a label is written the way it would be written using [markdown syntax](https://www.markdownguide.org/basic-syntax/#emphasis). Markdown is a featherweight plain text format that is super easy to use and commonplace in programming. There are many many ways of achieving the same aim in `ggplot`, I find markdown elements the simplest.
 
-Six taxa need six labels, so a named vector is the whole of it. A rule-based version would have
-to cope with qualifiers such as `undiff.`, `-type` and `subg.`, and with the fact that families
-are not italicised, which is a lot of regular expression for six names.
+Let's create some labels for `ggplot`. Since there are only 6 taxa, we can easily enough create matching pairs manually:
 
 ```{r visTaxonNames}
 taxon_names <- c(
-  Quercus  = "*Quercus*",
-  Pinus    = "*Pinus*",
-  Picea    = "*Picea*",
-  Ulmus    = "*Ulmus*",
-  Fraxinus = "*Fraxinus*",
-  Betula   = "*Betula*"
+  Quercus  = "*Quercus* spp.",
+  Pinus    = "*Pinus* spp.",
+  Picea    = "*Picea* spp.",
+  Ulmus    = "*Ulmus* spp.",
+  Fraxinus = "*Fraxinus* spp.",
+  Betula   = "*Betula* spp."
 )
 
-# A hand-written dictionary and a computed taxon list can drift apart. When they do,
-# as_labeller() returns NA and the facet strip is silently labelled "NA" rather than
-# raising an error, so check rather than trust.
+# raise an error if anything changes and taxon names do not match.
 stopifnot(all(focal %in% names(taxon_names)))
 ```
 
-`as_labeller()` puts those strings into the facet strips, and `element_marquee()` tells
-`ggplot2` to render the markdown rather than print it. Both are needed: the labeller alone would
-show the asterisks.
+Alternatively, we can take a simple programmatic approach:
 
-Now the same plot with the segments, the ordering and the names.
+```{r visTaxonNamesprogrammatic}
+markdown_names <- paste0("*", focal, "* spp.")
+taxon_names_prog <- setNames(markdown_names, focal)
+stopifnot(all(focal %in% names(taxon_names_prog)))
+```
+
+For more complex lists of species names, you can take a rule-based approach with lots of regular expressions (regex) to find and match patterns like `undiff.`, `-type`, and `subg`. Pattern matching text got much easier with the help of artificial intelligence, so generating labels is not a hard task now (it used to be challenging to safely/correctly match all the tricky taxon names as well as isotopes with the correct notation!). 
+
+Remember that the taxa are split into facets? Thus, it is the facet strip labels that need to be modified. `as_labeller()` puts the formatted strings into the facet strips, and `element_marquee()` tells `ggplot2` to render the markdown rather than print it. Both are needed: the labeller alone would
+show the asterisks. Now the same plot with the segments, the ordering and the names:
 
 ```{r fig-strat-devils}
-#| fig-cap: "Devil's Lake pollen diagram. Each horizontal segment is a sampled level, so the width of the shaded area between segments is interpolation rather than data. Panels are ordered by the weighted average age at which each taxon occurs, oldest on the left."
+#| fig-cap: "Devil's Lake pollen diagram. Each horizontal segment is a sampled level, so the width of the shaded area between segments is interpolation rather than data. Panels are ordered by the total abundance of the taxa."
 #| fig-height: 5
 ggplot(devils_focal, aes(x = age, y = prop)) +
-  geom_area(fill = "grey85") +
+  geom_area(fill = "grey25") +
   geom_segment(aes(x = age, xend = age, y = 0, yend = prop),
-               colour = "grey30", linewidth = 0.3) +
+               colour = "grey40", linewidth = 0.3) +
   scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
   scale_y_continuous(name = "Proportion of the pollen sum",
                      labels = label_percent(), n.breaks = 3) +
   coord_flip() +
-  facet_wrap(~variablename, nrow = 1, scales = "free_x",
+  facet_wrap(~variablename, nrow = 1,
              labeller = as_labeller(taxon_names)) +
   theme_minimal() +
   theme(strip.text        = element_marquee(),
@@ -201,13 +197,28 @@ ggplot(devils_focal, aes(x = age, y = prop)) +
         axis.text.x       = element_text(size = 7))
 ```
 
-<!-- NOTE (Claude): `scales = "free_x"` gives every taxon its own proportion axis, which is the
-     only way a scarce taxon and Quercus at about 60% are both visible. The cost is that panel
-     widths are no longer comparable by eye, which is exactly what a reader is tempted to do.
-     rioja solves this differently, with a common scale plus an exaggeration factor. Worth a
-     sentence deciding which convention the book teaches. -->
 
-### The same diagram with `rioja`
+Notice that we also included some optional cosmetic changes like percent on the x-axis using `label_percent()` and `label_comma()` to the ages on the y-axis.
+
+::: {#exr-freeaxis}
+1. `facet_wrap` includes optional arguments `"fixed"`, `"free"`, `"free_x"`, and `"free_y"`. Experiment with the alternative arguments to `facet_wrap` and discuss the consequences of how proportions are visualised.
+:::
+
+::: {.callout-note}
+# Assumptions of stratigraphic plots of taxa
+
+- When plotting relative abundances, that the taxa are _not_ independent of each other. As noted in @sec-visualisationbackground, a perceived increase in one taxa may be driven by the decrease in other species.
+
+- Chronological uncertainties are not visually accounted for. @sec-age-depth covers how important the age-depth uncertainties can be and that only considering the median density can lead to incorrect conclusions. Common errors in palaeoecology are to: (i) infer the timing of ecological events from stratigraphic diagrams that do not account for chronological uncertainty; and (ii) plot data from multiple cores against a single chronology to infer the synchroneity of events across space without due consideration of the compounded chronological uncertainties. Although these considerations are important to visualisation and interpretation, we will not attempt to tackle such big issues in this chapter. If you are interested, here are a few papers:
+  - @blois2011
+  - @parnell2008
+  - @blaauw2007
+  - @blaauw2020
+
+:::
+
+
+### Stratigraphic diagram with `rioja`
 
 `rioja` is built for this and does in one call what the section above does in several, including
 the CONISS constrained cluster analysis that splits the record into zones. It wants a wide
@@ -227,7 +238,7 @@ dim(devils_wide)
 ```
 
 ```{r fig-strat-rioja}
-#| fig-cap: "The same six taxa drawn by `rioja::strat.plot()`, with a CONISS dendrogram on the right and four zones marked in red. Taxa are ordered by weighted average, as in the previous figure."
+#| fig-cap: "The same six taxa drawn by `rioja::strat.plot()`, with a CONISS dendrogram on the right and four zones marked in red. `wa.order` sorts the taxa by weighted average age, so the panel order differs from the previous figure."
 #| fig-height: 6
 #| warning: false
 devils_clust <- rioja::chclust(dist(sqrt(devils_wide[, -1])), method = "coniss")
@@ -417,6 +428,20 @@ Repeat @fig-mich-abundance for a different state or region.
    of them, what does that tell you about the taxa you picked rather than about the region?
 :::
 
+
+::: {#exr-downsample}
+
+<!-- NOTE (Quinn): This may be quite a complex task... -->
+
+Take Devil's Lake, or another site of your choosing.
+
+1. Rebuild the chronology with `Bchron`, following @sec-age-depth, three times: once with the complete chronological control data, which is your reference point, and twice more with the control data artificially downsampled by removing rows. Keep the first and last control in each downsampled version.
+
+2. Artificially downsample the pollen data twice, again by removing rows. The complete dataset is your reference point here too.
+
+3. You now have three chronologies and three pollen datasets. Plot combinations of the two to see the effect of reduced temporal resolution in the chronological controls and in the pollen separately.
+:::
+
 ## Conclusion
 
 <!-- NOTE (Claude): placeholder, yours to write. The three things the chapter actually
@@ -427,6 +452,8 @@ Repeat @fig-mich-abundance for a different state or region.
 
 The exercises are worth returning to if you skipped them:
 
+- @exr-freeaxis, what the `scales` argument does to a stratigraphic plot
 - @exr-taxon-names, formatting taxon names correctly
 - @exr-stratplot, a stratigraphic diagram of your own
 - @exr-taxon-region, presence against abundance in another region
+- @exr-downsample, what falls away as temporal resolution drops

@@ -1,3 +1,8 @@
+---
+author: Simon Goring, Socorro Dominguez, and Quinn Asena
+---
+
+
 # The `neotoma2` package {#sec-neotoma2}
 
 ## Background
@@ -485,7 +490,7 @@ allSamp <- allSamp %>%
   dplyr::summarise(value = sum(value), .groups = 'keep')
 ```
 
-Note that in the `summarise()` code, we are *summing* the raw count data (number of individual grains identified). It is important to take care when converting between counts and proportions that maniplulations are done in the correct order and proportions are not accidentally summed, or taxa dropped after converting to proportions resulting in taxa not summing to 1.
+Note that in the `summarise()` code, we are *summing* the raw count data (number of individual grains identified). It is important to take care when converting between counts and proportions that manipulations are done in the correct order and proportions are not accidentally summed, or taxa dropped after converting to proportions resulting in taxa not summing to 1.
 
 ::: {.callout-note}
 # This is a basic demonstration
