@@ -17,6 +17,9 @@
 # without compiling rioja, and without calling the Neotoma API.
 
 # --- R ---
+# base R writes this whenever a plot is drawn with no device open, which happens
+# any time a script is run with Rscript rather than inside the render.
+Rplots.pdf
 .Rproj.user/
 .Rhistory
 .RData
