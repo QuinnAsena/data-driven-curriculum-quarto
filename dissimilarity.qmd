@@ -205,7 +205,7 @@ Be careful with the lengths. If you bind 122 values onto the 123 rows of `devils
 
 Some considerations of this method are:
 
-- it does not take into account time intervals or chronological uncertainty. Palaeoecological data are typically unevenly spaced through time and we may not be calculating the squared chord distance across communities evenly through time. See the age column in the data, you can use `diff()` to see the first differences in the data (the timespan between samples).
+- it does not take into account time intervals or chronological uncertainty. Palaeoecological data are typically unevenly spaced through time and we may not be calculating the squared chord distance across communities evenly through time. See the age column in the data; you can use `diff()` to see the first differences in the data (the timespan between samples).
 - time averaging is not taken into consideration. Time averaging is the amount of time a sample (i.e., a 1-centimetre thick slice of sediment core) encompasses. Due to processes like variable sedimentation rates and core compression, the number of years integrated within each sample may vary. Thus, we may be calculating the dissimilarity between say 50-years worth of ecological productivity and turnover in one sample, with 10-years in the previous one.
 - the calculations are based on species composition alone and are not conditioned on environmental covariates (e.g., climate variables or fire). Thus, this method can be considered descriptive rather than inferential.
 
