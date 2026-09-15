@@ -2,7 +2,7 @@
 author: Quinn Asena
 ---
 
-# Visualising pollen data {#sec-visualisation}
+# Visualising data {#sec-visualisation}
 
 ## Background {#sec-visualisationbackground}
 
@@ -199,7 +199,7 @@ Notice that we also included some optional cosmetic changes like percent on the 
 :::
 
 ::: {.callout-note}
-# Assumptions of stratigraphic plots of taxa
+# Assumptions of stratigraphic plots of taxa :mage:
 
 - When plotting relative abundances, that the taxa are _not_ independent of each other. As noted in @sec-visualisationbackground, a perceived increase in one taxa may be driven by the decrease in other species.
 
@@ -344,7 +344,7 @@ In the stratigraphic plot demonstration we picked the top 6 species by count (pu
 ### How much data does each site have?
 
 Palaeoecological datasets differ enormously in how many samples were taken and what period they cover.
-For any multi-site comparison is is important to know the sampling intensity and temporal coverage.
+For any multi-site comparison it is important to know the sampling intensity and temporal coverage.
 The following code loads up the samples data from the Michigan sites, deals with the duplicate name ("Green lake"), and creates a summary object `site_cover` that checks how many samples a site has, and whether the dataset covers the whole of the Holocene period.
 
 ```{r visMichCoverage}
@@ -490,9 +490,9 @@ per_site_bin %>%
 
 
 
-### Where a taxon is present
+### Where are taxa present?
 
-Baring in mind that we have glossed over the quality of each sites chronology, it is still worth checking out another exploratory plot. The following code once again filters for the records that cover the Holocene, follows the same binning procedure shown above and creates a table of the number of presence of each taxon per bin across sites.
+Bearing in mind that we have glossed over the quality of each site's chronology, it is still worth looking at another plot to demonstrate how data from Neotoma can be explored. The following code once again filters for the most abundant six taxa and records that cover the Holocene, follows the same binning procedure shown above, and creates a table of the number of presence of each taxon per bin across sites.
 
 ```{r visPresence}
 #| output: false
@@ -512,7 +512,7 @@ presence <- taxa_by_age %>%
          variablename = factor(variablename, levels = focal))
 ```
 
-Before plotting it, look at what the numbers do:
+Before plotting it, look at a summary table:
 
 ```{r visPresenceCheck}
 presence %>%
@@ -523,6 +523,8 @@ presence %>%
             bins_at_100pct = sum(proportion == 1),
             .groups = "drop")
 ```
+
+Now let's make a plot:
 
 ```{r fig-mich-presence}
 #| fig-cap: "Proportion of the 13 curated Michigan sites recording each taxon through time, in 200 year bins, with a binomial GAM smooth weighted by the number of sites contributing to each bin. Four of the six taxa sit at or near 100% throughout, which is the problem described below."
@@ -538,78 +540,42 @@ ggplot(presence, aes(x = age_bin, y = proportion, weight = n_sites_total)) +
   scale_x_reverse(name = "Age (cal years BP)", labels = label_comma()) +
   scale_y_continuous(name = "Proportion of sites recording the taxon",
                      labels = label_percent()) +
-  theme_bw() +
+  theme_minimal() +
   theme(strip.text = element_marquee())
 ```
 
-*Quercus* and *Ulmus* are present at every site in every one of the 56 bins, and *Pinus* in 48 of
-them. For those taxa the measure cannot go up or down, so the smooth is flat and tells you
-nothing at all. Presence is only informative for a taxon that is sometimes absent, which here is
-*Picea*, which ranges from 9% to 100% of sites, and *Fraxinus*, which never exceeds half of
-them.
-
-<!-- NOTE (Claude): two things worth saying in prose here, both of which the code above already
-     demonstrates. First, `weight = n_sites_total` is not optional. Without it the binomial GAM
-     is fitted to bare proportions and mgcv warns "non-integer #successes" once per panel; the
-     old draft hid that with `warning: false`. Second, a taxon at 100% in every bin is complete
-     separation, which is why the fit struggles. This is the honest lead-in to the abundance
-     version below, which was your note in the old draft. -->
+Despite making several assumptions along the way about chronological controls and bin widths (it is advisable to experiment with several different bin widths), some patterns do emerge!
+*Quercus* and *Ulmus* are present at every site in every one of the 56 age bins, and *Pinus* in 48 of
+them. The smoother is purely a visual guide, not intended for statistical analyses. Presence is only informative for a taxon that is sometimes absent, which here is *Picea*, which ranges from 9% to 100% of sites, and *Fraxinus*, which never exceeds half of them.
 
 
-<!-- NOTE (Claude): a further step, if you want one, is that binning to 500 years and taking an
-     unweighted mean treats a bin holding two sites the same as one holding twenty. Point size
-     shows the imbalance but does not correct it. That is a natural lead-in to @sec-gams. -->
+::: {.callout-note}
+# Always remember ecological knowledge! :mage:
 
-## Exercises
+_Always_ remember the ecology of a region. It is one thing to play with the numbers from a database, but we could be missing important ecological dynamics. The above example visualises data across Michigan as one, this approach could be missing those important underlying dynamics. Michigan is split by a climatic tension zone, how would the results change if that knowledge, which is not contained in the downloads, were included?
 
-::: {#exr-taxon-names}
-`taxon_names` is a dictionary of six entries, which is the right answer for six taxa. Find out
-where that stops being true.
-
-1. Get the full taxon list for Devil's Lake with
-   `sort(unique(devils_harm_prop$variablename))`. How many entries would a complete dictionary
-   need?
-2. Write the markdown for five of them that are **not** simple genus names. Neotoma records
-   families, `undiff.`, `-type` and `subg.` names, and they are not all italicised the same way.
-3. At what point would you stop writing entries by hand and write a rule instead? Say what the
-   rule would have to know, and what it would still get wrong.
 :::
 
-::: {#exr-stratplot}
-Draw a stratigraphic diagram for a site other than Devil's Lake, with taxa of your choosing,
-using either `ggplot2` or `rioja`.
 
-1. Pick a site using the search methods in @sec-neotoma2 and download it with the gated pattern
-   in the respawn code above.
-2. Choose between five and eight taxa. Say why you chose those, given that the diagram is meant
-   to show how the site changed.
-3. Order the panels by weighted average age. Does the order match what you expected from the
-   ecology?
+::: {#exr-youchoose}
+We have worked through several examples of how data from Neotoma can be manipulated and reshaped to produce data visualisations. This exercise is an open-ended one: either take one of the visualisations above, improve it, and discuss the shortcomings and what issues you addressed, _or_ come up with a visualisation of your own and discuss what you did and why.
+
+There are still many possible visualisations, if you need some inspiration consider:
+
+- Visualising chronological uncertainty
+- Spatial change in taxa (e.g., longitude against abundance)
+- Species richness against counting effort
+- Some sites include the name of the analyst under `sampleanalyst`, which sites have multiple analysts and does anything change in the data depending on who the analyst was?
+
 :::
-
-::: {#exr-taxon-region}
-Repeat @fig-mich-presence for a different state or region.
-
-1. Download the sites for your region, following @sec-neotoma2.
-2. Curate it the same way, and report what the filter costs you before plotting anything.
-3. Report how many of your taxa are present at 100% of sites in every bin. If the answer is most
-   of them, what does that tell you about the taxa you picked rather than about the region?
-:::
-
 
 
 ## Conclusion
 
-<!-- NOTE (Claude): placeholder, yours to write. The three things the chapter actually
-     establishes are: a pollen diagram is a set of per-taxon panels against age with the oldest
-     at the bottom; anything drawn between two sampled levels is interpolation and should be
-     shown as such; and a measure that cannot vary, such as presence for a taxon found
-     everywhere, will produce a flat line that looks like a result. -->
+This chapter is intended to: (i) give you insight into how many ways there are to manipulate and visualise data for different purposes; (ii) highlight pitfalls and potential errors such as ignoring chronological uncertainty or sampling intensity, and also missing ecological knowledge that the database does not contain directly. Some datasets may have associated publications that you can read to understand the methods and regional history. These points are far more important than the code itself which can now be written in minutes by AI. If you are using AI, make sure that every line of code is verified and you know exactly what the output is and how it was created. I take the approach that there are no AI mistakes, only my own misdirection or lack of verification.
 
 The exercises are worth returning to if you skipped them:
 
 - @exr-freeaxis, what the `scales` argument does to a stratigraphic plot
-- @exr-taxon-names, formatting taxon names correctly
-- @exr-stratplot, a stratigraphic diagram of your own
-- @exr-taxon-region, presence against abundance in another region
 - @exr-downsample, what falls away as temporal resolution drops
+- @exr-youchoose, improve on one of the examples or come up with a new visualisation
