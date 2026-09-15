@@ -8,12 +8,34 @@ Authors: Quinn Asena, Jack Williams, Simon Goring, Socorro Dominguez Vidana.
 
 ## Reading the book
 
-The rendered book is published from the `gh-pages` branch by the workflow in
-`.github/workflows/publish.yml`.
+The rendered book is published to GitHub Pages by the workflow in
+`.github/workflows/publish.yml`, which uploads the rendered site as a Pages artifact. There is
+no `gh-pages` branch; the repository's Pages source is set to GitHub Actions.
+
+## For students
+
+You do not need to build the book to use it. Read it at the published site, and clone this
+repository so that you have the data and can run the code alongside.
+
+```bash
+git clone https://github.com/QuinnAsena/data-driven-curriculum-quarto.git
+cd data-driven-curriculum-quarto
+```
+
+Clone rather than fork. You are not contributing to the book, you are reading it and working
+next to it, and a fork adds concepts you do not need yet.
+
+Then open `student/00-setup.qmd` and work through it. It installs the packages, creates a folder
+for your own scripts, checks that the data arrived with the clone, and explains the two kinds of
+box the chapters use to get you out of trouble. It is not part of the book, so nothing in it runs
+until you run it.
+
+After that, read the book and keep your own scripts in `student/`, which version control ignores.
 
 ## Building it locally
 
-You need [Quarto](https://quarto.org/docs/get-started/) and R (developed against 4.4.2).
+You need [Quarto](https://quarto.org/docs/get-started/) and R 4.4 or later. The committed
+results are currently built with R 4.6.1.
 
 ```bash
 git clone https://github.com/QuinnAsena/data-driven-curriculum-quarto.git
@@ -59,9 +81,14 @@ resolves R before reading it.
 `_quarto.yml` sets `execute: freeze: auto`, and `_freeze/` is committed. That is what lets the
 publishing workflow render without an R toolchain and without calling the Neotoma API.
 
-**If you change a code chunk, re-render locally and commit the updated `_freeze/` with your
-source change.** A stale `_freeze/` does not fail the build; it quietly publishes stale
-output.
+**Any** edit to a `.qmd` invalidates that chapter's frozen results, prose-only edits included,
+because the hash covers the whole source file rather than just the code. So re-render locally
+and commit the updated `_freeze/` in the same commit as the source change.
+
+Under `freeze: auto` a stale `_freeze/` is a **hard build failure**, not stale output. The
+workflow has no R, so it tries to execute the chapter and stops with "Unable to locate an
+installed version of R". That message names R, which is never the problem. The chapter at fault
+is the last one the log lists before the error.
 
 ### Cached datasets
 

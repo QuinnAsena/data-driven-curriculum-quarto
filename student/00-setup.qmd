@@ -1,0 +1,95 @@
+---
+title: "Setting up"
+author: Quinn Asena
+---
+
+## Getting the book
+
+If you are reading this on your own machine you have already done this step. If you are
+reading it on GitHub, start here:
+
+```bash
+git clone https://github.com/QuinnAsena/data-driven-curriculum-quarto.git
+cd data-driven-curriculum-quarto
+```
+
+Alternatively, open [this URL](https://github.com/QuinnAsena/data-driven-curriculum-quarto) and click the green "`<> Code`" dropdown in the top right, download the zip, and unzip it locally.
+
+**Clone, do not fork.** A fork is for contributing changes back; you want to be working
+on your own isolated copy. If you want to keep your own work under
+version control, you can make your own repository.
+
+After cloning the book, you will have _everything_ (including the necessary data files) in a directory named `data-driven-curriculum-quarto`. Open that directory in your chosen IDE (e.g., RStudio, Positron, VS Code...). It is **very important** to direct your IDE to the correct directory because every path in this book is written relative to the top of the repository.
+
+
+## Installing the packages
+
+The book uses a fair number of packages and some of them take a few minutes to install. We have included a file (`install.R`) containing the code to download all the necessary packages. You can run this now with the following code:
+
+```{r setupInstall}
+#| eval: false
+source("install.R")
+```
+
+The above code does two things: it will only run if you have opened this book in the correct directory, and it will take a few minutes to download the packages, which is best done in advance of the class.
+
+
+## A place for your own work
+
+We have designed this book to have a student workspace (the subdirectory `student`) within which to complete exercises and coursework. The tidiest way to do this is one subdirectory per chapter, each holding the script for that chapter's exercises and anything else that chapter produces, figures or notes or saved objects. Feel free to copy chunks of code out of the main book's chapters, but do not edit the chapters themselves; keep your work contained within your workspace.
+
+```{r setupDirs}
+#| eval: false
+
+chapters <- c("chapter-02-neotoma2",
+              "chapter-03-age-depth",
+              "chapter-04-visualisation",
+              "chapter-05-dissimilarity",
+              "chapter-06-no-analogue")
+
+for (ch in chapters) {
+  # one directory per chapter
+  dir.create(file.path("student", ch), recursive = TRUE, showWarnings = FALSE)
+
+  # and an empty script inside it, if you have not already started one
+  script <- file.path("student", ch, paste0(ch, ".R"))
+  if (!file.exists(script)) {
+    writeLines(c(
+      paste("#", ch),
+      "# Run from the top of the repository, not from this folder, so that paths",
+      "# like ./data/devils_dl.rds work when you copy code out of the book.",
+      ""
+    ), script)
+  }
+}
+
+list.files("student", recursive = TRUE)
+```
+
+Did you run the above code? Did you see the subdirectories appear, each with an empty R script ready to use? Great! You're good to go!
+
+
+## When things break
+
+One more thing about how we designed this book. When building code, things often break if run out of order, or variables are accidentally deleted or overwritten. So we have included "Respawn code" and "Jump points" in some of the chapters.
+
+::: {.callout-tip}
+# Respawn code
+
+Most chapters have one. It rebuilds that chapter's data from scratch, so if something has
+gone wrong you can run the code in the respawn box to reset the data and objects to that point.
+It is the first thing to reach for when an error mentions an object you thought you had.
+
+You can also copy the code from the respawn points into your own scripts to load up the data necessary for the exercises.
+:::
+
+::: {.callout-tip}
+# Jump point
+
+Some chapters have one of these too. Jump points load up a future state of the data that is necessary further along a chapter. The jump point will cross-reference you to a point further on that you can portal to and pick up from, without having to run all the code along the way. The no-analogue chapter has one, because the data wrangling before the analysis is long.
+:::
+
+The two do different jobs. A **respawn** puts you back where you were; a **jump** moves you
+forward past something you do not want to run.
+
+

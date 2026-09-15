@@ -30,6 +30,13 @@ Rplots.pdf
 .vscode/
 .Rproj.user/
 
+# --- student work ---
+# Students keep their own scripts in student/, which is ignored so that nothing they
+# write can clash with a git pull. The setup document itself is tracked, because
+# students need to receive it.
+/student/*
+!/student/00-setup.qmd
+
 # --- Claude Code working context (local only, not shared with co-authors) ---
 /.notes/
 /CLAUDE.md

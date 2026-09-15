@@ -1,5 +1,10 @@
 project:
   type: book
+  # Render only the top-level chapters. student/ holds a setup document that
+  # students open and run themselves; it is not part of the book.
+  render:
+    - "*.qmd"
+    - "!student/"
 
 book:
   title: "Palaeoecological data-science: a data driven curriculum"
@@ -39,5 +44,6 @@ format:
 execute:
   # freeze, not cache. Frozen results are committed to _freeze/ so the GitHub Action can
   # render without an R toolchain, without compiling rioja, and without calling the Neotoma
-  # API. Re-render locally and commit _freeze/ whenever a code chunk changes.
+  # API. Re-render locally and commit _freeze/ whenever a .qmd changes at all, prose
+  # included: the freeze hash covers the whole source file, not just the code.
   freeze: auto
