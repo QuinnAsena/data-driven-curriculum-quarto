@@ -127,8 +127,7 @@ radiocarbon years. Those numbers matter more than they look.
    reports and how much probability the largest of them carries, and then decide whether any
    single number would be an honest summary of this date.
 
-4. Finally, recalibrate one of your dates using the Southern Hemisphere curve (`shcal20`) and
-   the marine curve (`marine20`) instead of `intcal20`. How far does the estimated age move,
+4. Finally, recalibrate one of your dates using the Southern Hemisphere curve (`shcal20`) instead of `intcal20`. How far does the estimated age move,
    and what would the consequence be of choosing the wrong one?
 
 By the end of this exercise you should be able to look at a radiocarbon age, a standard
@@ -509,7 +508,7 @@ neotoma2::plotLeaflet(some_sites)
 Rebuild a chronology for a site of your own choosing, and get the calibration curve vector
 right.
 
-1. Pick a site (not the Devil's Lake, `ID = 666`) either from the ones given above, or any of your choosing!
+1. Pick a site (not Devil's Lake, `ID = 666`) either from the ones given above, or any of your choosing!
 
 2. List the available chronologies and choose one, saying why.
 
