@@ -11,6 +11,9 @@ book:
   author: "Quinn Asena, Jack Williams, Simon Goring, Socorro Dominguez Vidana"
   date: today
   repo-url: https://github.com/QuinnAsena/data-driven-curriculum-quarto
+  # Quarto assumes "main" unless told otherwise, so without this every
+  # "Edit this page" and "Report an issue" link 404s on a master branch.
+  repo-branch: master
   repo-actions: [edit, issue]
   # Chapter order lives here and only here. Filenames carry no numbers on purpose:
   # a numeric prefix drifts from the rendered chapter number as soon as a chapter is

@@ -1,5 +1,5 @@
 ---
-author: Simon Goring, Socorro Dominguez, and Quinn Asena
+author: Simon Goring, Socorro Dominguez Vidana, and Quinn Asena
 ---
 
 
